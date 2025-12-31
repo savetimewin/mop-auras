@@ -104,19 +104,166 @@ local roots = {
 	105771, -- Warbringer
 	115000, -- Remorseless Winter
 	25999, -- Charge
+	115757, -- Frost Nova (Glyph of Ice Block)
 }
 
+-- size 1.9
+local knocks = {
+	108199, -- Gorefiend's Grasp
+	102793, -- Ursol's Vortex
+	61391, -- Typhoon
+	13812, -- Glyph of Explosive Trap
+	51490, -- Thunderstorm
+	6360, -- Whiplash
+	115770, -- Fellash
+}
+
+-- size 1.8
 local silences = {
-
+	47476, -- Strangulate
+	114238, -- Glyph of Fae Silence
+	34490, -- Silencing Shot
+	102051, -- Frostjaw
+	55021, -- Counterspell
+	137460, -- Ring of Peace (Silence effect)
+	116709, -- Spear Hand Strike
+	31935, -- Avenger's Shield
+	15487, -- Silence
+	1330, -- Garrote
+	24259, -- Spell Lock
+	115782, -- Optical Blast (Observer)
+	18498, -- Silenced - Gag Order
+	50613, -- Arcane Torrent (Racial, Runic Power)
+	28730, -- Arcane Torrent (Racial, Mana)
+	25046, -- Arcane Torrent (Racial, Energy)
+	69179, -- Arcane Torrent (Racial, Rage)
+	80483, -- Arcane Torrent (Racial, Focus)
 }
 
+-- size 1.8
 local disarms = {
-
+	50541, -- Clench (Scorpid)
+	91644, -- Snatch (Bird of Prey)
+	117368, -- Grapple Weapon
+	126458, -- Grapple Weapon (Symbiosis)
+	137461, -- Ring of Peace (Disarm effect)
+	64058, -- Psychic Horror (Disarm Effect)
+	51722, -- Dismantle
+	118093, -- Disarm (Voidwalker/Voidlord)
+	676, -- Disarm
 }
 
--- size 2.0 -- hard dispellable and undispellable cc
+-- size 2.0 -- dispellable and undispellable cc
 local cc = {
-	
+		-- Incapacitate
+	2637, -- Hibernate
+	3355, -- Freezing Trap Effect
+	19386, -- Wyvern Sting
+	118, -- Polymorph
+	28271, -- Polymorph: Turtle
+	28272, -- Polymorph: Pig
+	61025, -- Polymorph: Serpent
+	61721, -- Polymorph: Rabbit
+	61780, -- Polymorph: Turkey
+	61305, -- Polymorph: Black Cat
+	82691, -- Ring of Frost
+	115078, -- Paralysis
+	20066, -- Repentance
+	9484, -- Shackle Undead
+	1776, -- Gouge
+	6770, -- Sap
+	76780, -- Bind Elemental
+	51514, -- Hex
+	710, -- Banish
+	107079, -- Quaking Palm (Racial)
+
+	-- Disorient
+	99, -- Disorienting Roar
+	19503, -- Scatter Shot
+	31661, -- Dragon's Breath
+	123393, -- Glyph of Breath of Fire
+	105421, -- Blinding Light
+	88625, -- Holy Word: Chastise
+
+	-- Stun (Controlled)
+	108194, -- Asphyxiate
+	91800, -- Gnaw (Ghoul)
+	91797, -- Monstrous Blow (Dark Transformation Ghoul)
+	115001, -- Remorseless Winter
+	102795, -- Bear Hug
+	5211, -- Mighty Bash
+	9005, -- Pounce
+	22570, -- Maim
+	113801, -- Bash (Treants)
+	117526, -- Binding Shot
+	24394, -- Intimidation
+	126246, -- Lullaby (Crane pet)
+	126423, -- Petrifying Gaze (Basilisk pet)
+	126355, -- Quill (Porcupine pet)
+	90337, -- Bad Manner (Monkey)
+	56626, -- Sting (Wasp)
+	50519, -- Sonic Blast
+	118271, -- Combustion
+	44572, -- Deep Freeze
+	119392, -- Charging Ox Wave
+	122242, -- Clash
+	120086, -- Fists of Fury
+	119381, -- Leg Sweep
+	115752, -- Blinding Light (Glyphed)
+	853, -- Hammer of Justice
+	110698, -- Hammer of Justice (Symbiosis)
+	119072, -- Holy Wrath
+	105593, -- Fist of Justice
+	408, -- Kidney Shot
+	1833, -- Cheap Shot
+	118345, -- Pulverize (Primal Earth Elemental)
+	118905, -- Static Charge (Capacitor Totem)
+	89766, -- Axe Toss (Felguard)
+	22703, -- Inferno Effect
+	30283, -- Shadowfury
+	132168, -- Shockwave
+	107570, -- Storm Bolt
+	132169, -- Storm Bolt 2
+	20549, -- War Stomp (Racial)
+
+	-- Stun (Non-controlled)
+	113953, -- Paralysis
+	118895, -- Dragon Roar
+	77505, -- Earthquake
+	100, -- Charge
+	118000, -- Dragon Roar
+
+	-- Fear
+	113004, -- Intimidating Roar (Symbiosis)
+	113056, -- Intimidating Roar (Symbiosis 2)
+	1513, -- Scare Beast
+	10326, -- Turn Evil
+	145067, -- Turn Evil (Evil is a Point of View)
+	8122, -- Psychic Scream
+	113792, -- Psychic Terror (Psyfiend)
+	2094, -- Blind
+	5782, -- Fear
+	118699, -- Fear 2
+	5484, -- Howl of Terror
+	115268, -- Mesmerize (Shivarra)
+	6358, -- Seduction (Succubus)
+	104045, -- Sleep (Metamorphosis)
+	5246, -- Intimidating Shout
+	20511, -- Intimidating Shout (secondary targets)
+
+	-- Horror
+	64044, -- Psychic Horror
+	137143, -- Blood Horror
+	6789, -- Death Coil
+
+	-- Mind Control
+	605, -- Dominate Mind
+	13181, -- Gnomish Mind Control Cap (Item)
+	67799, -- Mind Amplification Dish (Item)
+
+	-- Cyclone
+	33786, -- Cyclone
+	113506, -- Cyclone (Symbiosis)
 }
 
 -- show mine only on enemies because stacks with others' debuffs
@@ -410,6 +557,7 @@ fPB.snares60 = snares60
 fPB.snares70 = snares70
 
 fPB.roots = roots
+fPB.knocks = knocks
 fPB.silences = silences
 fPB.disarms = disarms
 
