@@ -23,12 +23,12 @@ local C_NamePlate_GetNamePlateForUnit, C_NamePlate_GetNamePlates, CreateFrame, U
   math.floor
 
 local defaultLargeSpells, defaultMediumSpells, defaultHiddenSpells, 
-  snares50, snares60, snares70, roots, knocks, silences, disarms, cc, war_personal_nostack_debuffs, war_personal_stackable_debuffs, 
-  major_defensive_buffs, minor_defensive_buffs, major_offensive_buffs, minor_offensive_buffs,
+  snares50, snares60, snares70, roots, silences, disarms, cc, war_personal_nostack_debuffs, war_personal_stackable_debuffs, 
+  major_defensive_buffs, minor_defensive_buffs, major_offensive_buffs, minor_offensive_buffs, cc_immunities,
   spell_immunities, mobility_buffs, speed_buffs, mana_buffs, drinkflags, stances_forms, constraint_debuffs =
   fPB.defaultLargeSpells, fPB.defaultMediumSpells, fPB.defaultHiddenSpells,
-  fPB.snares50, fPB.snares60, fPB.snares70, fPB.roots, fPB.knocks, fPB.silences, fPB.disarms, fPB.cc, fPB.war_personal_nostack_debuffs, fPB.war_personal_stackable_debuffs,
-  fPB.major_defensive_buffs, fPB.minor_defensive_buffs, fPB.major_offensive_buffs, fPB.minor_offensive_buffs, fPB.spell_immunities, 
+  fPB.snares50, fPB.snares60, fPB.snares70, fPB.roots, fPB.silences, fPB.disarms, fPB.cc, fPB.war_personal_nostack_debuffs, fPB.war_personal_stackable_debuffs,
+  fPB.major_defensive_buffs, fPB.minor_defensive_buffs, fPB.major_offensive_buffs, fPB.minor_offensive_buffs, fPB.cc_immunities, fPB.spell_immunities, 
   fPB.mobility_buffs, fPB.speed_buffs, fPB.mana_buffs, fPB.drinkflags, 
   fPB.stances_forms, fPB.constraint_debuffs
 
@@ -262,21 +262,6 @@ do --add default spells
     end
   end
 
-  for i = 1, #knocks do
-    local spellID = knocks[i]
-    local spellInfo = GetSpellInfo(spellID)
-    if spellInfo then
-      DefaultSettings.profile.Spells[spellID] = {
-        name = spellInfo.name,
-        spellID = spellID,
-        scale = 1.9,
-        durationSize = 14,
-        show = 5, -- 1 = always, 2 = mine, 3 = never, 4 = on ally, 5 = on enemy
-        stackSize = 14,
-      }
-    end
-  end
-
   for i = 1, #cc do
     local spellID = cc[i]
     local spellInfo = GetSpellInfo(spellID)
@@ -405,6 +390,21 @@ do --add default spells
         name = spellInfo.name,
         spellID = spellID,
         scale = 1.5,
+        durationSize = 14,
+        show = 5, -- 1 = always, 2 = mine, 3 = never, 4 = on ally, 5 = on enemy
+        stackSize = 14,
+      }
+    end
+  end
+
+  for i = 1, #cc_immunities do
+    local spellID = cc_immunities[i]
+    local spellInfo = GetSpellInfo(spellID)
+    if spellInfo then
+      DefaultSettings.profile.Spells[spellID] = {
+        name = spellInfo.name,
+        spellID = spellID,
+        scale = 2.0,
         durationSize = 14,
         show = 5, -- 1 = always, 2 = mine, 3 = never, 4 = on ally, 5 = on enemy
         stackSize = 14,

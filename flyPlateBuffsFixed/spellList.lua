@@ -99,23 +99,11 @@ local roots = {
 	114404, -- Void Tendril's Grasp
 	39965, -- Frost Grenade
 	55536, -- Frostweave Net
-	13099, -- Net-o-Matic
 	107566, -- Staggering Shout
 	105771, -- Warbringer
 	115000, -- Remorseless Winter
 	25999, -- Charge
 	115757, -- Frost Nova (Glyph of Ice Block)
-}
-
--- size 1.9
-local knocks = {
-	108199, -- Gorefiend's Grasp
-	102793, -- Ursol's Vortex
-	61391, -- Typhoon
-	13812, -- Glyph of Explosive Trap
-	51490, -- Thunderstorm
-	6360, -- Whiplash
-	115770, -- Fellash
 }
 
 -- size 1.8
@@ -282,7 +270,7 @@ local war_personal_stackable_debuffs = {
 	115798, -- Weakened Blows 1.1 -- target with this debuff does 10% less physical damage
 }
 
--- 1.8
+-- size 1.8
 local major_defensive_buffs = {
 	114214, -- Angelic bulwark
 	110909, -- Alter Time 
@@ -340,6 +328,8 @@ local major_defensive_buffs = {
 	114030, -- Vigilance
 	16188,-- Ancestral Swiftness, can either be defensive or offensive but want size to be big so added here
 	12043, -- Presence of Mind, No Check Spell ID, just the buff name, can either be defensive or offensive but want size to be big so added here
+	1022, -- Hand of Protection
+	131523, -- Zen Meditation
 }
 
 -- size 1.7
@@ -370,11 +360,10 @@ local minor_defensive_buffs = {
 	96267, -- Inner Focus
 	23493, -- Restoration (BG Leaf Healing Buff)
 	77613, -- Grace -- Increase all healing received from the priest by 30%
-
-
+	126697, -- Tremendous Fortitude
 }
 
--- 1.6
+-- size 1.6
 local major_offensive_buffs = {
 	13750, -- Adrenaline Rush 
 	12042, -- Arcane Power 
@@ -432,7 +421,7 @@ local major_offensive_buffs = {
 	121818, -- Stampede
 }
 
--- 1.5
+-- size 1.5
 local  minor_offensive_buffs = {
 	93435, -- Roar of Courage
 	126700, -- Surge of Victory
@@ -449,28 +438,32 @@ local  minor_offensive_buffs = {
 	57934, -- Tricks of the Trade
 }
 
--- 1.8
+-- size 2.0 -- includes cc reductions too
+local cc_immunities = {
+	46924, -- Bladestorm
+	115018, -- Desecrated Ground
+	137562, -- Nimble Brew
+	49039, -- Lichborne
+}
+
+-- size 1.8
 local spell_immunities = {
 	48707, -- Anti-Magic Shell (Death Knight)
 	110570, -- Anti-Magic Shell (Druid) (symbiosis)
 	31224, -- Cloak of Shadows (Rogue)
 	110788, -- Cloak of Shadows (Druid) (symbiosis)
-	122465, -- Dematerilaize
 	115760, -- Glyph of Ice Block
 	8178, -- Grounding Totem Effect
-	49039, -- Lichborne
 	114028, -- Mass Spell Reflection
 	33961, -- Spell Reflection
 	23920, -- Spell Reflection (Warrior)
 	113002, -- Spell Reflection (Druid) (symbiosis)
-	131523, -- Zen Meditation
-	137562, -- Nimble Brew
 	122783, -- Diffuse Magic
 	6346, -- Fear Ward
 	114039, -- Hand of Purity
 }
 
--- 1.5
+-- size 1.5
 local mobility_buffs = {
 	110806, -- spiritwalker's grace
 	114239, -- Phantasm
@@ -491,7 +484,7 @@ local mobility_buffs = {
 	108212, -- Burst of Speed
 }
 
--- 1.5
+-- size 1.5
 local speed_buffs = {
 	2983, -- Sprint
 	1850, -- Dash
@@ -499,13 +492,13 @@ local speed_buffs = {
 	65081, -- Body and Soul
 }
 
--- 1.5
+-- size 1.5
 local mana_buffs = {
 	29166, -- Innervate
 	54428, -- Divine Plea
 }
 
--- 2.0 -- added both since they are both same size
+-- size 2.0 -- added both since they are both same size
 local drinkflags = {
 	23333, -- Warsong Flag (horde WSG flag)
 	23335, -- Silverwing Flag (alliance WSG flag)
@@ -519,7 +512,7 @@ local drinkflags = {
 	140876, -- Alliance Mine (Silvershard Mines flag)
 }
 
--- 1.4
+-- size 1.4
 local stances_forms = {
 	5487, -- Bear Form
 	768, -- Cat Form
@@ -537,6 +530,7 @@ local stances_forms = {
 	2645, -- Ghost Wolf
 }
 
+-- size 1.5
 local constraint_debuffs = {
 	41425, -- Hypothermia
 	87023, -- Cauterize
@@ -557,7 +551,6 @@ fPB.snares60 = snares60
 fPB.snares70 = snares70
 
 fPB.roots = roots
-fPB.knocks = knocks
 fPB.silences = silences
 fPB.disarms = disarms
 
@@ -572,6 +565,7 @@ fPB.minor_defensive_buffs = minor_defensive_buffs
 fPB.major_offensive_buffs = major_offensive_buffs
 fPB.minor_offensive_buffs = minor_offensive_buffs
 
+fPB.cc_immunities = cc_immunities
 fPB.spell_immunities = spell_immunities
 
 fPB.mobility_buffs = mobility_buffs
