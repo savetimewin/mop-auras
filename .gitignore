@@ -1,0 +1,12 @@
+# Ignore everything by default
+*
+
+# But allow directories to be traversed
+!*/
+
+# Allow ONLY these files
+!BigDebuffs/BigDebuffs_Mists.lua
+!Diminish/libs/DRList-1.0/Spells.lua
+!flyPlateBuffsFixed/flyPlateBuffsFixed.lua
+!flyPlateBuffsFixed/spellList.lua
+!LoseControl/LoseControl.lua
