@@ -185,6 +185,7 @@ local cc = {
 	113801, -- Bash (Treants)
 	117526, -- Binding Shot
 	24394, -- Intimidation
+	19577, -- Intimidation
 	126246, -- Lullaby (Crane pet)
 	126423, -- Petrifying Gaze (Basilisk pet)
 	126355, -- Quill (Porcupine pet)
@@ -218,7 +219,7 @@ local cc = {
 	113953, -- Paralysis
 	118895, -- Dragon Roar
 	77505, -- Earthquake
-	100, -- Charge
+	7922, -- Charge
 	118000, -- Dragon Roar
 
 	-- Fear
@@ -246,8 +247,6 @@ local cc = {
 
 	-- Mind Control
 	605, -- Dominate Mind
-	13181, -- Gnomish Mind Control Cap (Item)
-	67799, -- Mind Amplification Dish (Item)
 
 	-- Cyclone
 	33786, -- Cyclone
@@ -258,6 +257,10 @@ local cc = {
 local war_personal_nostack_debuffs = {
 	115767, -- Deep Wounds 1.3
 	86346, -- Colossus Smash 1.5
+	1822, -- Rake 1.3
+	8921, -- Moonfire 1.3
+
+
 }
 
 -- show on enemy only because it does not stack
@@ -324,7 +327,6 @@ local major_defensive_buffs = {
 	86659, -- Guardian of Ancient Kings
 	81782, -- Power Word: Barrier
 	45242, -- Focused Will
-	122465, -- Dematerialize
 	114030, -- Vigilance
 	16188,-- Ancestral Swiftness, can either be defensive or offensive but want size to be big so added here
 	12043, -- Presence of Mind, No Check Spell ID, just the buff name, can either be defensive or offensive but want size to be big so added here
@@ -342,7 +344,7 @@ local minor_defensive_buffs = {
 	7812, -- Sacrifice warlock 10k shield from pet sac
 	102351, -- Cenarion Ward, rdruid healing hot
 	108281, -- Ancestral Guidance
-	116680, -- tHUNDER fOCUS tEA
+	116680, -- Thunder Focus Tea
 	108359, -- Dark Regeneration
 	31567, -- tbc deterrence? Does it still exist in MoP?
 	108416, -- Sacrificial Pact
@@ -357,10 +359,10 @@ local minor_defensive_buffs = {
 	97463, -- Rallying Cry
 	102351, -- Cenarion Ward
 	2565, -- Shield Block
-	96267, -- Inner Focus
 	23493, -- Restoration (BG Leaf Healing Buff)
 	77613, -- Grace -- Increase all healing received from the priest by 30%
 	126697, -- Tremendous Fortitude
+	16491, -- Second Wind
 }
 
 -- size 1.6
@@ -388,22 +390,16 @@ local major_offensive_buffs = {
 	44544, -- Fingers of Frost
 	32182, -- Heroism 
 	12472, -- Icy Veins -- no check spell id
-	29166, -- Innervate 
-	19577, -- Intimidation (Buff)
-	51690, -- Killing Spree  
-	16191, -- Mana Tide Totem 
-	47241, -- Metamorphosis 
-	23723, -- Mind Quickening Gem 
+	29166, -- Innervate
+	51690, -- Killing Spree
+	47241, -- Metamorphosis
 	16689, -- Nature's Grasp Buff
 	51271, -- Pillar of Frost 
 	10060, -- Power Infusion 
 	69369, -- Predator's Swiftness 
 	3045, -- Rapid Fire 
 	1719, -- Recklessness
-	51713, -- Shadow Dance 
-	23132, -- Shadow Reflector 
-	5024, -- Skull of Impending Doom
-	2379, -- Swiftness Potion 
+	51713, -- Shadow Dance
 	34471, -- The Beast Within 
 	49016, -- Unholy Frenzy
 	114206, -- Skull Banner -- 20% Crit Damage
@@ -440,8 +436,8 @@ local cc_immunities = {
 	115018, -- Desecrated Ground
 	137562, -- Nimble Brew
 	49039, -- Lichborne
-  128231, -- Berserker Rage
-  7744, -- Will of the Forsaken 
+	18499, -- Berserker Rage
+	7744, -- Will of the Forsaken 
 }
 
 -- size 1.8
@@ -463,13 +459,15 @@ local spell_immunities = {
 
 -- size 1.5
 local mobility_buffs = {
+	96267, -- Inner Focus
 	110806, -- spiritwalker's grace
 	114239, -- Phantasm
 	58875, -- Spirit Walk
 	1044, -- Hand of Freedom
-	53271, -- Master's Call
+	-- 53271, -- Master's Call
+	62305, -- Master's Call
 	116841, -- Tiger's Lust
-	109215, -- Posthaste
+	118922, -- Posthaste
 	108843, -- Blazing Speed
 	85499, -- Speed of Light
 	73325, -- Leap of Faith
@@ -480,6 +478,7 @@ local mobility_buffs = {
 	96268, -- Death's Advance
 	137573, -- Burst of Speed
 	108212, -- Burst of Speed
+	114896, -- Windwalk
 }
 
 -- size 1.5
@@ -494,7 +493,8 @@ local speed_buffs = {
 local mana_buffs = {
 	29166, -- Innervate
 	54428, -- Divine Plea
-  12051, -- Evocation
+	12051, -- Evocation
+	16191, -- Mana Tide Totem
 }
 
 -- size 2.0 -- added both since they are both same size

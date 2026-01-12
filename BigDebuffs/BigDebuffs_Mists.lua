@@ -425,7 +425,6 @@ addon.Spells = {
     [3045]   = { type = BUFF_OFFENSIVE }, -- Rapid Fire
     [1719]   = { type = BUFF_OFFENSIVE }, -- Recklessness
     [51713]  = { type = BUFF_OFFENSIVE }, -- Shadow Dance
-    [23132]  = { type = BUFF_OFFENSIVE }, -- Shadow Reflector
     [34471]  = { type = BUFF_OFFENSIVE }, -- The Beast Within
     [49016]  = { type = BUFF_OFFENSIVE }, -- Unholy Frenzy
     [114206] = { type = BUFF_OFFENSIVE }, -- Skull Banner (20% Crit Damage)

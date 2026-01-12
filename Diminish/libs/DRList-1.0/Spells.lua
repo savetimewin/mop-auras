@@ -940,7 +940,7 @@ elseif Lib.gameExpansion == "mop" then
         [113953] = "stun", -- Paralysis
         [118895] = "stun", -- Dragon Roar
         [77505]  = "stun", -- Earthquake
-        [100]    = "stun", -- Charge
+        -- [100]    = "stun", -- Charge
         [118000] = "stun", -- Dragon Roar
 
         -- *** Fear Effects ***
