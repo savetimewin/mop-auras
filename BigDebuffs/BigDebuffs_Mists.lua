@@ -34,20 +34,20 @@ addon.WarningDebuffs = {
 
 -- Make sure we always see these debuffs, but don't make them bigger
 addon.PriorityDebuffs = {
-    770, -- Faerie Fire
-    16857, -- Faerie Fire (Feral)
-    12294, -- Mortal Strike
-    21551, -- Mortal Strike
-    21552, -- Mortal Strike
-    21553, -- Mortal Strike
-    9035, -- Hex of Weakness
-    19281, -- Hex of Weakness
-    19282, -- Hex of Weakness
-    19283, -- Hex of Weakness
-    19284, -- Hex of Weakness
-    19285, -- Hex of Weakness
-    23230, -- Blood Fury Debuff
-    23605, -- Nightfall, Spell Vulnerability
+    -- 770, -- Faerie Fire
+    -- 16857, -- Faerie Fire (Feral)
+    -- 12294, -- Mortal Strike
+    -- 21551, -- Mortal Strike
+    -- 21552, -- Mortal Strike
+    -- 21553, -- Mortal Strike
+    -- 9035, -- Hex of Weakness
+    -- 19281, -- Hex of Weakness
+    -- 19282, -- Hex of Weakness
+    -- 19283, -- Hex of Weakness
+    -- 19284, -- Hex of Weakness
+    -- 19285, -- Hex of Weakness
+    -- 23230, -- Blood Fury Debuff
+    -- 23605, -- Nightfall, Spell Vulnerability
 }
 
 -- we're going to make this into MOP ARENA ONLY
@@ -159,6 +159,8 @@ addon.Spells = {
     -- *** Spells that DRs with itself only ***
     [33786]  = { type = CROWD_CONTROL }, -- Cyclone
     [113506] = { type = CROWD_CONTROL }, -- Cyclone (Symbiosis)
+	[7922] = { type = CROWD_CONTROL }, -- Charge
+
 
     -- *** Mind Control Effects *** 
     [605]   = { type = CROWD_CONTROL }, -- Dominate Mind
@@ -273,13 +275,6 @@ addon.Spells = {
     [110696] = { type = IMMUNITY }, -- Ice Block (Mage)
     [45438]  = { type = IMMUNITY }, -- Ice Block
     [122465] = { type = IMMUNITY }, -- Dematerialize
-    
-    -- DRINKS
-    [22734] = { type = BUFF_OTHER }, -- Drink
-        [46755] = { parent = 22734 }, -- Drink
-        [27089] = { parent = 22734 }, -- Drink
-        [43183] = { parent = 22734 }, -- Drink
-        [57073] = { parent = 22734 }, -- Drink
 
     -- DEBUFF_OFFENSIVE -- for raid frames to see who they going what big damage is incoming
     [46392]  = { type = DEBUFF_OFFENSIVE }, -- Focused Assault
@@ -297,211 +292,152 @@ addon.Spells = {
     [79140]  = { type = DEBUFF_OFFENSIVE }, -- Vendetta
     [12292]  = { type = DEBUFF_OFFENSIVE }, -- Bloodbath Melee special attacks cause an additional 30% bleed damage.
     [124280] = { type = DEBUFF_OFFENSIVE }, -- Touch of Karma debuff that goes on enemy of the monk
+    -- stealth constraint debuffs to see on raidframes
+    [770]   = { type = DEBUFF_OFFENSIVE }, -- Faerie Fire
+    [31615] = { type = DEBUFF_OFFENSIVE }, -- Hunter's Mark
+    -- healing reduction debuffs to see on raidframes
+    [8680]  = { type = DEBUFF_OFFENSIVE }, -- Wound Poison Healing Debuff (Rogue Poison)
+    [115804] = { type = DEBUFF_OFFENSIVE }, -- Mortal Wound (Warrior MS)
+    -- constraints to see on raidframes
+    [41425]  = { type = DEBUFF_OFFENSIVE }, -- Hypothermia
+    [25771]  = { type = DEBUFF_OFFENSIVE }, -- Forbearance
+    [87023]  = { type = DEBUFF_OFFENSIVE }, -- Cauterize
+    [45181]  = { type = DEBUFF_OFFENSIVE }, -- Cheated Death
 
-
-    [20594] = { type = BUFF_DEFENSIVE }, -- Stoneform
-    [20572] = { type = BUFF_OFFENSIVE }, -- Blood Fury
-
+    -- BUFF_OTHER (includes debuffs too?)
+    -- DRINKS
+    [22734] = { type = BUFF_OTHER }, -- Drink
+        [46755] = { parent = 22734 }, -- Drink
+        [27089] = { parent = 22734 }, -- Drink
+        [43183] = { parent = 22734 }, -- Drink
+        [57073] = { parent = 22734 }, -- Drink
     
+    -- want to see these buffs on unit frames
+    [768]    = { type = BUFF_OTHER }, -- Cat Form
+    [783]    = { type = BUFF_OTHER }, -- Travel Form
+    [24858]  = { type = BUFF_OTHER }, -- Moonkin Form
+    [33891]  = { type = BUFF_OTHER }, -- Tree of Life
+    [5487]   = { type = BUFF_OTHER }, -- Bear Form
+    [115191] = { type = BUFF_OTHER }, -- Stealth
+    [114018] = { type = BUFF_OTHER }, -- Shroud of Concealment
+    [80325]  = { type = BUFF_OTHER }, -- Camouflage
+    [51755]  = { type = BUFF_OTHER }, -- Camouflage
+    [90954]  = { type = BUFF_OTHER }, -- Camouflage
+    [119450] = { type = BUFF_OTHER }, -- Camouflage
+    [119030] = { type = BUFF_OTHER }, -- Spectral Guise
+    [112833] = { type = BUFF_OTHER }, -- Spectral Guise
+    [119032] = { type = BUFF_OTHER }, -- Spectral Guise
+    [119012] = { type = BUFF_OTHER }, -- Spectral Guise
+    [66]     = { type = BUFF_OTHER }, -- Invisibility
+    [5215] = { type = BUFF_OTHER }, -- Prowl
+    [102547] = { type = BUFF_OTHER }, -- Prowl
+    [113289] = { type = BUFF_OTHER }, -- Prowl
+    [142453] = { type = BUFF_OTHER }, -- Prowl
+    [133079] = { type = BUFF_OTHER }, -- Prowl
     
-    [126679] = { type = BUFF_OFFENSIVE }, -- Call of Victory
+    -- BUFF_DEFENSIVE
+    [114214] = { type = BUFF_DEFENSIVE }, -- Angelic Bulwark
+    [110909] = { type = BUFF_DEFENSIVE }, -- Alter Time
+    [50461]  = { type = BUFF_DEFENSIVE }, -- Anti-Magic Zone
+    [22812]  = { type = BUFF_DEFENSIVE }, -- Barkskin
+    [6940]   = { type = BUFF_DEFENSIVE }, -- Blessing of Sacrifice
+    [111397] = { type = BUFF_DEFENSIVE }, -- Blood Horror
+    [45182]  = { type = BUFF_DEFENSIVE }, -- Cheating Death
+    [74001]  = { type = BUFF_DEFENSIVE }, -- Combat Readiness
+    [1742]   = { type = BUFF_DEFENSIVE }, -- Cower (Pet)
+    [110913] = { type = BUFF_DEFENSIVE }, -- Dark Bargain
+    [118038] = { type = BUFF_DEFENSIVE }, -- Die by the Sword
+    [64843]  = { type = BUFF_DEFENSIVE }, -- Divine Hymn
+    [498]    = { type = BUFF_DEFENSIVE }, -- Divine Protection
+    [55694]  = { type = BUFF_DEFENSIVE }, -- Enraged Regeneration
+    [5277]   = { type = BUFF_DEFENSIVE }, -- Evasion
+    [110791] = { type = BUFF_DEFENSIVE }, -- Evasion (Druid) (Symbiosis)
+    [5384]   = { type = BUFF_DEFENSIVE }, -- Feign Death
+    [18708]  = { type = BUFF_DEFENSIVE }, -- Fel Domination
+    [126456] = { type = BUFF_DEFENSIVE }, -- Fortifying Brew
+    [22842]  = { type = BUFF_DEFENSIVE }, -- Frenzied Regeneration
+    [47788]  = { type = BUFF_DEFENSIVE }, -- Guardian Spirit
+    [11426]  = { type = BUFF_DEFENSIVE }, -- Ice Barrier
+    [48792]  = { type = BUFF_DEFENSIVE }, -- Icebound Fortitude
+    [110575] = { type = BUFF_DEFENSIVE }, -- Icebound Fortitude (Druid) (Symbiosis)
+    [102342] = { type = BUFF_DEFENSIVE }, -- Ironbark
+    [12975]  = { type = BUFF_DEFENSIVE }, -- Last Stand
+    [12976]  = { type = BUFF_DEFENSIVE }, -- Last Stand
+    [1463]   = { type = BUFF_DEFENSIVE }, -- Mana Shield
+    [132158] = { type = BUFF_DEFENSIVE }, -- Nature's Swiftness (also used offensively)
+    [16188]  = { type = BUFF_DEFENSIVE }, -- Ancestral Swiftness (also used offensively)
+    [12043]  = { type = BUFF_DEFENSIVE }, -- Presence of Mind (also used offensively)
+    [30299]  = { type = BUFF_DEFENSIVE }, -- Nether Protection
+    [33206]  = { type = BUFF_DEFENSIVE }, -- Pain Suppression
+    [53480]  = { type = BUFF_DEFENSIVE }, -- Roar of Sacrifice (Hunter Pet Skill)
+    [6229]   = { type = BUFF_DEFENSIVE }, -- Shadow Ward
+    [30823]  = { type = BUFF_DEFENSIVE }, -- Shamanistic Rage
+    [871]    = { type = BUFF_DEFENSIVE }, -- Shield Wall
+    [20711]  = { type = BUFF_DEFENSIVE }, -- Spirit of Redemption
+    [98007]  = { type = BUFF_DEFENSIVE }, -- Spirit Link Totem
+    [61336]  = { type = BUFF_DEFENSIVE }, -- Survival Instincts
+    [115610] = { type = BUFF_DEFENSIVE }, -- Temporal Shield
+    [104773] = { type = BUFF_DEFENSIVE }, -- Unending Resolve
+    [122291] = { type = BUFF_DEFENSIVE }, -- Unending Resolve (Druid) (Symbiosis)
+    [81256]  = { type = BUFF_DEFENSIVE }, -- Dancing Rune Weapon (20% Parry)
+    [116849] = { type = BUFF_DEFENSIVE }, -- Life Cocoon
+    [122278] = { type = BUFF_DEFENSIVE }, -- Dampen Harm
+    [116844] = { type = BUFF_DEFENSIVE }, -- Ring of Peace
+    [122470] = { type = BUFF_DEFENSIVE }, -- Touch of Karma
+    [31821]  = { type = BUFF_DEFENSIVE }, -- Devotion Aura
+    [31842]  = { type = BUFF_DEFENSIVE }, -- Divine Favor
+    [31850]  = { type = BUFF_DEFENSIVE }, -- Ardent Defender
+    [86659]  = { type = BUFF_DEFENSIVE }, -- Guardian of Ancient Kings
+    [81782]  = { type = BUFF_DEFENSIVE }, -- Power Word: Barrier
+    [45242]  = { type = BUFF_DEFENSIVE }, -- Focused Will
+    [114030] = { type = BUFF_DEFENSIVE }, -- Vigilance
+    [1022]   = { type = BUFF_DEFENSIVE }, -- Hand of Protection
+    [131523] = { type = BUFF_DEFENSIVE }, -- Zen Meditation
+
+    -- BUFF_OFFENSIVE
+    [13750]  = { type = BUFF_OFFENSIVE }, -- Adrenaline Rush
+    [12042]  = { type = BUFF_OFFENSIVE }, -- Arcane Power
+    [114049] = { type = BUFF_OFFENSIVE }, -- Ascendance
+    [31884]  = { type = BUFF_OFFENSIVE }, -- Avenging Wrath
+    [50334]  = { type = BUFF_OFFENSIVE }, -- Berserk
+    [13877]  = { type = BUFF_OFFENSIVE }, -- Blade Flurry
+    [2825]   = { type = BUFF_OFFENSIVE }, -- Bloodlust
+    [20572]  = { type = BUFF_OFFENSIVE }, -- Blood Fury (Racial)
     [126690] = { type = BUFF_OFFENSIVE }, -- Call of Conquest
     [126683] = { type = BUFF_OFFENSIVE }, -- Call of Dominance
-
-
-    [48792] = { type = BUFF_DEFENSIVE },  -- Icebound Fortitude
-    [49028] = { type = BUFF_DEFENSIVE },  -- Dancing Rune Weapon // might not work - spell id vs aura
-    
-    [50461] = { type = BUFF_DEFENSIVE },  -- Anti-Magic Zone
-    [49016] = { type = BUFF_OFFENSIVE },  -- Unholy Frenzy
-    
-    
-    [51271] = { type = BUFF_OFFENSIVE },  -- Pillar of Frost
-	
- 
-    [20711] = { type = BUFF_DEFENSIVE, },  -- Spirit of Redemption
-    [47788] = { type = BUFF_DEFENSIVE },  -- Guardian Spirit
-    
-    
-    [64843] = { type = BUFF_DEFENSIVE },  -- Divine Hymn
-    [64901] = { type = BUFF_DEFENSIVE }, -- Hymn of Hope
-    
-    
-    [10060] = { type = BUFF_OFFENSIVE }, -- Power Infusion
-    
-    [14892] = { type = BUFF_DEFENSIVE }, -- Inspiration
-        [15362] = { parent = 14892 },
-    [6346] = { type = BUFF_DEFENSIVE }, -- Fear Ward
-    
-    [33206] = { type = BUFF_DEFENSIVE }, -- Pain Suppression
-    [14751] = { type = BUFF_DEFENSIVE }, -- Inner Focus
-    
-    [96267] = { type = BUFF_DEFENSIVE }, -- Strength of Soul
-
-    [47241] = { type = BUFF_OFFENSIVE }, -- Metamorphosis
-    
-    
-    [6229] = { type = BUFF_DEFENSIVE }, -- Shadow Ward
-    
-    
-    [79462] = { type = BUFF_OFFENSIVE }, -- Demon Soul: Felguard
-    [79460] = { type = BUFF_OFFENSIVE }, -- Demon Soul: Felhunter
-    [79459] = { type = BUFF_OFFENSIVE }, -- Demon Soul: Imp
-    [79463] = { type = BUFF_OFFENSIVE }, -- Demon Soul: Succubus
-    [79464] = { type = BUFF_OFFENSIVE }, -- Demon Soul: Voidwalker
-    [137143] = { type = BUFF_DEFENSIVE }, -- Blood Horror
-    [111397] = { type = BUFF_DEFENSIVE }, -- Blood Horror
-
-    [110913] = { type = BUFF_DEFENSIVE }, -- Dark Bargain
-    [104773] = { type = BUFF_DEFENSIVE }, -- Unending Resolve
-
-	[113860] = { type = BUFF_OFFENSIVE }, -- Dark Soul: Misery
-	[113858] = { type = BUFF_OFFENSIVE }, -- Dark Soul: Instability
-	[113861] = { type = BUFF_OFFENSIVE }, -- Dark Soul: Knowledge
-
-    [2825] = { type = BUFF_OFFENSIVE },  -- Bloodlust
-    [16191] = { type = BUFF_OFFENSIVE }, -- Mana Tide Totem
-    [32182] = { type = BUFF_OFFENSIVE },  -- Heroism
-    
-    [58875] = { type = BUFF_OTHER, }, -- Spirit Walk (Spirit Wolf)
-    [16166] = { type = BUFF_OFFENSIVE }, -- Elemental Mastery
-    [30823] = { type = BUFF_DEFENSIVE }, -- Shamanistic Rage
-    
-    [110806] = { type = BUFF_OTHER },  -- Spiritwalker's Grace
-    [114049] = { type = BUFF_OFFENSIVE }, -- Ascendance
-        [114052] = { parent = 114049 }, -- Ascendance
-        [114051] = { parent = 114049 }, -- Ascendance
-        [114050] = { parent = 114049 }, -- Ascendance
-	[108271] = { type = BUFF_DEFENSIVE }, -- Astral Shift
-	[98007] = { type = BUFF_DEFENSIVE }, -- Spirit Link Totem Effect Buff
-	[16188] = { type = BUFF_OTHER }, -- Ancestral Swiftness 
-	
-
-    [25771] = { type = BUFF_OTHER, }, -- Forbearance
-    [54428] = { type = BUFF_OTHER, }, -- Divine Plea
-    
-
-    [498] = { type = BUFF_DEFENSIVE }, -- Divine Protection
-
-    [1044] = { type = BUFF_DEFENSIVE }, -- Blessing of Freedom
-    
-    [6940] = { type = BUFF_DEFENSIVE }, -- Blessing of Sacrifice
-    
-    [31884] = { type = BUFF_OFFENSIVE }, -- Avenging Wrath
-	[105809] = { type = BUFF_OFFENSIVE }, -- Holy Avenger
-	[31821] = { type = BUFF_DEFENSIVE }, -- Devotion Aura
-	[31842] = { type = BUFF_DEFENSIVE }, -- Divine Favor
-	[31850] = { type = BUFF_DEFENSIVE }, -- Ardent Defender
-	[86659] = { type = BUFF_DEFENSIVE }, -- Guardian of Ancient Kings
-    
-    [85696] = { type = BUFF_OFFENSIVE }, -- Zealotry
-    [1742] = { type = BUFF_DEFENSIVE, }, -- Cower (Pet)
-    [53476] = { type = BUFF_DEFENSIVE, }, -- Intervene (Pet)
-    [53480] = { type = BUFF_DEFENSIVE, },  -- Roar of Sacrifice (Hunter Pet Skill)
-
-    [13159] = { type = BUFF_OFFENSIVE }, -- Aspect of the Pack
-        [5118] = { parent = 13159 }, -- Aspect of the Cheetah
-    
-    [3045] = { type = BUFF_OFFENSIVE }, -- Rapid Fire
-    [19574] = { type = BUFF_OFFENSIVE }, -- Bestial Wrath
-    
-    [5384] = { type = BUFF_DEFENSIVE }, -- Feign Death
-    
-    [19577] = { type = BUFF_OFFENSIVE, parent = 24394 }, -- Intimidation (Buff)
-    
-
-    [3674] = { type = BUFF_OFFENSIVE }, -- Black Arrow
-
-
-    [768] = { type = BUFF_OTHER, }, -- Cat Form
-    [783] = { type = BUFF_OTHER, }, -- Travel Form
-    
-    [22842] = { type = BUFF_DEFENSIVE, },  -- Frenzied Regeneration
-    [24858] = { type = BUFF_OTHER, }, -- Moonkin Form
-    [33891] = { type = BUFF_OTHER, }, -- Tree of Life
-    [50334] = { type = BUFF_OFFENSIVE, },  -- Berserk
-    [61336] = { type = BUFF_DEFENSIVE, },  -- Survival Instincts
-    [69369] = { type = BUFF_OFFENSIVE, }, -- Predator's Swiftness
-
-    [22812] = { type = BUFF_DEFENSIVE }, -- Barkskin
-    [19975] = { parent = 339 }, -- Nature's Grasp Rank 1
-    
-    [29166] = { type = BUFF_OFFENSIVE }, -- Innervate
-    
-    [1850] = { type = BUFF_OFFENSIVE }, -- Dash
-    [16689] = { type = BUFF_OFFENSIVE }, -- Nature's Grasp Buff
-    [770] = { type = BUFF_OTHER }, -- Faerie Fire
-    [16857] = { parent = 770 }, -- Faerie Fire (Feral)
-    
-    [132158] = { type = BUFF_OTHER }, -- Nature's Swiftness
-    
-    [102342] = { type = BUFF_DEFENSIVE }, -- Ironbark
-    
-    [110791] = { type = BUFF_DEFENSIVE }, -- Evasion (Rogue)
-    [110575] = { type = BUFF_DEFENSIVE }, -- Icebound Fortitude (Death Knight)
-    [122291] = { type = BUFF_DEFENSIVE }, -- Unending Resolve (Warlock)
-
-    [41425] = { type = BUFF_OTHER, }, -- Hypothermia
-    [66] = { type = BUFF_OFFENSIVE, },  -- Invisibility
-    [44544] = { type = BUFF_OFFENSIVE, }, -- Fingers of Frost
-
-    [11426] = { type = BUFF_DEFENSIVE }, -- Ice Barrier
-    [543] = { type = BUFF_DEFENSIVE }, -- Fire Ward
-    
-    [12042] = { type = BUFF_OFFENSIVE }, -- Arcane Power
-    [12051] = { type = BUFF_OFFENSIVE }, -- Evocation
-    [1463] = { type = BUFF_DEFENSIVE }, -- Mana Shield
-    
-    [12043] = { type = BUFF_OTHER }, -- Presence of Mind
-    [12472] = { type = BUFF_OFFENSIVE }, -- Icy Veins
-    [87023] = { type = BUFF_OTHER, }, -- Cauterize
-    
-    [110909] = { type = BUFF_DEFENSIVE }, -- Alter Time
-    [115610] = { type = BUFF_DEFENSIVE }, -- Temporal Shield
-
-    [51690] = { type = BUFF_OFFENSIVE, },  -- Killing Spree
-    [51713] = { type = BUFF_OFFENSIVE, }, -- Shadow Dance
-    
-    
-    [13750] = { type = BUFF_OFFENSIVE}, -- Adrenaline Rush
-    [13877] = { type = BUFF_OFFENSIVE}, -- Blade Flurry
-    
-    [2983] = { type = BUFF_OFFENSIVE }, -- Sprint
-    [5277] = { type = BUFF_DEFENSIVE }, -- Evasion
-    
-
-    [45182] = { type = BUFF_DEFENSIVE }, -- Cheating Death
-    [14177] = { type = BUFF_OFFENSIVE }, -- Cold Blood
-    
-    [74001] = { type = BUFF_DEFENSIVE }, -- Combat Readiness
-    
-    [114018] = { type = BUFF_OTHER }, -- Shroud of Concealment
-    
-
-    [3411] = { type = BUFF_DEFENSIVE },  -- Intervene
-    [12975] = { type = BUFF_DEFENSIVE },  -- Last Stand
-    
-    [55694] = { type = BUFF_DEFENSIVE },  -- Enraged Regeneration
-    [60503] = { type = BUFF_OFFENSIVE, }, -- Taste for Blood
-    [65925] = { type = BUFF_OFFENSIVE, }, -- Unrelenting Assault (2/2)
-    
-    [1719] = { type = BUFF_OFFENSIVE }, -- Recklessness
-    [871] = { type = BUFF_DEFENSIVE }, -- Shield Wall
-    [18499] = { type = BUFF_OFFENSIVE }, -- Berserker Rage
-    
-    [12976] = { type = BUFF_DEFENSIVE }, -- Last Stand
-    [12294] = { type = BUFF_OTHER }, -- Mortal Strike
-
-    
-    [118038] = { type = BUFF_DEFENSIVE }, -- Die by the Sword
-    [114203] = { type = BUFF_OFFENSIVE }, -- Demoralizing Banner
-
-
-    [126456] = { type = BUFF_DEFENSIVE }, -- Fortifying Brew
-	[116849] = { type = BUFF_DEFENSIVE }, -- Life Cocoon
-	
-	[122278] = { type = BUFF_DEFENSIVE }, -- Dampen Harm
-	[116844] = { type = BUFF_OTHER }, -- ROP
-	[125174] = { type = BUFF_DEFENSIVE }, -- Touch of Karma buff that monks get on activation
-	[115288] = { type = BUFF_OFFENSIVE }, -- Energizing Brew
+    [126679] = { type = BUFF_OFFENSIVE }, -- Call of Victory
+    [14177]  = { type = BUFF_OFFENSIVE }, -- Cold Blood
+    [79462]  = { type = BUFF_OFFENSIVE }, -- Demon Soul: Felguard
+    [79460]  = { type = BUFF_OFFENSIVE }, -- Demon Soul: Felhunter
+    [79459]  = { type = BUFF_OFFENSIVE }, -- Demon Soul: Imp
+    [79463]  = { type = BUFF_OFFENSIVE }, -- Demon Soul: Succubus
+    [79464]  = { type = BUFF_OFFENSIVE }, -- Demon Soul: Voidwalker
+    [16166]  = { type = BUFF_OFFENSIVE }, -- Elemental Mastery
+    [44544]  = { type = BUFF_OFFENSIVE }, -- Fingers of Frost
+    [32182]  = { type = BUFF_OFFENSIVE }, -- Heroism
+    [12472]  = { type = BUFF_OFFENSIVE }, -- Icy Veins (no check spell id)
+    [29166]  = { type = BUFF_OFFENSIVE }, -- Innervate
+    [19577]  = { type = BUFF_OFFENSIVE }, -- Intimidation (Buff)
+    [51690]  = { type = BUFF_OFFENSIVE }, -- Killing Spree
+    [51271]  = { type = BUFF_OFFENSIVE }, -- Pillar of Frost
+    [10060]  = { type = BUFF_OFFENSIVE }, -- Power Infusion
+    [69369]  = { type = BUFF_OFFENSIVE }, -- Predator's Swiftness
+    [3045]   = { type = BUFF_OFFENSIVE }, -- Rapid Fire
+    [1719]   = { type = BUFF_OFFENSIVE }, -- Recklessness
+    [51713]  = { type = BUFF_OFFENSIVE }, -- Shadow Dance
+    [23132]  = { type = BUFF_OFFENSIVE }, -- Shadow Reflector
+    [34471]  = { type = BUFF_OFFENSIVE }, -- The Beast Within
+    [49016]  = { type = BUFF_OFFENSIVE }, -- Unholy Frenzy
+    [114206] = { type = BUFF_OFFENSIVE }, -- Skull Banner (20% Crit Damage)
+    [5217]   = { type = BUFF_OFFENSIVE }, -- Tiger's Fury
+    [115288] = { type = BUFF_OFFENSIVE }, -- Energizing Brew
+    [105809] = { type = BUFF_OFFENSIVE }, -- Holy Avenger
+    [113860] = { type = BUFF_OFFENSIVE }, -- Dark Soul: Misery
+    [113858] = { type = BUFF_OFFENSIVE }, -- Dark Soul: Instability
+    [113861] = { type = BUFF_OFFENSIVE }, -- Dark Soul: Knowledge
+    [107574] = { type = BUFF_OFFENSIVE }, -- Avatar
+    [120679] = { type = BUFF_OFFENSIVE }, -- Dire Beast
+    [82726]  = { type = BUFF_OFFENSIVE }, -- Fervor
+    [121818] = { type = BUFF_OFFENSIVE }, -- Stampede
+    [23505]  = { type = BUFF_OFFENSIVE }, -- Battleground Damage Buff
 }

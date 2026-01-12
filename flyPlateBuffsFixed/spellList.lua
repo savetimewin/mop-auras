@@ -405,9 +405,7 @@ local major_offensive_buffs = {
 	5024, -- Skull of Impending Doom
 	2379, -- Swiftness Potion 
 	34471, -- The Beast Within 
-	49016, -- Unholy Frenzy 
-	7744, -- Will of the Forsaken 
-	85696, -- Zealotry 
+	49016, -- Unholy Frenzy
 	114206, -- Skull Banner -- 20% Crit Damage
 	5217, -- Tiger's Fury
 	115288, -- Energizing Brew
@@ -423,19 +421,17 @@ local major_offensive_buffs = {
 
 -- size 1.5
 local  minor_offensive_buffs = {
-	93435, -- Roar of Courage
-	126700, -- Surge of Victory
-	104423, -- Windsong
-	12880, -- Enrage
-	-- 142530, -- Bloody Dancing Steel
-	120032, -- Dancing Steel
-	104993, -- Jade Spirit
-	126734, -- Synapse Springs
-	115989, -- Unholy Blight
-	12051, -- Evocation
-	128432, -- Cackling Howl
-	108508, -- Mannoroth's Fury
-	57934, -- Tricks of the Trade
+	-- 93435, -- Roar of Courage
+	-- 126700, -- Surge of Victory
+	-- 104423, -- Windsong
+	-- 12880, -- Enrage
+	-- 120032, -- Dancing Steel
+	-- 104993, -- Jade Spirit
+	-- 126734, -- Synapse Springs
+	-- 115989, -- Unholy Blight
+	-- 128432, -- Cackling Howl
+	-- 108508, -- Mannoroth's Fury
+	-- 57934, -- Tricks of the Trade
 }
 
 -- size 2.0 -- includes cc reductions too
@@ -444,6 +440,8 @@ local cc_immunities = {
 	115018, -- Desecrated Ground
 	137562, -- Nimble Brew
 	49039, -- Lichborne
+  128231, -- Berserker Rage
+  7744, -- Will of the Forsaken 
 }
 
 -- size 1.8
@@ -496,6 +494,7 @@ local speed_buffs = {
 local mana_buffs = {
 	29166, -- Innervate
 	54428, -- Divine Plea
+  12051, -- Evocation
 }
 
 -- size 2.0 -- added both since they are both same size

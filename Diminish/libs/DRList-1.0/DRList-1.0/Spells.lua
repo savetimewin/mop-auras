@@ -968,7 +968,7 @@ elseif Lib.gameExpansion == "mop" then
         [113770] = "root", -- Entangling Roots (Treants)
         [102359] = "root", -- Mass Entanglement
         [19975]  = "root", -- Nature's Grasp
-        [136634] = "root", -- Narrow Escape
+        [128405] = "root", -- Narrow Escape
         --[53148]  = "root", -- Charge (Tenacity pet)
         [90327]  = "root", -- Lock Jaw (Dog)
         [54706]  = "root", -- Venom Web Spray (Silithid)
@@ -1055,7 +1055,7 @@ elseif Lib.gameExpansion == "mop" then
         -- *** Spells that DRs with itself only ***
         [33786]  = "cyclone", -- Cyclone
         [113506] = "cyclone", -- Cyclone (Symbiosis)
-        [7922]  = "charge", -- Charge Stun
+		[7922]  = "charge", -- Charge Stun
     }
 
 elseif Lib.gameExpansion == "classic" then
