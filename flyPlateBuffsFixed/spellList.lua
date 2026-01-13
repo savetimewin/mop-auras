@@ -259,6 +259,7 @@ local war_personal_nostack_debuffs = {
 	86346, -- Colossus Smash 1.5
 	1822, -- Rake 1.3
 	8921, -- Moonfire 1.3
+	146739, -- Corruption 1.3
 
 
 }
