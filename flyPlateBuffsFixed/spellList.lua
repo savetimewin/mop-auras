@@ -275,69 +275,64 @@ local war_personal_stackable_debuffs = {
 
 -- size 1.8
 local major_defensive_buffs = {
+	16188,-- Ancestral Swiftness, can either be defensive or offensive but want size to be big so added here
 	114214, -- Angelic bulwark
 	110909, -- Alter Time 
 	50461, -- Anti-Magic Zone
+	31850, -- Ardent Defender
 	22812, -- Barkskin 
 	6940, -- Blessing of Sacrifice
 	111397, -- Blood Horror
 	45182, -- Cheating Death
 	74001, -- Combat Readiness 
 	1742, -- Cower (Pet) 
+	122278, -- Dampen Harm
 	110913, -- Dark Bargain 
+	31821, -- Devotion Aura
 	118038, -- Die by the Sword 
+	31842, -- Divine Favor
 	64843, -- Divine Hymn 
 	498, -- Divine Protection 
 	55694, -- Enraged Regeneration 
 	5277, -- Evasion 
 	110791, -- Evasion (Druid) (Symbiosis)
-	5384, -- Feign Death 
-	18708, -- Fel Domination
+	5384, -- Feign Death
 	126456, -- Fortifying Brew
 	22842, -- Frenzied Regeneration 
+	86659, -- Guardian of Ancient Kings
 	47788, -- Guardian Spirit 
-	11426, -- Ice Barrier 
+	1022, -- Hand of Protection
 	48792, -- Icebound Fortitude 
 	110575, -- Icebound Fortitude (Druid) (Symbiosis)
+	1463, -- Incanter's Ward
 	102342, -- Ironbark 
-	12975, -- Last Stand 
-	12976, -- Last Stand 
-	1463, -- Mana Shield 
+	12975, -- Last Stand
+	116849, -- Life Cocoon
 	132158, -- Nature's Swiftness, can either be defensive or offensive but want size to be big so added here
-	30299, -- Nether Protection 
 	33206, -- Pain Suppression 
+	81782, -- Power Word: Barrier
+	12043, -- Presence of Mind, No Check Spell ID, just the buff name, can either be defensive or offensive but want size to be big so added here
+	116844, -- Ring of Peace
 	53480, -- Roar of Sacrifice (Hunter Pet Skill)
-	6229, -- Shadow Ward
 	30823, -- Shamanistic Rage 
 	871, -- Shield Wall 
-	20711, -- Spirit of Redemption
 	98007, -- Spirit Link Totem
+	20711, -- Spirit of Redemption
 	61336, -- Survival Instincts 
 	115610, -- Temporal Shield 
+	122470, -- Touch of Karma
 	104773, -- Unending Resolve 
 	122291, -- Unending Resolve (Druid) (Symbiosis)
-	81256, -- Dancing Rune Weapon -- 20% Parry
-	116849, -- Life Cocoon
-	122278, -- Dampen Harm
-	116844, -- Ring of Peace
-	122470, -- Touch of Karma
-	31821, -- Devotion Aura
-	31842, -- Divine Favor
-	31850, -- Ardent Defender
-	86659, -- Guardian of Ancient Kings
-	81782, -- Power Word: Barrier
-	45242, -- Focused Will
 	114030, -- Vigilance
-	16188,-- Ancestral Swiftness, can either be defensive or offensive but want size to be big so added here
-	12043, -- Presence of Mind, No Check Spell ID, just the buff name, can either be defensive or offensive but want size to be big so added here
-	1022, -- Hand of Protection
 	131523, -- Zen Meditation
 }
 
 -- size 1.7
 -- only shown on nameplates & not on bigdebuffs addon 
 local minor_defensive_buffs = {
-	1966, -- Feint
+	45242, -- Focused Will
+	81256, -- Dancing Rune Weapon -- 20% Parry
+	1966, -- Feint -- don't check spell id, too many
 	17, -- Power Word: Shield
 	47753, -- Divine Aegis
 	20594, -- Stoneform
@@ -370,27 +365,29 @@ local major_offensive_buffs = {
 	13750, -- Adrenaline Rush 
 	12042, -- Arcane Power 
 	114049, -- Ascendance 
+	107574, -- Avatar
 	31884, -- Avenging Wrath 
 	23505, -- Battleground Damage buff 
 	23451, -- Battleground Speed buff 
 	50334, -- Berserk
+	23505, -- Berserking (BG DMG BUFF)
 	13877, -- Blade Flurry 
 	20572, -- Blood Fury 
 	2825, -- Bloodlust 
 	126690, -- Call of Conquest 
 	126683, -- Call of Dominance 
 	126679, -- Call of Victory 
-	14177, -- Cold Blood 
-	79462, -- Demon Soul: Felguard 
-	79460, -- Demon Soul: Felhunter
-	79459, -- Demon Soul: Imp 
-	79463, -- Demon Soul: Succubus 
-	79464, -- Demon Soul: Voidwalker 
+	113858, -- Dark Soul: Instability
+	113861, -- Dark Soul: Knowledge
+	113860, -- Dark Soul: Misery
+	120679, -- Dire Beast
 	16166, -- Elemental Mastery
+	115288, -- Energizing Brew
+	82726, -- Fervor
 	44544, -- Fingers of Frost
 	32182, -- Heroism 
-	12472, -- Icy Veins -- no check spell id
-	29166, -- Innervate
+	105809, -- Holy Avenger
+	131078, -- Icy Veins -- no check spell id
 	51690, -- Killing Spree
 	47241, -- Metamorphosis
 	16689, -- Nature's Grasp Buff
@@ -400,19 +397,11 @@ local major_offensive_buffs = {
 	3045, -- Rapid Fire 
 	1719, -- Recklessness
 	51713, -- Shadow Dance
-	34471, -- The Beast Within 
-	49016, -- Unholy Frenzy
 	114206, -- Skull Banner -- 20% Crit Damage
-	5217, -- Tiger's Fury
-	115288, -- Energizing Brew
-	105809, -- Holy Avenger
-	113860, -- Dark Soul: Misery
-	113858, -- Dark Soul: Instability
-	113861, -- Dark Soul: Knowledge
-	107574, -- Avatar
-	120679, -- Dire Beast
-	82726, -- Fervor
 	121818, -- Stampede
+	34471, -- The Beast Within 
+	5217, -- Tiger's Fury
+	49016, -- Unholy Frenzy
 }
 
 -- size 1.5
@@ -491,10 +480,10 @@ local speed_buffs = {
 
 -- size 1.5
 local mana_buffs = {
-	29166, -- Innervate
 	54428, -- Divine Plea
 	12051, -- Evocation
 	16191, -- Mana Tide Totem
+	29166, -- Innervate
 }
 
 -- size 2.0 -- added both since they are both same size
