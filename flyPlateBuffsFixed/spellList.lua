@@ -398,7 +398,6 @@ local major_offensive_buffs = {
 	3045, -- Rapid Fire 
 	1719, -- Recklessness
 	51713, -- Shadow Dance
-	114206, -- Skull Banner -- 20% Crit Damage
 	121818, -- Stampede
 	34471, -- The Beast Within 
 	5217, -- Tiger's Fury
@@ -407,6 +406,7 @@ local major_offensive_buffs = {
 
 -- size 1.5
 local  minor_offensive_buffs = {
+	114206, -- Skull Banner -- 20% Crit Damage
 	-- 93435, -- Roar of Courage
 	-- 126700, -- Surge of Victory
 	-- 104423, -- Windsong

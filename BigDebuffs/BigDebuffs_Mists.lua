@@ -421,7 +421,6 @@ addon.Spells = {
     [3045]   = { type = BUFF_OFFENSIVE }, -- Rapid Fire
     [1719]   = { type = BUFF_OFFENSIVE }, -- Recklessness
     [51713]  = { type = BUFF_OFFENSIVE }, -- Shadow Dance
-    [114206] = { type = BUFF_OFFENSIVE }, -- Skull Banner (20% Crit Damage)
     [121818] = { type = BUFF_OFFENSIVE }, -- Stampede
     [34471]  = { type = BUFF_OFFENSIVE }, -- The Beast Within
     [5217]   = { type = BUFF_OFFENSIVE }, -- Tiger's Fury
