@@ -358,7 +358,6 @@ local minor_defensive_buffs = {
 	46947, -- Safeguard
 	122973, -- Safeguard
 	97463, -- Rallying Cry
-	102351, -- Cenarion Ward
 	2565, -- Shield Block
 	23493, -- Restoration (BG Leaf Healing Buff)
 	77613, -- Grace -- Increase all healing received from the priest by 30%

@@ -209,26 +209,29 @@ addon.Spells = {
     [76577] = { type = CROWD_CONTROL }, -- Smoke Bomb
 
     -- INTERRUPTS
-    [19647] = { type = INTERRUPT, duration = 6 }, -- Spell Lock - Rank 1 (Warlock)
+    [72]    = { type = INTERRUPT, duration = 6 }, -- Shield Bash (Warrior)
+    [1766]  = { type = INTERRUPT, duration = 5 }, -- Kick (Rogue)
+    [2139]  = { type = INTERRUPT, duration = 8 }, -- Counterspell (Mage)
+    [6552]  = { type = INTERRUPT, duration = 4 }, -- Pummel
     [13491] = { type = INTERRUPT, duration = 5 }, -- Iron Knuckles
     [16979] = { type = INTERRUPT, duration = 4 }, -- Feral Charge (Druid)
-    [2139] = { type = INTERRUPT, duration = 8 }, -- Counterspell (Mage)
-    [147362] = { type = INTERRUPT, duration = 3}, -- Counter Shot (Hunter)
-    [1766] = { type = INTERRUPT, duration = 5 }, -- Kick (Rogue)
+    [19647] = { type = INTERRUPT, duration = 6 }, -- Spell Lock - Rank 1 (Warlock)
+    [26090] = { type = INTERRUPT, duration = 2, }, -- Pummel (Pet)
     [26679] = { type = INTERRUPT, duration = 3 }, -- Deadly Throw
-    [6552] = { type = INTERRUPT, duration = 4 }, -- Pummel
     [29443] = { type = INTERRUPT, duration = 10 }, -- Clutch of Foresight
-    [80965] = { type = INTERRUPT, duration = 4 }, -- Skull Bash (Cat)
-    [80964] = { type = INTERRUPT, duration = 4 }, -- Skull Bash (Bear)
     [47528] = { type = INTERRUPT, duration = 4, },  -- Mind Freeze
+    [50318] = { type = INTERRUPT, duration = 4 }, -- Serenity Dust (Moth - Hunter Pet)
+    [50479] = { type = INTERRUPT, duration = 2},  -- Nether Shock (Nether Ray - Hunter Pet)
+    [57994] = { type = INTERRUPT, duration = 2, },  -- Wind Shear
+    [78675] = { type = INTERRUPT, duration = 5 }, -- Solar Beam interrupt
+    [80964] = { type = INTERRUPT, duration = 4 }, -- Skull Bash (Bear)
+    [80965] = { type = INTERRUPT, duration = 4 }, -- Skull Bash (Cat)
     [91802] = { type = INTERRUPT, duration = 2 },  -- Shambling Rush (pet dk kick)
+    [96231] = { type = INTERRUPT, duration = 4 }, -- Rebuke
     [115781] = { type = INTERRUPT, duration = 6 }, -- Optical Blast (Interrupt)
     [119911] = { type = INTERRUPT, duration = 6 }, -- Optical Blast (Interrupt)
-    [57994] = { type = INTERRUPT, duration = 2, },  -- Wind Shear
-    [96231] = { type = INTERRUPT, duration = 4 }, -- Rebuke
-    [26090] = { type = INTERRUPT, duration = 2, }, -- Pummel (Pet)
-    [50479] = { type = INTERRUPT, duration = 2},  -- Nether Shock (nether ray pet kick)
-    [78675] = { type = INTERRUPT, duration = 5 }, -- Solar Beam interrupt
+    [147362] = { type = INTERRUPT, duration = 3}, -- Counter Shot (Hunter)
+    [386071] = { type = INTERRUPT, duration = 6 }, -- Disrupting Shout (Warrior)
 
     -- ROOTS
     [96294]  = { type = ROOT }, -- Chains of Ice (Chilblains)
@@ -340,6 +343,9 @@ addon.Spells = {
     [142453] = { type = BUFF_OTHER }, -- Prowl
     [133079] = { type = BUFF_OTHER }, -- Prowl
     [29166]  = { type = BUFF_OTHER }, -- Innervate
+    [54428]  = { type = BUFF_OTHER }, -- Divine Plea
+	[12051]  = { type = BUFF_OTHER }, -- Evocation
+	[16191]  = { type = BUFF_OTHER }, -- Mana Tide Totem
     
     -- BUFF_DEFENSIVE
     [110909] = { type = BUFF_DEFENSIVE }, -- Alter Time
