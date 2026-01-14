@@ -251,6 +251,8 @@ local cc = {
 	-- Cyclone
 	33786, -- Cyclone
 	113506, -- Cyclone (Symbiosis)
+
+	76577, -- Smoke Bomb -- no check because id might be wrong
 }
 
 -- show mine only on enemies because stacks with others' debuffs
@@ -450,12 +452,12 @@ local spell_immunities = {
 -- size 1.5
 local mobility_buffs = {
 	96267, -- Inner Focus
-	110806, -- spiritwalker's grace
+	79206, -- spiritwalker's grace
 	114239, -- Phantasm
 	58875, -- Spirit Walk
 	1044, -- Hand of Freedom
 	-- 53271, -- Master's Call
-	62305, -- Master's Call
+	62305, -- Master's Call -- no check id because there are multiple ids which this might not be the correct one
 	116841, -- Tiger's Lust
 	118922, -- Posthaste
 	108843, -- Blazing Speed

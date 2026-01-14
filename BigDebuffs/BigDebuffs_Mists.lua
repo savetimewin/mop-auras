@@ -199,6 +199,7 @@ addon.Spells = {
     [80483]  = { type = CROWD_CONTROL }, -- Arcane Torrent (Racial, Focus)
     [31117]  = { type = CROWD_CONTROL }, -- Unstable Affliction (Silence)
     [43523]  = { type = CROWD_CONTROL }, -- Unstable Affliction (Silence)
+
     
     -- INTERRUPTS
     [19647] = { type = INTERRUPT, duration = 6 }, -- Spell Lock - Rank 1 (Warlock)
@@ -222,6 +223,7 @@ addon.Spells = {
     [50479] = { type = INTERRUPT, duration = 2},  -- Nether Shock (nether ray pet kick)
     [78675] = { type = INTERRUPT, duration = 5 }, -- Solar Beam interrupt
     
+    [76577] = { type = CROWD_CONTROL }, -- Smoke Bomb
 
     -- ROOTS
     [96294]  = { type = ROOT }, -- Chains of Ice (Chilblains)
