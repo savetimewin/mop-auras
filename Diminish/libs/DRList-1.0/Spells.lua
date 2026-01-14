@@ -1055,7 +1055,7 @@ elseif Lib.gameExpansion == "mop" then
         -- *** Spells that DRs with itself only ***
         [33786]  = "cyclone", -- Cyclone
         [113506] = "cyclone", -- Cyclone (Symbiosis)
-        [7922]  = "charge", -- Charge Stun
+        -- [7922]  = "charge", -- Charge Stun
     }
 
 elseif Lib.gameExpansion == "classic" then

@@ -126,6 +126,7 @@ local silences = {
 	25046, -- Arcane Torrent (Racial, Energy)
 	69179, -- Arcane Torrent (Racial, Rage)
 	80483, -- Arcane Torrent (Racial, Focus)
+	78675, -- Solar Beam
 }
 
 -- size 1.8
@@ -292,7 +293,9 @@ local major_defensive_buffs = {
 	122278, -- Dampen Harm
 	110913, -- Dark Bargain 
 	31821, -- Devotion Aura
-	118038, -- Die by the Sword 
+	118038, -- Die by the Sword
+	110715, -- Dispersion (Priest)
+    47585, -- Dispersion
 	31842, -- Divine Favor
 	64843, -- Divine Hymn 
 	498, -- Divine Protection 
@@ -311,7 +314,7 @@ local major_defensive_buffs = {
 	102342, -- Ironbark 
 	12975, -- Last Stand
 	116849, -- Life Cocoon
-	132158, -- Nature's Swiftness, can either be defensive or offensive but want size to be big so added here
+	29274, -- Nature's Swiftness, can either be defensive or offensive but want size to be big so added here
 	33206, -- Pain Suppression 
 	81782, -- Power Word: Barrier
 	12043, -- Presence of Mind, No Check Spell ID, just the buff name, can either be defensive or offensive but want size to be big so added here
@@ -454,16 +457,13 @@ local mobility_buffs = {
 	96267, -- Inner Focus
 	79206, -- spiritwalker's grace
 	114239, -- Phantasm
-	58875, -- Spirit Walk
 	1044, -- Hand of Freedom
 	-- 53271, -- Master's Call
 	62305, -- Master's Call -- no check id because there are multiple ids which this might not be the correct one
 	116841, -- Tiger's Lust
 	118922, -- Posthaste
 	108843, -- Blazing Speed
-	85499, -- Speed of Light
 	73325, -- Leap of Faith
-	133278,  -- warrior heroic leap PVP set bonus speed buff
 	121557, -- Angelic Feather
 	36554, -- Shadowstep
 	77761, -- Stampeding Roar
@@ -471,6 +471,7 @@ local mobility_buffs = {
 	137573, -- Burst of Speed
 	108212, -- Burst of Speed
 	114896, -- Windwalk
+	58875, -- Spirit Walk
 }
 
 -- size 1.5
@@ -479,6 +480,8 @@ local speed_buffs = {
 	1850, -- Dash
 	54861, -- Nitro Boosts
 	65081, -- Body and Soul
+	133278,  -- warrior heroic leap PVP set bonus speed buff
+	85499, -- Speed of Light
 }
 
 -- size 1.5

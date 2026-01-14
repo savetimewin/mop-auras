@@ -130,7 +130,6 @@ addon.Spells = {
     [113953] = { type = CROWD_CONTROL }, -- Paralysis
     [118895] = { type = CROWD_CONTROL }, -- Dragon Roar
     [77505]  = { type = CROWD_CONTROL }, -- Earthquake
-    [100]    = { type = CROWD_CONTROL }, -- Charge
     [118000] = { type = CROWD_CONTROL }, -- Dragon Roar
 
     -- *** Fear Effects ***
@@ -199,8 +198,16 @@ addon.Spells = {
     [80483]  = { type = CROWD_CONTROL }, -- Arcane Torrent (Racial, Focus)
     [31117]  = { type = CROWD_CONTROL }, -- Unstable Affliction (Silence)
     [43523]  = { type = CROWD_CONTROL }, -- Unstable Affliction (Silence)
+    [129889]  = { type = CROWD_CONTROL }, -- Solar Beam
+    [81261]  = { type = CROWD_CONTROL }, -- Solar Beam
+    [133901]  = { type = CROWD_CONTROL }, -- Solar Beam
+    [113287]  = { type = CROWD_CONTROL }, -- Solar Beam
+    [113286]  = { type = CROWD_CONTROL }, -- Solar Beam (Symbiosis)
+    [129888]  = { type = CROWD_CONTROL }, -- Solar Beam
+    [133899]  = { type = CROWD_CONTROL }, -- Solar Beam
 
-    
+    [76577] = { type = CROWD_CONTROL }, -- Smoke Bomb
+
     -- INTERRUPTS
     [19647] = { type = INTERRUPT, duration = 6 }, -- Spell Lock - Rank 1 (Warlock)
     [13491] = { type = INTERRUPT, duration = 5 }, -- Iron Knuckles
@@ -222,8 +229,6 @@ addon.Spells = {
     [26090] = { type = INTERRUPT, duration = 2, }, -- Pummel (Pet)
     [50479] = { type = INTERRUPT, duration = 2},  -- Nether Shock (nether ray pet kick)
     [78675] = { type = INTERRUPT, duration = 5 }, -- Solar Beam interrupt
-    
-    [76577] = { type = CROWD_CONTROL }, -- Smoke Bomb
 
     -- ROOTS
     [96294]  = { type = ROOT }, -- Chains of Ice (Chilblains)
@@ -264,7 +269,6 @@ addon.Spells = {
     -- IMMUNITIES (COMPLETE IMMUNITY)
     [642]    = { type = IMMUNITY }, -- Divine Shield
     [58984]  = { type = IMMUNITY }, -- Shadowmeld
-    [47585]  = { type = IMMUNITY }, -- Dispersion
     [27827]  = { type = IMMUNITY }, -- Spirit of Redemption
     [19263]  = { type = IMMUNITY }, -- Deterrence
     [110618] = { type = IMMUNITY }, -- Deterrence
@@ -272,7 +276,6 @@ addon.Spells = {
     [148467] = { type = IMMUNITY }, -- Deterrence
     [67801]  = { type = IMMUNITY }, -- Deterrence
     [110617] = { type = IMMUNITY }, -- Deterrence (Hunter)
-    [110715] = { type = IMMUNITY }, -- Dispersion (Priest)
     [110700] = { type = IMMUNITY }, -- Divine Shield (Paladin)
     [110696] = { type = IMMUNITY }, -- Ice Block (Mage)
     [45438]  = { type = IMMUNITY }, -- Ice Block
@@ -354,6 +357,8 @@ addon.Spells = {
     [110913] = { type = BUFF_DEFENSIVE }, -- Dark Bargain
     [31821]  = { type = BUFF_DEFENSIVE }, -- Devotion Aura
     [118038] = { type = BUFF_DEFENSIVE }, -- Die by the Sword
+    [110715] = { type = BUFF_DEFENSIVE }, -- Dispersion (Priest)
+    [47585]  = { type = BUFF_DEFENSIVE }, -- Dispersion
     [31842]  = { type = BUFF_DEFENSIVE }, -- Divine Favor
     [64843]  = { type = BUFF_DEFENSIVE }, -- Divine Hymn
     [498]    = { type = BUFF_DEFENSIVE }, -- Divine Protection
@@ -373,6 +378,7 @@ addon.Spells = {
     [12975]  = { type = BUFF_DEFENSIVE }, -- Last Stand
     [116849] = { type = BUFF_DEFENSIVE }, -- Life Cocoon
     [132158] = { type = BUFF_DEFENSIVE }, -- Nature's Swiftness (also used offensively)
+    [29274]  = { type = BUFF_DEFENSIVE }, -- Nature's Swiftness
     [33206]  = { type = BUFF_DEFENSIVE }, -- Pain Suppression
     [81782]  = { type = BUFF_DEFENSIVE }, -- Power Word: Barrier
     [12043]  = { type = BUFF_DEFENSIVE }, -- Presence of Mind (also used offensively)
