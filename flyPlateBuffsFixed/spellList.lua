@@ -256,25 +256,24 @@ local cc = {
 	76577, -- Smoke Bomb -- no check because id might be wrong
 }
 
--- show mine only on enemies because stacks with others' debuffs
+-- show mine only on enemies because I need to make sure MY debuff is applied, regardless of other people's debuffs
 local war_personal_nostack_debuffs = {
 	115767, -- Deep Wounds 1.3
 	86346, -- Colossus Smash 1.5
 	1822, -- Rake 1.3
 	8921, -- Moonfire 1.3
 	146739, -- Corruption 1.3
-
-
 }
 
--- show on enemy only because it does not stack
+-- if one of these debuff is applied, then don't need to re-apply the same debuff so show no matter who applied it
 local war_personal_stackable_debuffs = {
-	8680, -- Wound Poison Healing Debuff
+	8680, -- Wound Poison Healing Debuff 1.4
 	115804, -- Mortal Wounds 1.4
-	81326, -- Physical Invulnerability 1.2 -- 4% dmg increase to the target with this debuff
-	64382, -- Shattering Throw 1.2 -- target with this debuff has 20% less armor
-	114205, -- Demoralizing Banner 1.2 -- target with this debuff does 10% less damage
-	115798, -- Weakened Blows 1.1 -- target with this debuff does 10% less physical damage
+	81326, -- Physical Invulnerability 1.3 -- 4% dmg increase to the target with this debuff
+	64382, -- Shattering Throw 1.3 -- target with this debuff has 20% less armor
+	114205, -- Demoralizing Banner 1.3 -- target with this debuff does 10% less damage
+	115798, -- Weakened Blows 1.3 -- target with this debuff does 10% less physical damage
+	113746, -- Sunder Armor 1.3 -- 4% less armor per stack
 }
 
 -- size 1.8
@@ -531,6 +530,8 @@ local constraint_debuffs = {
 	113942, -- Demonic Gateway Cooldown
 	770, -- Faerie Fire, No Check Spell ID, just the debuff name
 	31615, -- Hunter's Mark, No Check Spell ID, just the debuff name
+	1543, -- Flare -- don't check id, not sure exact debuff id
+	34709, -- Shadow Sight -- Stealth Detection. -- Invisibility Detection. -- Increases damage taken by 5%.
 }
 
 
