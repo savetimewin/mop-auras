@@ -506,6 +506,8 @@ local drinkflags = {
 	34976, -- Nether Flag (Eye of the Storm flag)
 	141210, -- Horde Mine (Silvershard Mines flag)
 	140876, -- Alliance Mine (Silvershard Mines flag)
+	46393, -- Brutal Assault
+	46392, -- Focused Assault
 }
 
 -- size 1.4
