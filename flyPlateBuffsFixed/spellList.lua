@@ -265,6 +265,7 @@ local war_personal_nostack_debuffs = {
 	146739, -- Corruption 1.3
 }
 
+-- default size is 1.3
 -- if one of these debuff is applied, then don't need to re-apply the same debuff so show no matter who applied it
 local war_personal_stackable_debuffs = {
 	110310, -- Dampening 1.4
@@ -493,6 +494,8 @@ local mana_buffs = {
 
 -- size 2.0 -- added both since they are both same size
 local drinkflags = {
+	301091, -- Alliance Flag (Twin Peaks Flag)
+	301089, -- Horde Flag (Twin Peaks Flag)
 	23333, -- Warsong Flag (horde WSG flag)
 	23335, -- Silverwing Flag (alliance WSG flag)
 	22734, -- Drink

@@ -287,6 +287,15 @@ addon.Spells = {
     -- DEBUFF_OFFENSIVE -- for raid frames to see who they going what big damage is incoming
     [46392]  = { type = DEBUFF_OFFENSIVE }, -- Focused Assault
     [46393]  = { type = DEBUFF_OFFENSIVE }, -- Brutal Assault
+    
+    [301091]  = { type = DEBUFF_OFFENSIVE }, -- Alliance Flag (Twin Peaks Flag)
+    [301089]  = { type = DEBUFF_OFFENSIVE }, -- Horde Flag (Twin Peaks Flag)
+    [23333]  = { type = DEBUFF_OFFENSIVE }, -- Warsong Flag (horde WSG flag)
+    [23335]  = { type = DEBUFF_OFFENSIVE }, -- Silverwing Flag (alliance WSG flag)
+    [34976]  = { type = DEBUFF_OFFENSIVE }, -- Nether Flag (Eye of the Storm flag)
+    [141210]  = { type = DEBUFF_OFFENSIVE }, -- Horde Mine (Silvershard Mines flag)
+    [140876]  = { type = DEBUFF_OFFENSIVE }, -- Alliance Mine (Silvershard Mines flag)
+    
     [49206]  = { type = DEBUFF_OFFENSIVE }, -- Summon Gargoyle
     [108200] = { type = DEBUFF_OFFENSIVE }, -- Remorseless Winter (Indicator to see the stacks)
     [130735] = { type = DEBUFF_OFFENSIVE }, -- Soul Reaper (Frost)
