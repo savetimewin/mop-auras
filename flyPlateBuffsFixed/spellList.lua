@@ -338,7 +338,7 @@ local minor_defensive_buffs = {
 	45242, -- Focused Will
 	81256, -- Dancing Rune Weapon -- 20% Parry
 	1966, -- Feint -- don't check spell id, too many
-	17, -- Power Word: Shield
+	-- 17, -- Power Word: Shield
 	47753, -- Divine Aegis
 	20594, -- Stoneform
 	7812, -- Sacrifice warlock 10k shield from pet sac
