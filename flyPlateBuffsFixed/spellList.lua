@@ -144,7 +144,7 @@ local disarms = {
 
 -- size 2.0 -- dispellable and undispellable cc
 local cc = {
-		-- Incapacitate
+	-- Incapacitate
 	2637, -- Hibernate
 	3355, -- Freezing Trap Effect
 	19386, -- Wyvern Sting
@@ -267,6 +267,7 @@ local war_personal_nostack_debuffs = {
 
 -- if one of these debuff is applied, then don't need to re-apply the same debuff so show no matter who applied it
 local war_personal_stackable_debuffs = {
+	110310, -- Dampening 1.4
 	8680, -- Wound Poison Healing Debuff 1.4
 	115804, -- Mortal Wounds 1.4
 	81326, -- Physical Invulnerability 1.3 -- 4% dmg increase to the target with this debuff
