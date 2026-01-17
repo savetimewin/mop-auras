@@ -70,6 +70,7 @@ local snares70 = {
 
 -- size 1.9
 local roots = {
+	31367, -- Netherweave Net (Does not work in arena)
 	96294, -- Chains of Ice (Chilblains)
 	91807, -- Shambling Rush (Dark Transformation)
 	339, -- Entangling Roots
