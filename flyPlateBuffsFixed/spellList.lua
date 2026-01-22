@@ -291,8 +291,7 @@ local major_defensive_buffs = {
 	111397, -- Blood Horror
 	45182, -- Cheating Death
 	74001, -- Combat Readiness 
-	1742, -- Cower (Pet) 
-	122278, -- Dampen Harm
+	1742, -- Cower (Pet)
 	110913, -- Dark Bargain 
 	31821, -- Devotion Aura
 	118038, -- Die by the Sword
@@ -316,6 +315,7 @@ local major_defensive_buffs = {
 	102342, -- Ironbark 
 	12975, -- Last Stand
 	116849, -- Life Cocoon
+	132158, -- Nature's Swiftness
 	29274, -- Nature's Swiftness, can either be defensive or offensive but want size to be big so added here
 	33206, -- Pain Suppression 
 	81782, -- Power Word: Barrier
@@ -338,6 +338,7 @@ local major_defensive_buffs = {
 -- size 1.7
 -- only shown on nameplates & not on bigdebuffs addon 
 local minor_defensive_buffs = {
+	122278, -- Dampen Harm
 	45242, -- Focused Will
 	81256, -- Dancing Rune Weapon -- 20% Parry
 	1966, -- Feint -- don't check spell id, too many

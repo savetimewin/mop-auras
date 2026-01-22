@@ -368,7 +368,6 @@ addon.Spells = {
     [45182]  = { type = BUFF_DEFENSIVE }, -- Cheating Death
     [74001]  = { type = BUFF_DEFENSIVE }, -- Combat Readiness
     [1742]   = { type = BUFF_DEFENSIVE }, -- Cower (Pet)
-    [122278] = { type = BUFF_DEFENSIVE }, -- Dampen Harm
     [110913] = { type = BUFF_DEFENSIVE }, -- Dark Bargain
     [31821]  = { type = BUFF_DEFENSIVE }, -- Devotion Aura
     [118038] = { type = BUFF_DEFENSIVE }, -- Die by the Sword
