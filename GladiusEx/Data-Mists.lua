@@ -305,6 +305,7 @@ function GladiusEx.Data.DefaultClassicon()
         [GladiusEx:SafeGetSpellName(131523)] = 5,  -- Zen Meditation
 
         -- BUFF_OFFENSIVE -- priority 4
+        [GladiusEx:SafeGetSpellName(108288)]  = 4, -- Adrenaline Rush
         [GladiusEx:SafeGetSpellName(13750)]  = 4, -- Adrenaline Rush
         [GladiusEx:SafeGetSpellName(12042)]  = 4, -- Arcane Power
         [GladiusEx:SafeGetSpellName(114049)] = 4, -- Ascendance

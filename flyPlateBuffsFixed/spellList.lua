@@ -409,6 +409,7 @@ local major_offensive_buffs = {
 	34471, -- The Beast Within 
 	5217, -- Tiger's Fury
 	49016, -- Unholy Frenzy
+	108288, -- Heart of the Wild
 }
 
 -- size 1.5
@@ -446,6 +447,7 @@ local spell_immunities = {
 	115760, -- Glyph of Ice Block
 	8178, -- Grounding Totem Effect
 	114028, -- Mass Spell Reflection
+	89523, -- Grounding Totem (reflect)
 	33961, -- Spell Reflection
 	23920, -- Spell Reflection (Warrior)
 	113002, -- Spell Reflection (Druid) (symbiosis)

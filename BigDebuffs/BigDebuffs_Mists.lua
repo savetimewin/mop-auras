@@ -432,6 +432,7 @@ addon.Spells = {
     [115288] = { type = BUFF_OFFENSIVE }, -- Energizing Brew
     [82726]  = { type = BUFF_OFFENSIVE }, -- Fervor
     [44544]  = { type = BUFF_OFFENSIVE }, -- Fingers of Frost
+    [108288] = { type = BUFF_OFFENSIVE }, -- Heart of the Wild
     [32182]  = { type = BUFF_OFFENSIVE }, -- Heroism
     [105809] = { type = BUFF_OFFENSIVE }, -- Holy Avenger
     [131078]  = { type = BUFF_OFFENSIVE }, -- Icy Veins (no check spell id)
