@@ -301,6 +301,7 @@ addon.Spells = {
     [130735] = { type = DEBUFF_OFFENSIVE }, -- Soul Reaper (Frost)
         [130736] = { parent = 130735 }, -- Soul Reaper (Unholy)
         [114866] = { parent = 130735 }, -- Soul Reaper (Blood)
+    [73975]  = { type = DEBUFF_OFFENSIVE }, -- Necrotic Strike
     [34914]  = { type = DEBUFF_OFFENSIVE }, -- VT
     [80240]  = { type = DEBUFF_OFFENSIVE }, -- Havoc
     [30108]  = { type = DEBUFF_OFFENSIVE }, -- UA

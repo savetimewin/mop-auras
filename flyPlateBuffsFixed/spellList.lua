@@ -264,6 +264,7 @@ local war_personal_nostack_debuffs = {
 	1822, -- Rake 1.3
 	8921, -- Moonfire 1.3
 	146739, -- Corruption 1.3
+	30108, -- Unstable Affliction Dot
 }
 
 -- default size is 1.3
@@ -277,6 +278,7 @@ local war_personal_stackable_debuffs = {
 	114205, -- Demoralizing Banner 1.3 -- target with this debuff does 10% less damage
 	115798, -- Weakened Blows 1.3 -- target with this debuff does 10% less physical damage
 	113746, -- Sunder Armor 1.3 -- 4% less armor per stack
+	73975, -- necrotic strike
 }
 
 -- size 1.8
@@ -366,6 +368,7 @@ local minor_defensive_buffs = {
 	77613, -- Grace -- Increase all healing received from the priest by 30%
 	126697, -- Tremendous Fortitude
 	16491, -- Second Wind
+	114893, -- Stone Bulwark
 }
 
 -- size 1.6
