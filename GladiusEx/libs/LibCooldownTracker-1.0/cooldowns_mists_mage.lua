@@ -37,6 +37,13 @@ LCT_SpellData[122] = {
 	cc = true,
 	cooldown = 25
 }
+-- Freeze
+LCT_SpellData[33395] = {
+	class = "MAGE",
+	pet = true,
+	cc = true,
+	cooldown = 25
+}
 -- Ice Block
 LCT_SpellData[45438] = {
 	class = "MAGE",
