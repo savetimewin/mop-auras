@@ -150,9 +150,11 @@ function GladiusEx.Data.DefaultClassicon()
         -- Instant Casts
         [GladiusEx:SafeGetSpellName(16188)]	= 9, -- Ancestral Swiftness (Shaman)
         [GladiusEx:SafeGetSpellName(132158)] = 9, -- Nature's Swiftness (Druid)
+        [GladiusEx:SafeGetSpellName(114108)] = 8.9, -- Soul of the Forest (Resto Druid)
         [GladiusEx:SafeGetSpellName(29274)]	= 9, -- Nature's Swiftness (Druid)
         [GladiusEx:SafeGetSpellName(12043)]	= 9, -- Presence of Mind
         [GladiusEx:SafeGetSpellName(69369)]	= 9, -- Predator's Swiftness (Feral Druid)
+
 
         -- Immunity
         [GladiusEx:SafeGetSpellName(122465)] = 9, -- Dematerialize

@@ -105,7 +105,7 @@ addonTable.CDs = {
 		[31661] = 17, -- https://www.wowhead.com/cata/ru/spell=31661
 		[12472] = 144, -- https://www.wowhead.com/cata/ru/spell=12472
 		[44572] = 30, -- https://www.wowhead.com/cata/ru/spell=44572
-		[11958] = 288, -- https://www.wowhead.com/cata/ru/spell=11958
+		[11958] = 180, -- https://www.wowhead.com/mop-classic/spell=11958/cold-snap
 		[11426] = 18, -- https://www.wowhead.com/cata/ru/spell=11426
 		[108978] = 90, -- https://www.wowhead.com/mop/ru/spell=108978
 		[84714] = 60, -- https://www.wowhead.com/mop/ru/spell=84714

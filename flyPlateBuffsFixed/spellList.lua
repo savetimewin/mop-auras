@@ -342,6 +342,7 @@ local major_defensive_buffs = {
 	69369, -- Predator's Swiftness 
 	102342, -- Ironbark
 	111397, -- Blood Horror
+	114108, -- Soul of the Forest
 }
 
 -- size 1.7
