@@ -12,7 +12,7 @@
 		spells_data = lib:GetCooldownsData()
 ]]
 
-local version = 10
+local version = 11
 local lib = LibStub:NewLibrary("LibCooldownTracker-1.0", version)
 local IsRetail = WOW_PROJECT_ID == WOW_PROJECT_MAINLINE
 local LGIST = IsRetail and LibStub:GetLibrary("LibGroupInSpecT-1.1")
@@ -147,6 +147,20 @@ local function GetPetUnit(unit)
 	if unit == "player" or unit == "pet" then
 		return "pet"
 	end
+
+	-- Indexed pet tokens place "pet" before the index:
+	-- arena1 -> arenapet1, party1 -> partypet1, raid1 -> raidpet1.
+	local unit_type, index = unit:match("^(arena)(%d+)$")
+	if not unit_type then
+		unit_type, index = unit:match("^(party)(%d+)$")
+	end
+	if not unit_type then
+		unit_type, index = unit:match("^(raid)(%d+)$")
+	end
+	if unit_type then
+		return unit_type .. "pet" .. index
+	end
+
 	return unit .. "pet"
 end
 
@@ -159,6 +173,20 @@ local function UpdateGUID(unit)
 	local pet_unit = GetPetUnit(unit)
 	local pet_guid = UnitGUID(pet_unit)
 	if pet_guid then lib.guid_to_unitid[pet_guid] = unit end
+end
+
+-- Pet tokens can become available after their owner was first registered.
+-- Resolve a tracked pet lazily so the first observed pet cooldown is not lost
+-- if UNIT_PET or ARENA_OPPONENT_UPDATE arrives after the combat-log event.
+local function FindUnitByPetGUID(guid)
+	if not guid then return end
+
+	for unit in pairs(lib.registered_units) do
+		if UnitGUID(GetPetUnit(unit)) == guid then
+			lib.guid_to_unitid[guid] = unit
+			return unit
+		end
+	end
 end
 
 -- simple timer used for updating number of charges
@@ -558,6 +586,7 @@ local function enable()
   lib.frame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
   lib.frame:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
   lib.frame:RegisterEvent("UNIT_NAME_UPDATE")
+  lib.frame:RegisterEvent("UNIT_PET")
   lib.frame:RegisterEvent("ARENA_CROWD_CONTROL_SPELL_UPDATE")
   lib.frame:RegisterEvent("ARENA_COOLDOWNS_UPDATE")
   lib.frame:RegisterEvent("ARENA_OPPONENT_UPDATE")
@@ -867,13 +896,18 @@ function events:UNIT_SPELLCAST_SUCCEEDED(event, unit, lineID, spellId)
 end
 
 function events:CombatLogEvent(_, timestamp, event, hideCaster, sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, destName, destFlags, destRaidFlags, spellId, spellName, spellSchool, auraType)
-	-- check unit
-	local unit = lib.guid_to_unitid[sourceGUID]
-	if not unit then return end
-
-	-- check spell
+	-- Check the spell before doing the slower pet-owner fallback.
 	local spelldata = SpellData[spellId]
 	if not spelldata then return end
+
+	-- Pet abilities are cast by the pet GUID but their cooldown belongs to the
+	-- registered owner unit (for example, arenapet1 belongs to arena1).
+	local unit = lib.guid_to_unitid[sourceGUID]
+	local resolved_spelldata = type(spelldata) == "number" and SpellData[spelldata] or spelldata
+	if not unit and resolved_spelldata and resolved_spelldata.pet then
+		unit = FindUnitByPetGUID(sourceGUID)
+	end
+	if not unit then return end
 
 	if event == "SPELL_DISPEL" or
 	   event == "SPELL_AURA_REMOVED" or
@@ -888,7 +922,17 @@ function events:COMBAT_LOG_EVENT_UNFILTERED(event)
 end
 
 function events:UNIT_NAME_UPDATE(event, unit)
-	UpdateGUID(unit)
+	-- UNIT_NAME_UPDATE also fires for unregistered units such as arenapet1.
+	-- Do not let those overwrite the pet GUID -> owner mapping.
+	if lib:IsUnitRegistered(unit) then
+		UpdateGUID(unit)
+	end
+end
+
+function events:UNIT_PET(event, unit)
+	if lib:IsUnitRegistered(unit) then
+		UpdateGUID(unit)
+	end
 end
 
 function events:ARENA_CROWD_CONTROL_SPELL_UPDATE(event, unit, spellID)
@@ -905,6 +949,12 @@ function events:ARENA_CROWD_CONTROL_SPELL_UPDATE(event, unit, spellID)
 end
 
 function events:ARENA_OPPONENT_UPDATE(event, unit, unitEvent)
+  -- Refresh both the opponent and arenapetN GUID as soon as the arena unit
+  -- becomes visible (and clear stale mappings when it changes).
+  if lib:IsUnitRegistered(unit) then
+    UpdateGUID(unit)
+  end
+
   if unitEvent == "seen" then
     C_PvP.RequestCrowdControlSpell(unit)
   end
@@ -956,3 +1006,4 @@ function events:ARENA_COOLDOWNS_UPDATE(event, unit)
   lib.tracked_players[unit][spellid].cooldown_end = (startTime / 1000) + (duration / 1000)
   lib.callbacks:Fire("LCT_CooldownUsed", unit, spellid)
 end
+
