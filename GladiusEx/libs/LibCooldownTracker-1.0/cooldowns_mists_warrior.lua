@@ -1,5 +1,12 @@
 -- ================ WARRIOR ================
 -- Warrior/baseline
+-- Shield Wall
+LCT_SpellData[871] = {
+	class = "WARRIOR",
+	defensive = true,
+	duration = 12,
+	cooldown = 180
+}
 -- Berserker Rage
 LCT_SpellData[18499] = {
 	class = "WARRIOR",
@@ -14,12 +21,6 @@ LCT_SpellData[100] = {
 	opt_charges = 2,
 	cooldown = 20
 }
--- -- Deadly Calm
--- [85730] = {
-	-- class = "WARRIOR",
-	-- offensive = true,
-	-- cooldown = 60
--- },
 -- Heroic Leap
 LCT_SpellData[6544] = {
 	class = "WARRIOR",
@@ -206,13 +207,6 @@ LCT_SpellData[118038] = {
 }
 -- Warrior/Fury
 -- Warrior/Protection
--- Shield Wall
-LCT_SpellData[871] = {
-	class = "WARRIOR",
-	defensive = true,
-	duration = 12,
-	cooldown = 180
-}
 -- Demoralizing Shout
 LCT_SpellData[1160] = {
 	class = "WARRIOR",
