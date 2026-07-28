@@ -47,6 +47,7 @@ do
 end
 
 local SpellsPerPlayerGUID = { };
+local PetOwnerGUIDs = { };
 local AllSpellIDsAndIconsByName = { };
 local ElapsedTimer = 0;
 local Nameplates = {};
@@ -2420,38 +2421,54 @@ do
 
 	EventFrame.COMBAT_LOG_EVENT_UNFILTERED = function()
 		local cTime = GetTime();
-		local _, eventType, _, srcGUID, _, srcFlags, _, _, _, _, _, spellID = CombatLogGetCurrentEventInfo();
+		local _, eventType, _, srcGUID, _, srcFlags, _, dstGUID, _, _, _, spellID = CombatLogGetCurrentEventInfo();
 		local isHostile = bit_band(srcFlags, COMBATLOG_OBJECT_REACTION_HOSTILE) ~= 0;
 		local isTrackedSource = srcGUID == LocalPlayerGUID
 			or isHostile
 			or (db.ShowCDOnAllies == true and srcGUID ~= LocalPlayerGUID)
 			or (srcGUID ~= nil and srcGUID ~= "" and srcGUID ~= LocalPlayerGUID and spellID ~= nil and (eventType == "SPELL_CAST_SUCCESS" or eventType == "SPELL_AURA_APPLIED" or eventType == "SPELL_MISSED" or eventType == "SPELL_SUMMON"));
+		if (eventType == "SPELL_SUMMON" and dstGUID ~= nil and dstGUID ~= "" and srcGUID ~= nil and srcGUID ~= "" and srcGUID ~= dstGUID) then
+			PetOwnerGUIDs[dstGUID] = srcGUID;
+		end
 		if (isTrackedSource) then
 			local entry = db.SpellCDs[spellID];
 			local cooldown = AllCooldowns[spellID];
+			local trackedGUIDs = { };
+			if (srcGUID ~= nil and srcGUID ~= "") then
+				trackedGUIDs[1] = srcGUID;
+			end
+			local ownerGUID = PetOwnerGUIDs[srcGUID];
+			if (ownerGUID ~= nil and ownerGUID ~= "" and ownerGUID ~= srcGUID and ownerGUID ~= trackedGUIDs[1]) then
+				trackedGUIDs[#trackedGUIDs + 1] = ownerGUID;
+			end
 			if (cooldown ~= nil and entry and entry.enabled) then
 				if (eventType == "SPELL_CAST_SUCCESS" or eventType == "SPELL_AURA_APPLIED" or eventType == "SPELL_MISSED" or eventType == "SPELL_SUMMON") then
-					if (not SpellsPerPlayerGUID[srcGUID]) then SpellsPerPlayerGUID[srcGUID] = { }; end
-					local expires = cTime + cooldown;
-					SpellsPerPlayerGUID[srcGUID][spellID] = { ["spellID"] = spellID, ["expires"] = expires, ["texture"] = SpellTextureByID[spellID], ["started"] = cTime };
-					for frame, unitGUID in pairs(NameplatesVisible) do
-						if (unitGUID == srcGUID) then
-							UpdateOnlyOneNameplate(frame, unitGUID);
-							break;
+					for _, targetGUID in ipairs(trackedGUIDs) do
+						if (targetGUID ~= nil and targetGUID ~= "") then
+							if (not SpellsPerPlayerGUID[targetGUID]) then SpellsPerPlayerGUID[targetGUID] = { }; end
+							local expires = cTime + cooldown;
+							SpellsPerPlayerGUID[targetGUID][spellID] = { ["spellID"] = spellID, ["expires"] = expires, ["texture"] = SpellTextureByID[spellID], ["started"] = cTime };
+							for frame, unitGUID in pairs(NameplatesVisible) do
+								if (unitGUID == targetGUID) then
+									UpdateOnlyOneNameplate(frame, unitGUID);
+									break;
+								end
+							end
 						end
 					end
 				end
 			end
 			-- reductions
 			if (Reductions[spellID] ~= nil and eventType == "SPELL_CAST_SUCCESS") then
-				if (SpellsPerPlayerGUID[srcGUID]) then
-					for _, sp in pairs(Reductions[spellID].spells) do
-						if (SpellsPerPlayerGUID[srcGUID][sp] ~= nil) then
-							SpellsPerPlayerGUID[srcGUID][sp].expires = SpellsPerPlayerGUID[srcGUID][sp].expires - Reductions[spellID].reduction;
+				for _, targetGUID in ipairs(trackedGUIDs) do
+					if (targetGUID ~= nil and targetGUID ~= "" and SpellsPerPlayerGUID[targetGUID]) then
+						for _, sp in pairs(Reductions[spellID].spells) do
+							if (SpellsPerPlayerGUID[targetGUID][sp] ~= nil) then
+								SpellsPerPlayerGUID[targetGUID][sp].expires = SpellsPerPlayerGUID[targetGUID][sp].expires - Reductions[spellID].reduction;
+							end
 						end
-					end
 					for frame, unitGUID in pairs(NameplatesVisible) do
-						if (unitGUID == srcGUID) then
+						if (unitGUID == targetGUID) then
 							UpdateOnlyOneNameplate(frame, unitGUID);
 							break;
 						end

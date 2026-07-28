@@ -106,6 +106,7 @@ LCT_SpellData[12043] = {
 	class = "MAGE",
 	talent = true,
 	cc = true,
+	cooldown_starts_on_aura_fade = true,
 	cooldown = 90
 }
 -- Cauterize

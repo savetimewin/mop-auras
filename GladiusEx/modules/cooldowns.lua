@@ -622,12 +622,17 @@ local function GetCooldownList(unit, group)
             local tracked = CT:GetUnitCooldownInfo(unit, spellid)
             local detected = tracked and tracked.detected
             -- check if the spell has a cooldown valid for an arena, and check if it is a talent that has not yet been detected
+            local shouldShowSpell =
+                -- General class spells are always shown, while pet-specific spells stay hidden until the first combat-log detection
+                (not (spelldata.talent or spelldata.item or spelldata.pet)) or
+                detected or
+                spelldata.pvp_trinket or
+                not db.cooldownsHideTalentsUntilDetected
+
             if
                 (not spelldata.cooldown or spelldata.cooldown < 600) and
-                    -- Do NOT show all covenant spells if HideTalentsUntilDetected is false
-                    (not (spelldata.talent or spelldata.item) or spelldata.pet or spelldata.pvp_trinket or detected or
-                        not db.cooldownsHideTalentsUntilDetected)
-             then
+                shouldShowSpell
+            then
                 -- check if the spell requires an aura (XXX unused atm?)
                 if not spelldata.requires_aura or AuraUtil.FindAuraByName(spelldata.requires_aura_name, unit, "HELPFUL") then
                     if spelldata.replaces then

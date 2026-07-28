@@ -413,7 +413,8 @@ function GroupInfoMixin:SetupBar(isUpdateBarsOrGRU)
 					elseif cat == "ESSENCE" then
 						isValidSpell = self.talentData[spec]
 					elseif not E.BOOKTYPE_CATEGORY[cat] then
-						isValidSpell = self:IsEquipped(item) or (self.sessionItemData[item] and (item ~= 5512 or not self.talentData[386689]))
+						local hasItem = self:IsEquipped(item, spell.item2, spell.item3)
+						isValidSpell = hasItem or (self.sessionItemData[item] and (item ~= 5512 or not self.talentData[386689]))
 					end
 				else
 
@@ -1004,11 +1005,11 @@ function GroupInfoMixin:IsSpecOrTalentForPvpStatus(talentID, isLearnedLevel)
 	end
 end
 
-function GroupInfoMixin:IsEquipped(item, item2)
-	if not item then
+function GroupInfoMixin:IsEquipped(item, item2, item3)
+	if not item and not item2 and not item3 then
 		return true
 	end
-	return self.itemData[item] or self.itemData[item2]
+	return self.itemData[item] or self.itemData[item2] or self.itemData[item3]
 end
 
 function GroupInfoMixin:GetValueByType(value)

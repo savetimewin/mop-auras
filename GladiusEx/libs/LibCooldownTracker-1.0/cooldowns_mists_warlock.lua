@@ -17,8 +17,19 @@ LCT_SpellData[104773] = {
 LCT_SpellData[48020] = {
 	class = "WARLOCK",
 	defensive = true,
-	cooldown = 30
+	cooldown = 25
 }
+--[[
+Demonic Circle: Teleport — ID 48020
+
+Base cooldown is 30 seconds.
+
+Demonic Circle Cooldown Reduction, spell 33063: reduces it by 5 seconds, producing 25 seconds. AKA PVP GEAR SET BONUS!!!
+so I set cooldown = 25, because I am arena player.
+Glyph of Demonic Circle, spell 63309: reduces it by 4 seconds, producing 21 seconds.
+
+The two pages do not establish whether those reductions stack together, so I would not treat 21 seconds as confirmed without an in-game test.
+]]
 -- Demonic gateway
 LCT_SpellData[111771] = {
 	class = "WARLOCK",
@@ -41,8 +52,11 @@ LCT_SpellData[5484] = {
 	class = "WARLOCK",
 	talent = true,
 	cc = true,
-	cooldown = 40
+	cooldown = 35
 }
+-- https://www.wowhead.com/mop-classic/spell=5484/howl-of-terror 
+-- base cooldown is 40 seconds, but every damaging attack received reduces the remaining cooldown by 1 second. 
+-- Its effective cooldown can therefore be lower than 40 seconds. Ima just set it 35.
 -- Mortal Coil
 LCT_SpellData[6789] = {
 	class = "WARLOCK",
@@ -126,7 +140,7 @@ LCT_SpellData[113860] = {
 	specID = { 265 },
 	offensive = true,
 	duration = 20,
-	cooldown = 120
+	cooldown = 20
 }
 
 -- Warlock/266 - Demonology
@@ -142,7 +156,7 @@ LCT_SpellData[113861] = {
 	specID = { 266 },
 	offensive = true,
 	duration = 20,
-	cooldown = 120
+	cooldown = 20
 }
 -- Hand of Gul'dan
 LCT_SpellData[105174] = {
@@ -183,7 +197,7 @@ LCT_SpellData[113858] = {
 	specID = { 267 },
 	offensive = true,
 	duration = 20,
-	cooldown = 120
+	cooldown = 20
 }
 -- Conflagrate
 LCT_SpellData[17962] = {

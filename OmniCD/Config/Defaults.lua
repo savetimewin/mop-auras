@@ -166,7 +166,10 @@ C.Party.arena = {
 	},
 	["spells"] = { ["*"] = false },
 	["spellFrame"] = {},
-	["spellPriority"] = {},
+	["spellPriority"] = {
+		["59752"] = 96,
+		["354540"] = 94,
+	},
 	["spellGlow"] = { ["*"] = false },
 	["manualPos"] = {},
 	["extraBars"] = {},

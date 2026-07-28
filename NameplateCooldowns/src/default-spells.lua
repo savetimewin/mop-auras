@@ -5,6 +5,19 @@ local _, addonTable = ...;
 
 addonTable.HUNTER_FEIGN_DEATH = 5384;
 addonTable.SPELL_PVPTRINKET = 42292;
+addonTable.HUNTER_SURVIVAL_SPEC_SPELL = 53301; -- Explosive Shot
+addonTable.HUNTER_TRAP_SPELLS = {
+	[13813] = true,
+	[82939] = true,
+	[13809] = true,
+	[82941] = true,
+	[13795] = true,
+	[82945] = true,
+	[34600] = true,
+	[82948] = true,
+	[1499] = true,
+	[60192] = true,
+};
 
 addonTable.CDs = {
 	[addonTable.UNKNOWN_CLASS] = {
@@ -25,118 +38,148 @@ addonTable.CDs = {
 		[7744] = 120,		-- // Will of the Forsaken https://www.wowhead.com/cata/ru/spell=7744
 	},
 	["HUNTER"] = {
-		-- // reviewed 2024/05/25
-		[53271] = 45, 	-- https://www.wowhead.com/cata/ru/spell=53271
-		[3045] = 180, 	-- https://www.wowhead.com/cata/ru/spell=3045
-		[1543] = 20, 		-- https://www.wowhead.com/cata/ru/spell=1543
-		[13813] = 24, 	-- https://www.wowhead.com/cata/ru/spell=13813
-		[82939] = 24, 	-- https://www.wowhead.com/cata/ru/spell=82939
-		[13809] = 24, 	-- https://www.wowhead.com/cata/ru/spell=13809
-		[82941] = 24, 	-- https://www.wowhead.com/cata/ru/spell=82941
-		[13795] = 24, 	-- https://www.wowhead.com/cata/ru/spell=13795
-		[82945] = 24, 	-- https://www.wowhead.com/cata/ru/spell=82945
-		[34600] = 24, 	-- https://www.wowhead.com/cata/ru/spell=34600
-		[82948] = 24, 	-- https://www.wowhead.com/cata/ru/spell=82948
-		[1499] = 24, 		-- https://www.wowhead.com/cata/ru/spell=1499
-		[60192] = 24, 	-- https://www.wowhead.com/cata/ru/spell=60192
-		[19263] = 110, 	-- https://www.wowhead.com/cata/ru/spell=19263
-		[781] = 16, 		-- https://www.wowhead.com/cata/ru/spell=781
-		[5384] = 25, 		-- https://www.wowhead.com/cata/ru/spell=5384
-		[19574] = 64, 	-- https://www.wowhead.com/cata/ru/spell=19574
-		[82726] = 120, 	-- https://www.wowhead.com/cata/ru/spell=82726
-		[34490] = 20, 	-- https://www.wowhead.com/cata/ru/spell=34490
-		[23989] = 180, 	-- https://www.wowhead.com/cata/ru/spell=23989
-		[19386] = 54, 	-- https://www.wowhead.com/cata/ru/spell=19386
-		[19577] = 40,		-- https://www.wowhead.com/cata/ru/spell=19577
-		[53480] = 40, 	-- https://www.wowhead.com/cata/ru/spell=53480
-		[19503] = 30, 	-- https://www.wowhead.com/cata/ru/spell=19503
-		[131894] = 120, -- https://www.wowhead.com/mop/ru/spell=131894
+		-- // reviewed 2026/07/27
+		[53271] = 45,   -- https://www.wowhead.com/mop-classic/spell=53271/masters-call
+		[3045] = 180,   -- https://www.wowhead.com/mop-classic/spell=3045/rapid-fire
+		[1543] = 20,    -- https://www.wowhead.com/mop-classic/spell=1543/flare
+		[13813] = 30,   -- https://www.wowhead.com/mop-classic/spell=13813/explosive-trap
+		[82939] = 30,   -- https://www.wowhead.com/mop-classic/spell=82939/explosive-trap
+		[13809] = 30,   -- https://www.wowhead.com/mop-classic/spell=13809/ice-trap
+		[82941] = 30,   -- https://www.wowhead.com/mop-classic/spell=82941/ice-trap
+		[13795] = 30,   -- https://www.wowhead.com/mop-classic/spell=13795/immolation-trap
+		[82945] = 30,   -- https://www.wowhead.com/mop-classic/spell=82945/immolation-trap
+	
+		[1499] = 30,    -- https://www.wowhead.com/mop-classic/spell=1499/freezing-trap
+		[60192] = 30,   -- https://www.wowhead.com/mop-classic/spell=60192/freezing-trap
+		[19263] = 180,  -- https://www.wowhead.com/mop-classic/spell=19263/deterrence
+		[781] = 20,     -- https://www.wowhead.com/mop-classic/spell=781/disengage
+		[5384] = 30,    -- https://www.wowhead.com/mop-classic/spell=5384/feign-death
+		[19574] = 60,   -- https://www.wowhead.com/mop-classic/spell=19574/bestial-wrath
+		[82726] = 30,   -- https://www.wowhead.com/mop-classic/spell=82726/fervor
+		[34490] = 24,   -- https://www.wowhead.com/mop-classic/spell=34490/silencing-shot
+		[19386] = 45,   -- https://www.wowhead.com/mop-classic/spell=19386/wyvern-sting
+		[19577] = 60,   -- https://www.wowhead.com/mop-classic/spell=19577/intimidation
+		[53480] = 60,   -- https://www.wowhead.com/mop-classic/spell=53480/roar-of-sacrifice
+		[19503] = 30,   -- https://www.wowhead.com/mop-classic/spell=19503/scatter-shot
+		[131894] = 120, -- https://www.wowhead.com/mop-classic/spell=131894/a-murder-of-crows
 	},
 	["WARLOCK"] = {
-		-- // reviewed 2024/05/29
-		[6789] = 90, -- https://www.wowhead.com/cata/ru/spell=6789
-		[5484] = 32, -- https://www.wowhead.com/cata/ru/spell=5484
-		[77801] = 120, -- https://www.wowhead.com/cata/ru/spell=77801
-		[74434] = 30, -- https://www.wowhead.com/cata/ru/spell=74434
-		[18540] = 600, -- https://www.wowhead.com/cata/ru/spell=18540
-		[79268] = 30, -- https://www.wowhead.com/cata/ru/spell=79268
-		[1122] = 600, -- https://www.wowhead.com/cata/ru/spell=1122
-		[6229] = 30, -- https://www.wowhead.com/cata/ru/spell=6229
-		[48020] = 21, -- https://www.wowhead.com/cata/ru/spell=48020
-		[88448] = 180, -- https://www.wowhead.com/cata/ru/spell=88448
-		[54786] = 45, -- https://www.wowhead.com/cata/ru/spell=54786
-		[91711] = 30, -- https://www.wowhead.com/cata/ru/spell=91711
-		[47193] = 40, -- https://www.wowhead.com/cata/ru/spell=47193
-		[50796] = 10, -- https://www.wowhead.com/cata/ru/spell=50796
-		[30283] = 20, -- https://www.wowhead.com/cata/ru/spell=30283
-		[19647] = 24, -- https://www.wowhead.com/cata/ru/spell=19647
-		[54785] = 45, -- https://www.wowhead.com/cata/ru/spell=54785
-		[59672] = 180, -- https://www.wowhead.com/cata/ru/spell=59672
-		[18708] = 180, -- https://www.wowhead.com/cata/ru/spell=18708
-		[104773] = 180, -- https://www.wowhead.com/mop-classic/spell=104773/unending-resolve
-		[108359] = 120, -- https://www.wowhead.com/mop-classic/spell=108359/dark-regeneration
-		[110913] = 180, -- https://www.wowhead.com/mop-classic/spell=110913/dark-bargain
-		[111397] = 60, -- https://www.wowhead.com/mop-classic/spell=111397/blood-horror
-		[89766] = 30, -- https://www.wowhead.com/mop-classic/spell=89766/axe-toss
-		[80240] = 25, -- https://www.wowhead.com/mop-classic/spell=80240/havoc
-		[89751] = 45, -- https://www.wowhead.com/mop-classic/spell=89751/felstorm
-		[115781] = 24, -- Optical Blast
-		[115770] = 25, -- Fellash
+		-- // reviewed 2026/07/27
+		[6789] = 45,     -- https://www.wowhead.com/mop-classic/spell=6789/mortal-coil
+		[5484] = 35,     -- https://www.wowhead.com/mop-classic/spell=5484/howl-of-terror 
+		-- base cooldown is 40 seconds, but every damaging attack received reduces the remaining cooldown by 1 second. 
+		-- Its effective cooldown can therefore be lower than 40 seconds. Ima just set it 35.
+		[113858] = 20,   -- https://www.wowhead.com/mop-classic/spell=113858/dark-soul-instability?spellModifier=108505
+		[113861] = 20,   -- https://www.wowhead.com/mop-classic/spell=113861/dark-soul-knowledge?spellModifier=108505
+		[113860] = 20,   -- https://www.wowhead.com/mop-classic/spell=113860/dark-soul-misery?spellModifier=108505
+		[6229] = 30,     -- https://www.wowhead.com/mop-classic/spell=6229/twilight-ward
+		[48020] = 25,    -- https://www.wowhead.com/mop-classic/spell=48020/demonic-circle-teleport
+		--[[
+		Demonic Circle: Teleport — ID 48020
+
+		Base cooldown is 30 seconds.
+
+		Demonic Circle Cooldown Reduction, spell 33063: reduces it by 5 seconds, producing 25 seconds. AKA PVP GEAR SET BONUS!!!
+		Glyph of Demonic Circle, spell 63309: reduces it by 4 seconds, producing 21 seconds.
+
+		The two pages do not establish whether those reductions stack together, so I would not treat 21 seconds as confirmed without an in-game test.
+		]]
+		[88448] = 120,   -- https://www.wowhead.com/mop-classic/spell=88448/demonic-rebirth
+		[109151] = 10,    -- https://www.wowhead.com/mop-classic/spell=54786/demonic-leap
+		[91711] = 30,    -- https://www.wowhead.com/mop-classic/spell=91711/nether-ward
+		[30283] = 30,    -- https://www.wowhead.com/mop-classic/spell=30283/shadowfury
+		[19647] = 24,    -- https://www.wowhead.com/mop-classic/spell=19647/spell-lock
+		[104773] = 180,  -- https://www.wowhead.com/mop-classic/spell=104773/unending-resolve
+		--[[
+			Unending Resolve — ID 104773
+
+			Base cooldown is 180 seconds. 
+			Glyph of Unending Resolve reduces it by 60 seconds, 
+			producing a 120-second cooldown, but also reduces the ability’s damage reduction by 20 percentage points.
+
+			If they use wall less than 180 seconds, then the cooldown will be 120 seconds. 
+			If they use wall after 180 seconds, then the cooldown will be 180 seconds.
+		]]
+		[108359] = 120,  -- https://www.wowhead.com/mop-classic/spell=108359/dark-regeneration
+		[110913] = 180,  -- https://www.wowhead.com/mop-classic/spell=110913/dark-bargain
+		[111397] = 30,   -- https://www.wowhead.com/mop-classic/spell=111397/blood-horror
+		[89766] = 30,    -- https://www.wowhead.com/mop-classic/spell=89766/axe-toss
+		[80240] = 25,    -- https://www.wowhead.com/mop-classic/spell=80240/havoc
+		--[[
+			Havoc — ID 80240
+
+			Base cooldown is 25 seconds. Glyph of Havoc adds three charges but increases the cooldown by 35 seconds, producing a 60-second cooldown.
+			Glypth can only be used by destro warlocks so for this, we needed to detect if player is destro so check combat log for conflag/destro specific spells
+			but then complex implementation to check 3 stacks or 6 stacks if the destro is running the glyph is implemented.
+		]]
+		[89751] = 45,    -- https://www.wowhead.com/mop-classic/spell=89751/felstorm
+		[115781] = 24,   -- https://www.wowhead.com/mop-classic/spell=115781/optical-blast
+		[115770] = 25,   -- https://www.wowhead.com/mop-classic/spell=115770/fellash
 	},
 	["MAGE"] = {
-		-- // reviewed 2024/05/25
-		[80353] = 300, -- https://www.wowhead.com/cata/ru/spell=80353
-		[1463] = 10, -- https://www.wowhead.com/cata/ru/spell=1463
-		[55342] = 180, -- https://www.wowhead.com/cata/ru/spell=55342
-		[543] = 30, -- https://www.wowhead.com/cata/ru/spell=543
-		[2139] = 22, -- https://www.wowhead.com/cata/ru/spell=2139
-		[12051] = 120, -- https://www.wowhead.com/cata/ru/spell=12051
-		[1953] = 13, -- https://www.wowhead.com/cata/ru/spell=1953
-		[66] = 135, -- https://www.wowhead.com/cata/ru/spell=66
-		[82731] = 60, -- https://www.wowhead.com/cata/ru/spell=82731
-		[82676] = 120, -- https://www.wowhead.com/cata/ru/spell=82676
-		[45438] = 200, -- https://www.wowhead.com/cata/ru/spell=45438
-		[122] = 25, -- https://www.wowhead.com/cata/ru/spell=122
-		[120] = 10, -- https://www.wowhead.com/mop-classic/spell=120/cone-of-cold
-		[33395] = 25, -- https://www.wowhead.com/mop-classic/spell=33395/freeze
-		[12042] = 90, -- https://www.wowhead.com/cata/ru/spell=12042
-		[12043] = 90, -- https://www.wowhead.com/cata/ru/spell=12043
-		[11129] = 120, -- https://www.wowhead.com/cata/ru/spell=11129
-		[31661] = 17, -- https://www.wowhead.com/cata/ru/spell=31661
-		[12472] = 144, -- https://www.wowhead.com/cata/ru/spell=12472
-		[44572] = 30, -- https://www.wowhead.com/cata/ru/spell=44572
-		[11958] = 180, -- https://www.wowhead.com/mop-classic/spell=11958/cold-snap
-		[11426] = 18, -- https://www.wowhead.com/cata/ru/spell=11426
-		[108978] = 90, -- https://www.wowhead.com/mop/ru/spell=108978
-		[84714] = 60, -- https://www.wowhead.com/mop/ru/spell=84714
-		[113724] = 45, -- https://www.wowhead.com/mop/ru/spell=84714
+		-- // reviewed 2026/07/27
+		[80353] = 300,  -- https://www.wowhead.com/mop-classic/spell=80353/time-warp
+		[1463] = 25,    -- https://www.wowhead.com/mop-classic/spell=1463/incanters-ward
+		[55342] = 180,  -- https://www.wowhead.com/mop-classic/spell=55342/mirror-image
+		[2139] = 24,    -- https://www.wowhead.com/mop-classic/spell=2139/counterspell
+		--[[
+		Counterspell — 2139
+
+		The base cooldown is 24 seconds.
+
+		Glyph of Counterspell, spell 115703, allows Counterspell to be cast while casting or channeling, 
+		but increases its cooldown by 4 seconds, resulting in 28 seconds.
+
+		The Mage PvP two-piece bonus reduces Counterspell’s remaining cooldown by 4 seconds after a successful interrupt. 
+		This is conditional and does not permanently change the base cooldown.
+		]]
+		[12051] = 120,  -- https://www.wowhead.com/mop-classic/spell=12051/evocation
+		[1953] = 15,    -- https://www.wowhead.com/mop-classic/spell=1953/blink
+		[66] = 300,     -- https://www.wowhead.com/mop-classic/spell=66/invisibility
+		[45438] = 300,  -- https://www.wowhead.com/mop-classic/spell=45438/ice-block
+		[122] = 25,     -- https://www.wowhead.com/mop-classic/spell=122/frost-nova
+		[120] = 10,     -- https://www.wowhead.com/mop-classic/spell=120/cone-of-cold
+		[33395] = 25,   -- https://www.wowhead.com/mop-classic/spell=33395/freeze
+		[12042] = 90,   -- https://www.wowhead.com/mop-classic/spell=12042/arcane-power
+		[12043] = 90,   -- https://www.wowhead.com/mop-classic/spell=12043/presence-of-mind
+		[11129] = 45,   -- https://www.wowhead.com/mop-classic/spell=11129/combustion
+		[31661] = 20,   -- https://www.wowhead.com/mop-classic/spell=31661/dragons-breath
+		[12472] = 180,  -- https://www.wowhead.com/mop-classic/spell=12472/icy-veins
+		[44572] = 30,   -- https://www.wowhead.com/mop-classic/spell=44572/deep-freeze
+		[11958] = 180,  -- https://www.wowhead.com/mop-classic/spell=11958/cold-snap
+		[11426] = 25,   -- https://www.wowhead.com/mop-classic/spell=11426/ice-barrier
+		[108978] = 90, -- https://www.wowhead.com/mop-classic/spell=108978/alter-time
+		--[[
+			Alter Time — 108978
+			The base cooldown is 180 seconds.
+			The Mage PvP four-piece bonus reduces Alter Time’s cooldown by 90 seconds.
+		--]]
+		[84714] = 60,   -- https://www.wowhead.com/mop-classic/spell=84714/frozen-orb
+		[113724] = 45,  -- https://www.wowhead.com/mop-classic/spell=113724/ring-of-frost
 	},
 	["DEATHKNIGHT"] = {
-		-- // reviewed 2024/05/23
-		[77606]	= 60,		-- https://www.wowhead.com/cata/ru/spell=77606
-		[45529]	= 30,		-- https://www.wowhead.com/cata/ru/spell=45529
-		[48743]	= 120,	-- https://www.wowhead.com/cata/ru/spell=48743
-		[47476]	= 60,		-- https://www.wowhead.com/cata/ru/spell=47476
-		[48792]	= 180,	-- https://www.wowhead.com/cata/ru/spell=48792
-		[47528]	= 10,		-- https://www.wowhead.com/cata/ru/spell=47528
-		[48707]	= 45,		-- https://www.wowhead.com/cata/ru/spell=48707
-		[49576]	= 20,		-- https://www.wowhead.com/cata/ru/spell=49576
-		[42650]	= 600,	-- https://www.wowhead.com/cata/ru/spell=42650
-		[46584]	= 120,	-- https://www.wowhead.com/cata/ru/spell=46584
-		[49222]	= 60,		-- https://www.wowhead.com/cata/ru/spell=49222
-		[49028]	= 90,		-- https://www.wowhead.com/cata/ru/spell=49028
-		[55233]	= 60,		-- https://www.wowhead.com/cata/ru/spell=55233
-		[49039]	= 120,	-- https://www.wowhead.com/cata/ru/spell=49039
-		[49203]	= 60,		-- https://www.wowhead.com/cata/ru/spell=49203
-		[51271]	= 60,		-- https://www.wowhead.com/cata/ru/spell=51271
-		[49016]	= 180,	-- https://www.wowhead.com/cata/ru/spell=49016
-		[49206]	= 180,	-- https://www.wowhead.com/cata/ru/spell=49206
-		[51052]	= 120,	-- https://www.wowhead.com/cata/ru/spell=51052
-		[47568]	= 300,	-- https://www.wowhead.com/cata/ru/spell=47568
-		[61999]	= 600,	-- https://www.wowhead.com/cata/ru/spell=61999
-		[48982]	= 30,		-- https://www.wowhead.com/cata/ru/spell=48982
-		[47481]	= 60,		-- https://www.wowhead.com/cata/ru/spell=47481
-		[108201] = 120, -- https://www.wowhead.com/mop/ru/spell=108201
+		-- // reviewed 2027/07/27
+		[77606] = 60,   -- https://www.wowhead.com/mop-classic/spell=77606/dark-simulacrum
+		[48743] = 120,  -- https://www.wowhead.com/mop-classic/spell=48743/death-pact
+		[47476] = 60,   -- https://www.wowhead.com/mop-classic/spell=47476/strangulate
+		[48792] = 180,  -- https://www.wowhead.com/mop-classic/spell=48792/icebound-fortitude
+		[47528] = 15,   -- https://www.wowhead.com/mop-classic/spell=47528/mind-freeze
+		[48707] = 45,   -- https://www.wowhead.com/mop-classic/spell=48707/anti-magic-shell
+		[49576] = 25,   -- https://www.wowhead.com/mop-classic/spell=49576/death-grip
+		[42650] = 600,  -- https://www.wowhead.com/mop-classic/spell=42650/army-of-the-dead
+		[46584] = 120,  -- https://www.wowhead.com/mop-classic/spell=46584/raise-dead
+		[49222] = 60,   -- https://www.wowhead.com/mop-classic/spell=49222/bone-shield
+		[49028] = 90,   -- https://www.wowhead.com/mop-classic/spell=49028/dancing-rune-weapon
+		[55233] = 60,   -- https://www.wowhead.com/mop-classic/spell=55233/vampiric-blood
+		[49039] = 120,  -- https://www.wowhead.com/mop-classic/spell=49039/lichborne
+		[51271] = 60,   -- https://www.wowhead.com/mop-classic/spell=51271/pillar-of-frost
+		[49016] = 180,  -- https://www.wowhead.com/mop-classic/spell=49016/unholy-frenzy
+		[49206] = 180,  -- https://www.wowhead.com/mop-classic/spell=49206/summon-gargoyle
+		[51052] = 120,  -- https://www.wowhead.com/mop-classic/spell=51052/anti-magic-zone
+		[47568] = 300,  -- https://www.wowhead.com/mop-classic/spell=47568/empower-rune-weapon
+		[61999] = 600,  -- https://www.wowhead.com/mop-classic/spell=61999/raise-ally
+		[48982] = 30,   -- https://www.wowhead.com/mop-classic/spell=48982/rune-tap
+		[47481] = 60,   -- https://www.wowhead.com/mop-classic/spell=47481/gnaw
 	},
 	["DRUID"] = {
 		-- // reviewed 2024/05/23
@@ -165,7 +208,7 @@ addonTable.CDs = {
 		[33891]	= 180,	-- https://www.wowhead.com/cata/ru/spell=33891
 		[17116]	= 156,	-- https://www.wowhead.com/cata/ru/spell=17116
 		[22570] = 10,		-- https://www.wowhead.com/cata/ru/spell=22570
-		[102342] = 120, -- https://www.wowhead.com/mop/ru/spell=102342
+		[102342] = 30, -- https://www.wowhead.com/mop-classic/spell=102342/ironbark
 		[108294] = 360, -- https://www.wowhead.com/mop/ru/spell=108294
 		[132158] = 60, -- https://www.wowhead.com/mop-classic/spell=132158/natures-swiftness
 		[99] = 30, -- disor roar
@@ -303,32 +346,6 @@ addonTable.CDs = {
 		[114028] = 60, --
 		[71] = 1.5, -- Defensive Stance
 	},
-	["ROGUE"] = {
-		-- // reviewed 2024/05/27
-		[408] = 20, -- https://www.wowhead.com/cata/ru/spell=408
-		[51722] = 60, -- https://www.wowhead.com/cata/ru/spell=51722
-		[74001] = 90, -- https://www.wowhead.com/cata/ru/spell=74001
-		[1776] = 9, -- https://www.wowhead.com/cata/ru/spell=1776
-		[1766] = 8, -- https://www.wowhead.com/cata/ru/spell=1766
-		[2983] = 60, -- https://www.wowhead.com/cata/ru/spell=2983
-		[5277] = 180, -- https://www.wowhead.com/cata/ru/spell=5277
-		[76577] = 180, -- https://www.wowhead.com/cata/ru/spell=76577
-		[31224] = 90, -- https://www.wowhead.com/cata/ru/spell=31224
-		[1856] = 90, -- https://www.wowhead.com/cata/ru/spell=1856
-		[2094] = 120, -- https://www.wowhead.com/cata/ru/spell=2094
-		[73981] = 60, -- https://www.wowhead.com/cata/ru/spell=73981
-		[1725] = 20, -- https://www.wowhead.com/cata/ru/spell=1725
-		[79140] = 120, -- https://www.wowhead.com/cata/ru/spell=79140
-		[14177] = 120, -- https://www.wowhead.com/cata/ru/spell=14177
-		[51690] = 120, -- https://www.wowhead.com/cata/ru/spell=51690
-		[13750] = 180, -- https://www.wowhead.com/cata/ru/spell=13750
-		[51713] = 60, -- https://www.wowhead.com/cata/ru/spell=51713
-		[14185] = 120, -- https://www.wowhead.com/cata/ru/spell=14185
-		[36554] = 14, -- https://www.wowhead.com/cata/ru/spell=36554
-		[31231] = 60, -- https://www.wowhead.com/cata/ru/spell=31231
-		[13877] = 10, -- https://www.wowhead.com/cata/ru/spell=13877
-		[14183] = 20, -- https://www.wowhead.com/cata/ru/spell=14183
-	},
 	["SHAMAN"] = {
 		-- // reviewed 2024/05/27
 		[79206] = 120, -- https://www.wowhead.com/cata/ru/spell=79206
@@ -421,6 +438,10 @@ do
 		[23989] = { -- Readiness https://www.wowhead.com/cata/spell=23989
 			["reduction"] = BIG_REDUCTION,
 			["spells"] = allHunterSpells,
+		},
+		[2139] = { -- Mage PvP two-piece bonus: reduce Counterspell's remaining cooldown by 4s after a successful interrupt
+			["reduction"] = 4,
+			["spells"] = { 2139 },
 		},
 		-- [45438] = { -- Ice Block https://www.wowhead.com/cata/ru/spell=45438
 		-- 	["reduction"] = BIG_REDUCTION,

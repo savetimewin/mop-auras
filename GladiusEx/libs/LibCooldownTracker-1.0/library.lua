@@ -120,8 +120,16 @@ end
 local SpellData = LCT_SpellData
 LCT_SpellData = nil
 
+local survival_hunter_trap_spells = {
+	[1499] = true,
+	[13813] = true,
+	[34600] = true,
+	[13795] = true,
+}
+
 -- state
 lib.guid_to_unitid = lib.guid_to_unitid or {} -- [guid] = unitid
+lib.survival_hunters = lib.survival_hunters or {} -- [unit/guid] = true
 lib.tracked_players = lib.tracked_players or {} --[[
 	[unitid][spellid] = {
 		["cooldown_start"] = time,
@@ -143,13 +151,21 @@ local function RemoveGUID(unit)
 	end
 end
 
+local function GetPetUnit(unit)
+	if unit == "player" or unit == "pet" then
+		return "pet"
+	end
+	return unit .. "pet"
+end
+
 local function UpdateGUID(unit)
 	RemoveGUID(unit)
 
 	local guid = UnitGUID(unit)
 	if guid then lib.guid_to_unitid[guid] = unit end
 
-	local pet_guid = UnitGUID(unit .. "pet")
+	local pet_unit = GetPetUnit(unit)
+	local pet_guid = UnitGUID(pet_unit)
 	if pet_guid then lib.guid_to_unitid[pet_guid] = unit end
 end
 
@@ -196,6 +212,10 @@ end
 local function GetCooldownTime(spellid, unit)
 	local spelldata = SpellData[spellid]
 	local time = spelldata.cooldown
+
+	if lib.survival_hunters[unit] and survival_hunter_trap_spells[spellid] and time == 30 then
+		return 24
+	end
 
 	-- V: note - this thing ties it to GladiusEx, but no choice :(
 	if GladiusEx and GladiusEx.buttons[unit] and spelldata.cooldown_overload then
@@ -447,25 +467,18 @@ local function CooldownEvent(event, unit, spellid)
         tps.cooldown = spelldata.opt_lower_cooldown
       end
 
-      if spelldata.restore_charges then
-        for i = 1, #spelldata.restore_charges do
-          local respellid = spelldata.restore_charges[i]
-          local respelldata = SpellData[respellid]
-          if not tpu[respellid] then
-            -- V: if we have to *detect* the cooldown, just use the max number of charges
-            --    also, use charges by default, not only optional charges (not sure if the spell only has optional charges)
-
-            tpu[respellid] = {
-              charges = respelldata.charges or respelldata.opt_charges,
-              max_charges = respelldata.charges or respelldata.opt_charges,
-            }
-          else
-            -- TODO: might have to cancel some timers
-            tpu[respellid].charges = (tpu[respellid].charges or 0) + 1
-          end
-          tpu[respellid].charges_detected = true
-        end
-      end
+			if spellid == 104773 and on_cd and not tps.cooldown then
+				local remaining = tps.cooldown_end - now
+				if remaining < 180 then
+					tps.cooldown = 120
+				end
+			end
+			if spellid == 48020 and on_cd and not tps.cooldown then
+				local remaining = tps.cooldown_end - now
+				if remaining > 0 and remaining < 25 then
+					tps.cooldown = 21
+				end
+			end
 
       -- reset other cooldowns (Cold Snap, Preparation)
       if spelldata.resets then
@@ -843,6 +856,11 @@ function events:CombatLogEvent(_, timestamp, event, hideCaster, sourceGUID, sour
 	local unit = lib.guid_to_unitid[sourceGUID]
 	if not unit then return end
 
+	if event == "SPELL_CAST_SUCCESS" and (spellId == 53301 or spellName == "Explosive Shot") then
+		lib.survival_hunters[sourceGUID] = true
+		lib.survival_hunters[unit] = true
+	end
+
 	-- check spell
 	local spelldata = SpellData[spellId]
 	if not spelldata then return end
@@ -873,7 +891,7 @@ function events:ARENA_CROWD_CONTROL_SPELL_UPDATE(event, unit, spellID)
   end
 
   lib:DetectSpell(unit, spellID)
-  lib.callbacks:Fire("LCT_CooldownDetected", unit, spellid)
+  lib.callbacks:Fire("LCT_CooldownDetected", unit, spellID)
 end
 
 function events:ARENA_OPPONENT_UPDATE(event, unit, unitEvent)
