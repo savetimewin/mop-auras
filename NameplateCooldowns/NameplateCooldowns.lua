@@ -423,28 +423,39 @@ do
 		return false;
 	end
 
-	local function GetRelevantGUIDsForSource(srcGUID)
-		local relevantGUIDs = { [srcGUID] = true };
-		if (srcGUID ~= nil and srcGUID ~= "" and srcGUID == UnitGUID("pet")) then
-			if (LocalPlayerGUID ~= nil and LocalPlayerGUID ~= "") then
-				relevantGUIDs[LocalPlayerGUID] = true;
-			end
+	local function RegisterCooldownForSource(srcGUID, spellID, expires, texture, started)
+		if (srcGUID == nil or srcGUID == "") then
+			return;
 		end
-		return relevantGUIDs;
+
+		if (not SpellsPerPlayerGUID[srcGUID]) then
+			SpellsPerPlayerGUID[srcGUID] = { };
+		end
+		SpellsPerPlayerGUID[srcGUID][spellID] = { ["spellID"] = spellID, ["expires"] = expires, ["texture"] = texture, ["started"] = started };
+
+		if (srcGUID ~= LocalPlayerGUID and srcGUID == UnitGUID("pet") and LocalPlayerGUID ~= nil and LocalPlayerGUID ~= "") then
+			if (not SpellsPerPlayerGUID[LocalPlayerGUID]) then
+				SpellsPerPlayerGUID[LocalPlayerGUID] = { };
+			end
+			SpellsPerPlayerGUID[LocalPlayerGUID][spellID] = { ["spellID"] = spellID, ["expires"] = expires, ["texture"] = texture, ["started"] = started };
+		end
 	end
 
-	local function UpdateNameplatesForGUIDs(relevantGUIDs)
+	local function UpdateNameplatesForSource(srcGUID)
 		for frame, unitGUID in pairs(NameplatesVisible) do
-			if (relevantGUIDs[unitGUID]) then
+			if (unitGUID == srcGUID) then
 				UpdateOnlyOneNameplate(frame, unitGUID);
+				break;
 			end
 		end
-	end
 
-	local function AddSpellToGUIDs(relevantGUIDs, spellID, expires, texture, started)
-		for guid in pairs(relevantGUIDs) do
-			if (not SpellsPerPlayerGUID[guid]) then SpellsPerPlayerGUID[guid] = { }; end
-			SpellsPerPlayerGUID[guid][spellID] = { ["spellID"] = spellID, ["expires"] = expires, ["texture"] = texture, ["started"] = started };
+		if (srcGUID ~= nil and srcGUID ~= "" and srcGUID ~= LocalPlayerGUID and srcGUID == UnitGUID("pet") and LocalPlayerGUID ~= nil and LocalPlayerGUID ~= "") then
+			for frame, unitGUID in pairs(NameplatesVisible) do
+				if (unitGUID == LocalPlayerGUID) then
+					UpdateOnlyOneNameplate(frame, unitGUID);
+					break;
+				end
+			end
 		end
 	end
 
@@ -2454,34 +2465,34 @@ do
 		if (isTrackedSource) then
 			local entry = db.SpellCDs[spellID];
 			local cooldown = AllCooldowns[spellID];
-			local relevantGUIDs = GetRelevantGUIDsForSource(srcGUID);
 			if (cooldown ~= nil and entry and entry.enabled) then
 				if (eventType == "SPELL_CAST_SUCCESS" or eventType == "SPELL_AURA_APPLIED" or eventType == "SPELL_MISSED" or eventType == "SPELL_SUMMON") then
 					local expires = cTime + cooldown;
-					AddSpellToGUIDs(relevantGUIDs, spellID, expires, SpellTextureByID[spellID], cTime);
-					UpdateNameplatesForGUIDs(relevantGUIDs);
+					RegisterCooldownForSource(srcGUID, spellID, expires, SpellTextureByID[spellID], cTime);
+					UpdateNameplatesForSource(srcGUID);
 				end
 			end
 			-- reductions
 			if (Reductions[spellID] ~= nil and eventType == "SPELL_CAST_SUCCESS") then
-				for guid in pairs(relevantGUIDs) do
-					if (SpellsPerPlayerGUID[guid]) then
-						for _, sp in pairs(Reductions[spellID].spells) do
-							if (SpellsPerPlayerGUID[guid][sp] ~= nil) then
-								SpellsPerPlayerGUID[guid][sp].expires = SpellsPerPlayerGUID[guid][sp].expires - Reductions[spellID].reduction;
-							end
+				if (SpellsPerPlayerGUID[srcGUID]) then
+					for _, sp in pairs(Reductions[spellID].spells) do
+						if (SpellsPerPlayerGUID[srcGUID][sp] ~= nil) then
+							SpellsPerPlayerGUID[srcGUID][sp].expires = SpellsPerPlayerGUID[srcGUID][sp].expires - Reductions[spellID].reduction;
+						end
+					end
+					for frame, unitGUID in pairs(NameplatesVisible) do
+						if (unitGUID == srcGUID) then
+							UpdateOnlyOneNameplate(frame, unitGUID);
+							break;
 						end
 					end
 				end
-				UpdateNameplatesForGUIDs(relevantGUIDs);
 			-- // pvptier 1/2 used, correcting cd of PvP trinket
 			elseif (spellID == SPELL_PVPADAPTATION and db.SpellCDs[SPELL_PVPTRINKET] ~= nil and db.SpellCDs[SPELL_PVPTRINKET].enabled and eventType == "SPELL_AURA_APPLIED") then
-				for guid in pairs(relevantGUIDs) do
-					if (SpellsPerPlayerGUID[guid]) then
-						SpellsPerPlayerGUID[guid][SPELL_PVPTRINKET] = { ["spellID"] = SPELL_PVPTRINKET, ["expires"] = cTime + 60, ["texture"] = SpellTextureByID[SPELL_PVPTRINKET], ["started"] = cTime };
-					end
+				if (SpellsPerPlayerGUID[srcGUID]) then
+					RegisterCooldownForSource(srcGUID, SPELL_PVPTRINKET, cTime + 60, SpellTextureByID[SPELL_PVPTRINKET], cTime);
+					UpdateNameplatesForSource(srcGUID);
 				end
-				UpdateNameplatesForGUIDs(relevantGUIDs);
 			end
 		end
 	end

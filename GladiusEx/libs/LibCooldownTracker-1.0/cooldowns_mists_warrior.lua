@@ -209,7 +209,6 @@ LCT_SpellData[118038] = {
 -- Shield Wall
 LCT_SpellData[871] = {
 	class = "WARRIOR",
-	specID = { 73 },
 	defensive = true,
 	duration = 12,
 	cooldown = 180
