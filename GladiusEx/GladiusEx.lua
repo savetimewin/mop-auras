@@ -72,7 +72,7 @@ local strfind, strmatch = string.find, string.match
 local max, abs, floor, ceil = math.max, math.abs, math.floor, math.ceil
 local UnitIsDeadOrGhost, UnitGUID, UnitExists = UnitIsDeadOrGhost, UnitGUID, UnitExists
 local InCombatLockdown = InCombatLockdown
-local GetNumGroupMembers = GetNumArenaOpponents, GetNumArenaOpponentSpecs, GetNumGroupMembers
+local GetNumArenaOpponents, GetNumArenaOpponentSpecs, GetNumGroupMembers = GetNumArenaOpponents, GetNumArenaOpponentSpecs, GetNumGroupMembers
 
 local arena_units = {
     ["arena1"] = true,

@@ -29,14 +29,16 @@ LCT_SpellData[781] = {
 LCT_SpellData[1499] = {
 	class = "HUNTER",
 	cc = true,
-	cooldown = 30
+	cooldown = 30,
+	cooldown_overload = { [255] = 24 }
 }
 -- Explosive Trap
 LCT_SpellData[13813] = {
 	class = "HUNTER",
 	knockback = true, -- With the glyph
 	offensive = true,
-	cooldown = 30
+	cooldown = 30,
+	cooldown_overload = { [255] = 24 }
 }
 -- Flare
 LCT_SpellData[1543] = {
@@ -48,7 +50,8 @@ LCT_SpellData[1543] = {
 LCT_SpellData[13809] = {
 	class = "HUNTER",
 	offensive = true,
-	cooldown = 24
+	cooldown = 30,
+	cooldown_overload = { [255] = 24 }
 }
 -- Master's Call
 LCT_SpellData[53271] = {
@@ -203,7 +206,7 @@ LCT_SpellData[3674] = {
 	class = "HUNTER",
 	specID = { 255 },
 	offensive = true,
-	sets_cooldown = { spellid = 13813, cooldown = 30 }, -- Explosive Trap
+	sets_cooldown = { spellid = 13813, cooldown = 24 }, -- Explosive Trap; Survival Trap Mastery
 	cooldown = 30
 }
 

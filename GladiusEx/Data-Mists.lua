@@ -6,7 +6,7 @@ end
 
 function GladiusEx.Data.DefaultAuras()
     return {
-        [GladiusEx:SafeGetSpellName(57940)] = true -- Essence of Wintergrasp
+        -- [GladiusEx:SafeGetSpellName(57940)] = true -- Essence of Wintergrasp
     }
 end
 

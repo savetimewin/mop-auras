@@ -120,16 +120,8 @@ end
 local SpellData = LCT_SpellData
 LCT_SpellData = nil
 
-local survival_hunter_trap_spells = {
-	[1499] = true,
-	[13813] = true,
-	[34600] = true,
-	[13795] = true,
-}
-
 -- state
 lib.guid_to_unitid = lib.guid_to_unitid or {} -- [guid] = unitid
-lib.survival_hunters = lib.survival_hunters or {} -- [unit/guid] = true
 lib.tracked_players = lib.tracked_players or {} --[[
 	[unitid][spellid] = {
 		["cooldown_start"] = time,
@@ -211,30 +203,38 @@ end
 
 local function GetCooldownTime(spellid, unit)
 	local spelldata = SpellData[spellid]
-	local time = spelldata.cooldown
-
-	if lib.survival_hunters[unit] and survival_hunter_trap_spells[spellid] and time == 30 then
-		return 24
+	if not spelldata then
+		return
 	end
 
-	-- V: note - this thing ties it to GladiusEx, but no choice :(
-	if GladiusEx and GladiusEx.buttons[unit] and spelldata.cooldown_overload then
-		local button = GladiusEx.buttons[unit]
+	local time = spelldata.cooldown
+
+	-- Spec/class overrides are deterministic and can be applied on the first cast.
+	-- Keep the GladiusEx dependency guarded because the library can receive events
+	-- while unit buttons are being created or destroyed.
+	local buttons = GladiusEx and GladiusEx.buttons
+	local button = buttons and buttons[unit]
+	if button and spelldata.cooldown_overload then
 		local overloads = spelldata.cooldown_overload
 		if button.specID and overloads[button.specID] then
 			return overloads[button.specID]
 		end
-		local class = GladiusEx.buttons[unit].class or select(2, UnitClass(unit))
+
+		local class = button.class or select(2, UnitClass(unit))
 		if class and overloads[class] then
 			return overloads[class]
 		end
 	end
 
-	local tps = lib.tracked_players[unit][spellid]
+	-- Optional shorter cooldowns are learned only after an observed early recast.
+	-- The nil guard matters when zoning/reset callbacks clear tracked_players while
+	-- another cooldown callback is still finishing.
+	local tpu = lib.tracked_players[unit]
+	local tps = tpu and tpu[spellid]
 	if tps and tps.cooldown then
 		time = tps.cooldown
 	end
-	
+
 	return time
 end
 
@@ -467,18 +467,33 @@ local function CooldownEvent(event, unit, spellid)
         tps.cooldown = spelldata.opt_lower_cooldown
       end
 
-			if spellid == 104773 and on_cd and not tps.cooldown then
-				local remaining = tps.cooldown_end - now
-				if remaining < 180 then
-					tps.cooldown = 120
-				end
-			end
-			if spellid == 48020 and on_cd and not tps.cooldown then
-				local remaining = tps.cooldown_end - now
-				if remaining > 0 and remaining < 25 then
-					tps.cooldown = 21
-				end
-			end
+      -- Some cooldown-reset abilities restore charges instead of resetting the
+      -- entire spell. This generic behavior was accidentally removed by the
+      -- modifier experiment and is required by existing cooldown data.
+      if spelldata.restore_charges then
+        for i = 1, #spelldata.restore_charges do
+          local restored_spellid = spelldata.restore_charges[i]
+          local restored_spelldata = SpellData[restored_spellid]
+
+          if restored_spelldata then
+            local restored = tpu[restored_spellid]
+            local max_charges = restored_spelldata.charges or restored_spelldata.opt_charges
+
+            if not restored then
+              restored = {
+                charges = max_charges,
+                max_charges = max_charges,
+              }
+              tpu[restored_spellid] = restored
+            elseif max_charges then
+              restored.max_charges = restored.max_charges or max_charges
+              restored.charges = math.min((restored.charges or 0) + 1, restored.max_charges)
+            end
+
+            restored.charges_detected = true
+          end
+        end
+      end
 
       -- reset other cooldowns (Cold Snap, Preparation)
       if spelldata.resets then
@@ -855,11 +870,6 @@ function events:CombatLogEvent(_, timestamp, event, hideCaster, sourceGUID, sour
 	-- check unit
 	local unit = lib.guid_to_unitid[sourceGUID]
 	if not unit then return end
-
-	if event == "SPELL_CAST_SUCCESS" and (spellId == 53301 or spellName == "Explosive Shot") then
-		lib.survival_hunters[sourceGUID] = true
-		lib.survival_hunters[unit] = true
-	end
 
 	-- check spell
 	local spelldata = SpellData[spellId]

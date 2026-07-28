@@ -11,13 +11,18 @@ LCT_SpellData[104773] = {
 	class = "WARLOCK",
 	defensive = true,
 	duration = 8,
-	cooldown = 180
+	cooldown = 180,
+	-- Glyph of Unending Resolve. Learned after a recast before the 180s
+	-- prediction expires, then used for future casts.
+	opt_lower_cooldown = 120
 }
 -- Demonic Circle: Teleport
 LCT_SpellData[48020] = {
 	class = "WARLOCK",
 	defensive = true,
-	cooldown = 25
+	cooldown = 25,
+	-- Glyph of Demonic Circle. Learned after an observed early recast.
+	opt_lower_cooldown = 21
 }
 --[[
 Demonic Circle: Teleport — ID 48020

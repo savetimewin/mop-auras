@@ -609,6 +609,31 @@ end
 
 local spell_list = {}
 local unit_sorted_spells = {}
+
+local function ShouldShowCooldown(spelldata, detected, hideOptionalUntilDetected)
+    if not hideOptionalUntilDetected then
+        return true
+    end
+
+    local optional = spelldata.talent or spelldata.item or spelldata.pet
+    return not optional or detected or spelldata.pvp_trinket
+end
+
+local function HasRequiredAura(spelldata, unit)
+    if not spelldata.requires_aura then
+        return true
+    end
+
+    -- AuraUtil is not present in every Classic client build. Failing open keeps
+    -- the cooldown list usable instead of throwing during an icon refresh.
+    if not AuraUtil or not AuraUtil.FindAuraByName then
+        return true
+    end
+
+    local aura_name = spelldata.requires_aura_name
+    return aura_name and AuraUtil.FindAuraByName(aura_name, unit, "HELPFUL")
+end
+
 local function GetCooldownList(unit, group)
     local db = Cooldowns:GetGroupDB(unit, group)
 
@@ -621,20 +646,19 @@ local function GetCooldownList(unit, group)
         if db.cooldownsSpells[spellid] or (spelldata.replaces and db.cooldownsSpells[spelldata.replaces]) then
             local tracked = CT:GetUnitCooldownInfo(unit, spellid)
             local detected = tracked and tracked.detected
-            -- check if the spell has a cooldown valid for an arena, and check if it is a talent that has not yet been detected
-            local shouldShowSpell =
-                -- General class spells are always shown, while pet-specific spells stay hidden until the first combat-log detection
-                (not (spelldata.talent or spelldata.item or spelldata.pet)) or
-                detected or
-                spelldata.pvp_trinket or
-                not db.cooldownsHideTalentsUntilDetected
+            -- General class spells are always visible. Talents, items, and pet
+            -- abilities can remain hidden until combat-log detection.
+            local shouldShowSpell = ShouldShowCooldown(
+                spelldata,
+                detected,
+                db.cooldownsHideTalentsUntilDetected
+            )
 
             if
                 (not spelldata.cooldown or spelldata.cooldown < 600) and
                 shouldShowSpell
             then
-                -- check if the spell requires an aura (XXX unused atm?)
-                if not spelldata.requires_aura or AuraUtil.FindAuraByName(spelldata.requires_aura_name, unit, "HELPFUL") then
+                if HasRequiredAura(spelldata, unit) then
                     if spelldata.replaces then
                         -- remove replaced spell if detected
                         spell_list[spelldata.replaces] = false

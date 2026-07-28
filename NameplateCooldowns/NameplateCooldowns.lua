@@ -9,7 +9,14 @@
 local _, addonTable = ...;
 local Interrupts = addonTable.Interrupts;
 local Trinkets = addonTable.Trinkets;
-local Reductions = addonTable.Reductions;
+local CooldownAliases = addonTable.CooldownAliases;
+local CooldownMeta = addonTable.CooldownMeta;
+local SpecHints = addonTable.SpecHints;
+local CooldownResets = addonTable.CooldownResets;
+local CooldownReductions = addonTable.CooldownReductions;
+local CastReductions = addonTable.CastReductions;
+local DamageTakenReductions = addonTable.DamageTakenReductions;
+local SharedCooldowns = addonTable.SharedCooldowns;
 
 --@non-debug@
 local buildTimestamp = "40400.1-release";
@@ -55,13 +62,16 @@ local InstanceType = "none";
 local AllCooldowns = { };
 local GUIFrame, EventFrame, TestFrame, db, aceDB, ProfileOptionsFrame, LocalPlayerGUID;
 local FeignDeathGUIDs = {};
+local DetectedSpecs = {};
+local LearnedCooldowns = {};
 
-local _G, pairs, UIParent, string_gsub, string_find, bit_band, GetTime, math_ceil, table_insert, table_sort, C_Timer_After, string_format, C_Timer_NewTimer, math_max, C_NamePlate_GetNamePlateForUnit, UnitGUID =
-	  _G, pairs, UIParent, string.gsub,	string.find, bit.band, GetTime, math.ceil, table.insert, table.sort, C_Timer.After, string.format, C_Timer.NewTimer, math.max, C_NamePlate.GetNamePlateForUnit, UnitGUID;
+local _G, pairs, UIParent, string_gsub, string_find, bit_band, GetTime, math_ceil, math_floor, math_min, table_insert, table_sort, C_Timer_After, string_format, C_Timer_NewTimer, math_max, C_NamePlate_GetNamePlateForUnit, UnitGUID =
+	  _G, pairs, UIParent, string.gsub,	string.find, bit.band, GetTime, math.ceil, math.floor, math.min, table.insert, table.sort, C_Timer.After, string.format, C_Timer.NewTimer, math.max, C_NamePlate.GetNamePlateForUnit, UnitGUID;
 local wipe, IsInGroup, unpack, tinsert, GetSpellInfo, UnitReaction, UnitAura = wipe, IsInGroup, unpack, table.insert, GetSpellInfo, UnitReaction, UnitAura;
 
 local OnStartup, InitializeDB, GetDefaultDBEntryForSpell;
 local AllocateIcon, ReallocateAllIcons, UpdateOnlyOneNameplate, HideCDIcon, ShowCDIcon;
+local RegisterCooldownForSource, GetCooldownForSource, RefreshChargeState, UpdateNameplatesForSource;
 local OnUpdate;
 local ShowGUI, InitializeGUI, GUICategory_General, GUICategory_Other, OnGUICategoryClick, ShowGUICategory, CreateGUICategory;
 
@@ -100,10 +110,10 @@ do
 	local function ReloadDB()
 		db = aceDB.profile;
 		if (db.AddonEnabled) then
+			EventFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED");
+		else
 			EventFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED");
 			wipe(SpellsPerPlayerGUID);
-		else
-			EventFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED");
 		end
 		if (TestFrame and TestFrame:GetScript("OnUpdate") ~= nil) then
 			addonTable.DisableTestMode();
@@ -179,9 +189,9 @@ do
 	function addonTable.BuildCooldownValues()
 		wipe(AllCooldowns);
 		for class, cds in pairs(addonTable.CDs) do
-			for spellId, cd in pairs(cds) do
+			for spellId, definition in pairs(cds) do
 				if (SpellNameByID[spellId] ~= nil) then
-					AllCooldowns[spellId] = cd;
+					AllCooldowns[spellId] = addonTable.ResolveBaseCooldown(definition, InstanceType, nil);
 					if (db.SpellCDs[spellId] == nil) then
 						db.SpellCDs[spellId] = GetDefaultDBEntryForSpell();
 						addonTable.Print(string_format(L["New spell has been added: %s"].." (%s)", GetSpellLink(spellId) or SpellNameByID[spellId], class));
@@ -366,6 +376,10 @@ do
 		else
 			icon.cooldownText:SetFont(SML:Fetch("font", db.Font), db.TimerTextSize, "OUTLINE");
 		end
+		icon.chargeText = icon:CreateFontString(nil, "OVERLAY");
+		icon.chargeText:SetPoint("BOTTOMRIGHT", icon, "BOTTOMRIGHT", -1, 1);
+		icon.chargeText:SetTextColor(1, 1, 1);
+		icon.chargeText:SetFont(SML:Fetch("font", db.Font), math_max(9, math_ceil(db.IconSize * 0.42)), "OUTLINE");
 		icon.border = icon:CreateTexture(nil, "OVERLAY");
 		icon.border:SetTexture("Interface\\AddOns\\NameplateCooldowns\\media\\CooldownFrameBorder.tga");
 		icon.border:SetVertexColor(1, 0.35, 0);
@@ -400,6 +414,7 @@ do
 					else
 						icon.cooldownText:SetFont(SML:Fetch("font", db.Font), db.TimerTextSize, "OUTLINE");
 					end
+					icon.chargeText:SetFont(SML:Fetch("font", db.Font), math_max(9, math_ceil(db.IconSize * 0.42)), "OUTLINE");
 
 					if (clearSpells) then
 						HideCDIcon(icon, frame);
@@ -423,29 +438,109 @@ do
 		return false;
 	end
 
-	local function RegisterCooldownForSource(srcGUID, spellID, expires, texture, started)
-		if (srcGUID == nil or srcGUID == "") then
+	function GetCooldownForSource(srcGUID, spellID)
+		local dbInfo = db.SpellCDs[spellID];
+		if (dbInfo and dbInfo.customCD ~= nil) then
+			return dbInfo.customCD;
+		end
+
+		local learned = LearnedCooldowns[srcGUID] and LearnedCooldowns[srcGUID][spellID];
+		if (learned) then
+			return learned;
+		end
+
+		local definition = addonTable.CooldownByID[spellID];
+		return addonTable.ResolveBaseCooldown(definition, InstanceType, DetectedSpecs[srcGUID]) or AllCooldowns[spellID];
+	end
+	addonTable.GetCooldownForSource = GetCooldownForSource;
+
+	function RefreshChargeState(spellInfo, currentTime)
+		if (not spellInfo or not spellInfo.maxCharges or not spellInfo.rechargeStarted or not spellInfo.rechargeDuration) then
 			return;
+		end
+
+		local recovered = math_floor((currentTime - spellInfo.rechargeStarted) / spellInfo.rechargeDuration);
+		if (recovered <= 0) then
+			return;
+		end
+
+		spellInfo.charges = math_min(spellInfo.maxCharges, spellInfo.charges + recovered);
+		if (spellInfo.charges >= spellInfo.maxCharges) then
+			spellInfo.rechargeStarted = nil;
+			spellInfo.expires = currentTime;
+			spellInfo.started = currentTime;
+		else
+			spellInfo.rechargeStarted = spellInfo.rechargeStarted + recovered * spellInfo.rechargeDuration;
+			spellInfo.started = spellInfo.rechargeStarted;
+			spellInfo.expires = spellInfo.rechargeStarted + spellInfo.rechargeDuration;
+		end
+	end
+
+	function RegisterCooldownForSource(srcGUID, spellID, cooldown, texture, started, isShared)
+		if (srcGUID == nil or srcGUID == "") then
+			return false;
 		end
 
 		if (not SpellsPerPlayerGUID[srcGUID]) then
 			SpellsPerPlayerGUID[srcGUID] = { };
 		end
-		SpellsPerPlayerGUID[srcGUID][spellID] = { ["spellID"] = spellID, ["expires"] = expires, ["texture"] = texture, ["started"] = started };
+
+		local spells = SpellsPerPlayerGUID[srcGUID];
+		local previous = spells[spellID];
+		if (previous and previous.lastEvent and (started - previous.lastEvent) < 0.4) then
+			return false;
+		end
+
+		local meta = CooldownMeta[spellID] or {};
+		if (previous and not isShared and not meta.charges and previous.started and previous.expires > started + 1) then
+			local observed = started - previous.started;
+			if (observed >= math_max(5, cooldown * 0.25) and observed < cooldown - 1) then
+				LearnedCooldowns[srcGUID] = LearnedCooldowns[srcGUID] or {};
+				LearnedCooldowns[srcGUID][spellID] = math_floor(observed + 0.5);
+				cooldown = LearnedCooldowns[srcGUID][spellID];
+			end
+		end
+
+		local spellInfo = previous or { ["spellID"] = spellID };
+		spellInfo.texture = texture;
+		spellInfo.lastEvent = started;
+		spellInfo.rechargeDuration = cooldown;
+
+		if (meta.charges and meta.charges > 1 and not isShared) then
+			spellInfo.maxCharges = meta.charges;
+			spellInfo.charges = spellInfo.charges or meta.charges;
+			RefreshChargeState(spellInfo, started);
+			if (spellInfo.charges > 0) then
+				spellInfo.charges = spellInfo.charges - 1;
+			end
+			if (not spellInfo.rechargeStarted) then
+				spellInfo.rechargeStarted = started;
+			end
+			spellInfo.started = spellInfo.rechargeStarted;
+			spellInfo.expires = spellInfo.rechargeStarted + cooldown;
+		else
+			spellInfo.maxCharges = nil;
+			spellInfo.charges = nil;
+			spellInfo.rechargeStarted = nil;
+			spellInfo.started = started;
+			spellInfo.expires = started + cooldown;
+		end
+		spells[spellID] = spellInfo;
 
 		if (srcGUID ~= LocalPlayerGUID and srcGUID == UnitGUID("pet") and LocalPlayerGUID ~= nil and LocalPlayerGUID ~= "") then
 			if (not SpellsPerPlayerGUID[LocalPlayerGUID]) then
 				SpellsPerPlayerGUID[LocalPlayerGUID] = { };
 			end
-			SpellsPerPlayerGUID[LocalPlayerGUID][spellID] = { ["spellID"] = spellID, ["expires"] = expires, ["texture"] = texture, ["started"] = started };
+			SpellsPerPlayerGUID[LocalPlayerGUID][spellID] = addonTable.deepcopy(spellInfo);
 		end
+		return true;
 	end
 
-	local function UpdateNameplatesForSource(srcGUID)
+	function UpdateNameplatesForSource(srcGUID)
 		for frame, unitGUID in pairs(NameplatesVisible) do
 			if (unitGUID == srcGUID) then
 				UpdateOnlyOneNameplate(frame, unitGUID);
-				break;
+				break
 			end
 		end
 
@@ -453,7 +548,7 @@ do
 			for frame, unitGUID in pairs(NameplatesVisible) do
 				if (unitGUID == LocalPlayerGUID) then
 					UpdateOnlyOneNameplate(frame, unitGUID);
-					break;
+					break
 				end
 			end
 		end
@@ -638,9 +733,10 @@ do
 			if (SpellsPerPlayerGUID[unitGUID]) then
 				local currentTime = GetTime();
 				local sortedCDs = Nameplate_SortAuras(SpellsPerPlayerGUID[unitGUID]);
-				for _, spellInfo in pairs(sortedCDs) do
+				for _, spellInfo in ipairs(sortedCDs) do
 					local spellID = spellInfo.spellID;
-					local isActiveCD = spellInfo.expires > currentTime;
+					RefreshChargeState(spellInfo, currentTime);
+					local isActiveCD = spellInfo.expires > currentTime or spellInfo.rechargeStarted ~= nil;
 					if (db.InverseLogic) then
 						isActiveCD = not isActiveCD;
 					end
@@ -653,8 +749,9 @@ do
 						UpdateOnlyOneNameplate_SetTexture(icon, spellInfo.texture, isActiveCD);
 						local remain = spellInfo.expires - currentTime;
 						UpdateNameplate_SetGlow(icon, dbInfo.glow, remain, isActiveCD);
-						local cooldown = AllCooldowns[spellID];
+						local cooldown = spellInfo.rechargeDuration or GetCooldownForSource(unitGUID, spellID);
 						Nameplate_SetCooldown(icon, remain, spellInfo.started, cooldown, isActiveCD);
+						icon.chargeText:SetText(spellInfo.maxCharges and tostring(spellInfo.charges) or "");
 						Nameplate_SetBorder(icon, spellID, isActiveCD);
 						SetCooldownTooltip(icon, spellID);
 						if (not icon.shown) then
@@ -680,6 +777,7 @@ do
 		icon:Hide();
 		icon.shown = false;
 		icon.textureID = 0;
+		icon.chargeText:SetText("");
 		LBG_HideOverlayGlow(icon);
 		SetFrameSize(frame);
 	end
@@ -2454,43 +2552,135 @@ do
 	EventFrame:SetScript("OnEvent", function(self, event, ...) self[event](...); end);
 	C_ChatInfo.RegisterAddonMessagePrefix("NC_prefix");
 
+	local damageEvents = {
+		["SPELL_DAMAGE"] = true,
+		["SPELL_PERIODIC_DAMAGE"] = true,
+		["RANGE_DAMAGE"] = true,
+		["SWING_DAMAGE"] = true,
+	};
+
+	local defaultStartEvents = {
+		["SPELL_CAST_SUCCESS"] = true,
+		["SPELL_AURA_APPLIED"] = true,
+		["SPELL_MISSED"] = true,
+		["SPELL_SUMMON"] = true,
+	};
+
+	local function ApplyReduction(srcGUID, spellIDs, amount, currentTime, deferVisualUpdate)
+		local spells = SpellsPerPlayerGUID[srcGUID];
+		if (not spells) then
+			return;
+		end
+		for i = 1, #spellIDs do
+			local spellInfo = spells[spellIDs[i]];
+			if (spellInfo and spellInfo.expires and spellInfo.expires > currentTime) then
+				spellInfo.expires = math_max(currentTime, spellInfo.expires - amount);
+				if (spellInfo.rechargeStarted) then
+					spellInfo.rechargeStarted = spellInfo.rechargeStarted - amount;
+					spellInfo.started = spellInfo.rechargeStarted;
+				end
+			end
+		end
+		if (not deferVisualUpdate) then
+			UpdateNameplatesForSource(srcGUID);
+		end
+	end
+
+	local function ApplyReset(srcGUID, spellIDs, currentTime)
+		local spells = SpellsPerPlayerGUID[srcGUID];
+		if (not spells) then
+			return;
+		end
+		for i = 1, #spellIDs do
+			local spellInfo = spells[spellIDs[i]];
+			if (spellInfo) then
+				spellInfo.expires = currentTime;
+				spellInfo.started = currentTime;
+				spellInfo.rechargeStarted = nil;
+				if (spellInfo.maxCharges) then
+					spellInfo.charges = spellInfo.maxCharges;
+				end
+			end
+		end
+		UpdateNameplatesForSource(srcGUID);
+	end
+
+	local function RegisterSharedCooldowns(srcGUID, spellID, currentTime)
+		local shared = SharedCooldowns[spellID];
+		if (not shared) then
+			return;
+		end
+		for i = 1, #shared do
+			local sharedID, duration, existingOnly = shared[i][1], shared[i][2], shared[i][3];
+			local dbInfo = db.SpellCDs[sharedID];
+			local alreadyDetected = SpellsPerPlayerGUID[srcGUID] and SpellsPerPlayerGUID[srcGUID][sharedID];
+			if (dbInfo and dbInfo.enabled and (not existingOnly or alreadyDetected)) then
+				RegisterCooldownForSource(srcGUID, sharedID, duration, SpellTextureByID[sharedID], currentTime, true);
+			end
+		end
+	end
+
 	EventFrame.COMBAT_LOG_EVENT_UNFILTERED = function()
 		local cTime = GetTime();
-		local _, eventType, _, srcGUID, _, srcFlags, _, _, _, _, _, spellID = CombatLogGetCurrentEventInfo();
-		local isHostile = bit_band(srcFlags, COMBATLOG_OBJECT_REACTION_HOSTILE) ~= 0;
+		local _, eventType, _, srcGUID, _, srcFlags, _, destGUID, _, _, _, rawSpellID = CombatLogGetCurrentEventInfo();
+
+		if (damageEvents[eventType] and destGUID and DamageTakenReductions[5484]) then
+			ApplyReduction(destGUID, { 5484 }, DamageTakenReductions[5484], cTime, true);
+		end
+		if (eventType == "SWING_DAMAGE") then
+			return;
+		end
+
+		local spellID = rawSpellID and (CooldownAliases[rawSpellID] or rawSpellID);
+		local specID = rawSpellID and (SpecHints[rawSpellID] or SpecHints[spellID]);
+		if (specID and srcGUID) then
+			DetectedSpecs[srcGUID] = specID;
+		end
+
+		local isHostile = bit_band(srcFlags or 0, COMBATLOG_OBJECT_REACTION_HOSTILE) ~= 0;
 		local isTrackedSource = srcGUID == LocalPlayerGUID
 			or isHostile
 			or (db.ShowCDOnAllies == true and srcGUID ~= LocalPlayerGUID)
 			or (srcGUID ~= nil and srcGUID ~= "" and srcGUID ~= LocalPlayerGUID and spellID ~= nil and (eventType == "SPELL_CAST_SUCCESS" or eventType == "SPELL_AURA_APPLIED" or eventType == "SPELL_MISSED" or eventType == "SPELL_SUMMON"));
 		if (isTrackedSource) then
 			local entry = db.SpellCDs[spellID];
-			local cooldown = AllCooldowns[spellID];
+			local cooldown = spellID and GetCooldownForSource(srcGUID, spellID);
+			local meta = spellID and CooldownMeta[spellID];
+			local shouldStart = false;
+			if (meta) then
+				if (meta.startOnDispel) then
+					shouldStart = eventType == "SPELL_DISPEL";
+				elseif (meta.startOnAuraRemoved) then
+					shouldStart = eventType == "SPELL_AURA_REMOVED";
+				else
+					shouldStart = defaultStartEvents[eventType] == true;
+				end
+			end
+
 			if (cooldown ~= nil and entry and entry.enabled) then
-				if (eventType == "SPELL_CAST_SUCCESS" or eventType == "SPELL_AURA_APPLIED" or eventType == "SPELL_MISSED" or eventType == "SPELL_SUMMON") then
-					local expires = cTime + cooldown;
-					RegisterCooldownForSource(srcGUID, spellID, expires, SpellTextureByID[spellID], cTime);
+				if (shouldStart and RegisterCooldownForSource(srcGUID, spellID, cooldown, SpellTextureByID[spellID], cTime)) then
+					RegisterSharedCooldowns(srcGUID, spellID, cTime);
 					UpdateNameplatesForSource(srcGUID);
 				end
 			end
-			-- reductions
-			if (Reductions[spellID] ~= nil and eventType == "SPELL_CAST_SUCCESS") then
-				if (SpellsPerPlayerGUID[srcGUID]) then
-					for _, sp in pairs(Reductions[spellID].spells) do
-						if (SpellsPerPlayerGUID[srcGUID][sp] ~= nil) then
-							SpellsPerPlayerGUID[srcGUID][sp].expires = SpellsPerPlayerGUID[srcGUID][sp].expires - Reductions[spellID].reduction;
-						end
-					end
-					for frame, unitGUID in pairs(NameplatesVisible) do
-						if (unitGUID == srcGUID) then
-							UpdateOnlyOneNameplate(frame, unitGUID);
-							break;
-						end
-					end
-				end
+
+			local reduction = spellID and CooldownReductions[spellID];
+			if (reduction and reduction.event == eventType) then
+				ApplyReduction(srcGUID, reduction.spells, reduction.amount, cTime);
+			end
+
+			local castReduction = rawSpellID and CastReductions[rawSpellID];
+			if (castReduction and eventType == "SPELL_CAST_SUCCESS" and DetectedSpecs[srcGUID] == castReduction.spec) then
+				ApplyReduction(srcGUID, castReduction.spells, castReduction.amount, cTime);
+			end
+
+			local resets = spellID and CooldownResets[spellID];
+			if (resets and eventType == "SPELL_CAST_SUCCESS") then
+				ApplyReset(srcGUID, resets, cTime);
 			-- // pvptier 1/2 used, correcting cd of PvP trinket
 			elseif (spellID == SPELL_PVPADAPTATION and db.SpellCDs[SPELL_PVPTRINKET] ~= nil and db.SpellCDs[SPELL_PVPTRINKET].enabled and eventType == "SPELL_AURA_APPLIED") then
 				if (SpellsPerPlayerGUID[srcGUID]) then
-					RegisterCooldownForSource(srcGUID, SPELL_PVPTRINKET, cTime + 60, SpellTextureByID[SPELL_PVPTRINKET], cTime);
+					RegisterCooldownForSource(srcGUID, SPELL_PVPTRINKET, 60, SpellTextureByID[SPELL_PVPTRINKET], cTime, true);
 					UpdateNameplatesForSource(srcGUID);
 				end
 			end
@@ -2508,11 +2698,11 @@ do
 				for auraIndex = 1, 40 do
 					local spellName, _, _, _, _, _, _, _, _, spellId = UnitAura(_unitID, auraIndex);
 					if (spellName == nil) then
-						break;
+						break
 					end
 					if (spellId == HUNTER_FEIGN_DEATH) then
 						feignDeathFound = true;
-						break;
+						break
 					end
 				end
 				if (FeignDeathGUIDs[unitGUID] and not feignDeathFound) then
@@ -2523,7 +2713,7 @@ do
 					for frame, plateUnitGUID in pairs(NameplatesVisible) do
 						if (unitGUID == plateUnitGUID) then
 							UpdateOnlyOneNameplate(frame, unitGUID);
-							break;
+							break
 						end
 					end
 					FeignDeathGUIDs[unitGUID] = nil;
@@ -2539,6 +2729,8 @@ do
 			OnStartup();
 		end
 		wipe(SpellsPerPlayerGUID);
+		wipe(DetectedSpecs);
+		wipe(LearnedCooldowns);
 		local inInstance, instanceType = IsInInstance();
 		if (not inInstance) then
 			InstanceType = instanceType;
@@ -2591,4 +2783,3 @@ do
 	end
 
 end
-
