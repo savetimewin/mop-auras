@@ -1,206 +1,92 @@
--- ================ PRIEST ================
--- Priest/baseline
--- Fear Ward
-LCT_SpellData[6346] = {
+-- PRIEST arena cooldowns.
+-- Generated from OmniCD's MoP spellDefaults; items and racials are intentionally excluded.
+
+-- Silence (interrupt)
+LCT_SpellData[15487] = {
 	class = "PRIEST",
-	defensive = true,
-	cooldown = 180
-}
--- Prayer of Mending
-LCT_SpellData[33076] = {
-	class = "PRIEST",
-	heal = true,
-	cooldown = 10
-}
--- Shadowfiend
-LCT_SpellData[34433] = {
-	class = "PRIEST",
-	offensive = true,
-	duration = 12,
-	cooldown = 180,
-}
--- Leap of Faith
-LCT_SpellData[73325] = {
-	class = "PRIEST",
-	defensive = true,
-	cooldown = 90,
-}
--- Mass Dispel
-LCT_SpellData[32375] = {
-	class = "PRIEST",
-	mass_dispel = true,
-	cooldown = 15
-}
--- Priest/talents
--- Psychic Scream
-LCT_SpellData[8122] = {
-	class = "PRIEST",
-	talent = true,
-	cc = true,
+	specID = { 258 },
+	interrupt = true,
+	silence = true,
 	cooldown = 45,
 }
--- Void Tendrils
-LCT_SpellData[108920] = {
+
+-- Mass Dispel (dispel)
+LCT_SpellData[32375] = {
 	class = "PRIEST",
-	talent = true,
-	cc = true,
-	cooldown = 30
-}
--- Phantasm
-LCT_SpellData[114239] = {
-	class = "PRIEST",
-	talent = true,
-	defensive = true,
-	duration = 5,
-	cooldown = 30
-}
--- Angelic Feather
-LCT_SpellData[121536] = {
-	class = "PRIEST",
-	talent = true,
-	charges = 3,
-	cooldown = 10
-}
--- Desperate Prayer
-LCT_SpellData[19236] = {
-	class = "PRIEST",
-	talent = true,
-	defensive = true,
-	cooldown = 120
-}
--- Spectral Guise
-LCT_SpellData[112833] = {
-	class = "PRIEST",
-	talent = true,
-	defensive = true,
-	duration = 6,
-	cooldown = 30
-}
--- Angelic Bulwark
-LCT_SpellData[108945] = {
-	class = "PRIEST",
-	talent = true,
-	defensive = true,
-	cooldown = 90
-}
--- Power Infusion
-LCT_SpellData[10060] = {
-	class = "PRIEST",
-	talent = true,
-	offensive = true,
-	duration = 20,
-	cooldown = 120
-}
--- Spirit Shell
-LCT_SpellData[109964] = {
-	class = "PRIEST",
-	talent = true,
-	specID = { 256 },
-	defensive = true,
-	duration = 15,
-	cooldown = 60
-}
--- Cascade
-LCT_SpellData[121135] = {
-	class = "PRIEST",
-	talent = true,
-	specID = { 256, 257 },
-	heal = true,
-	cooldown = 25
-}
--- Cascade (SP)
-LCT_SpellData[127632] = {
-	class = "PRIEST",
-	talent = true,
-	specID = { 258 },
-	offensive = true,
-	cooldown = 25
-}
--- Divine Star
-LCT_SpellData[110744] = {
-	class = "PRIEST",
-	talent = true,
-	specID = { 256, 257 },
-	heal = true,
-	cooldown = 15
-}
--- Divine Star (SP)
-LCT_SpellData[122121] = {
-	class = "PRIEST",
-	talent = true,
-	specID = { 258 },
-	offensive = true,
-	cooldown = 15
-}
--- Halo
-LCT_SpellData[120517] = {
-	class = "PRIEST",
-	talent = true,
-	specID = { 256, 257 },
-	heal = true,
-	cooldown = 40
-}
--- Halo (SP)
-LCT_SpellData[120644] = {
-	class = "PRIEST",
-	talent = true,
-	specID = { 258 },
-	offensive = true,
-	heal = true,
-	cooldown = 40
+	dispel = true,
+	mass_dispel = true,
+	cooldown = 15,
 }
 
--- Priest/Discipline
--- Holy Fire
-LCT_SpellData[14914] = {
-	class = "PRIEST",
-	specID = { 256, 257 },
-	offensive = true,
-	cooldown = 10
-}
--- Archangel
-LCT_SpellData[81700] = {
-	class = "PRIEST",
-	specID = { 256 },
-	heal = true,
-	duration = 18,
-	cooldown = 30
-}
--- Penance
-LCT_SpellData[47540] = {
-	class = "PRIEST",
-	specID = { 256 },
-	heal = true,
-	duration = 2,
-	cooldown = 9,
-}
--- Pain Suppression
-LCT_SpellData[33206] = {
-	class = "PRIEST",
-	specID = { 256 },
-	defensive = true,
-	duration = 8,
-	cooldown = 180,
-}
--- Power Word: Barrier
-LCT_SpellData[62618] = {
-	class = "PRIEST",
-	specID = { 256 },
-	defensive = true,
-	duration = 10,
-	cooldown = 180,
-}
--- Purify
+-- Purify (dispel)
 LCT_SpellData[527] = {
 	class = "PRIEST",
 	specID = { 256, 257 },
 	dispel = true,
 	cooldown_starts_on_dispel = true,
-	cooldown = 8,
+	cooldown = 15,
 }
 
--- Priest/Holy
--- Guardian Spirit
+-- Holy Word: Chastise (cc)
+LCT_SpellData[88625] = {
+	class = "PRIEST",
+	specID = { 257 },
+	cc = true,
+	cooldown = 30,
+}
+
+-- Psychic Horror (cc)
+LCT_SpellData[64044] = {
+	class = "PRIEST",
+	specID = { 258 },
+	cc = true,
+	cooldown = 45,
+	cooldown_variants = { 35 },
+}
+
+-- Psyfiend (cc)
+LCT_SpellData[108921] = {
+	class = "PRIEST",
+	talent = true,
+	cc = true,
+	cooldown = 45,
+}
+
+-- Psychic Scream (aoeCC)
+LCT_SpellData[8122] = {
+	class = "PRIEST",
+	cc = true,
+	cooldown = 30,
+	cooldown_variants = { 27 },
+}
+
+-- Desperate Prayer (defensive)
+LCT_SpellData[19236] = {
+	class = "PRIEST",
+	talent = true,
+	defensive = true,
+	cooldown = 120,
+}
+
+-- Dispersion (defensive)
+LCT_SpellData[47585] = {
+	class = "PRIEST",
+	specID = { 258 },
+	defensive = true,
+	duration = 6,
+	cooldown = 120,
+	cooldown_variants = { 105 },
+}
+
+-- Void Shift (defensive)
+LCT_SpellData[108968] = {
+	class = "PRIEST",
+	specID = { 256, 257 },
+	defensive = true,
+	cooldown = 300,
+}
+
+-- Guardian Spirit (externalDefensive)
 LCT_SpellData[47788] = {
 	class = "PRIEST",
 	specID = { 257 },
@@ -208,63 +94,122 @@ LCT_SpellData[47788] = {
 	duration = 10,
 	cooldown = 180,
 }
--- Lightwell
-LCT_SpellData[724] = {
+
+-- Pain Suppression (externalDefensive)
+LCT_SpellData[33206] = {
 	class = "PRIEST",
-	specID = { 257 },
-	heal = true,
+	specID = { 256 },
+	defensive = true,
+	duration = 8,
 	cooldown = 180,
 }
--- Divine Hymn
+
+-- Divine Hymn (raidDefensive)
 LCT_SpellData[64843] = {
 	class = "PRIEST",
 	specID = { 257 },
-	heal = true,
+	defensive = true,
 	duration = 8,
-	cooldown = 180
-}
--- Holy Word: Chastise
-LCT_SpellData[88625] = {
-	class = "PRIEST",
-	specID = { 257 },
-	cc = true,
-	cooldown = 30
-}
--- Holy Word: Serenity
-LCT_SpellData[88684] = {
-	class = "PRIEST",
-	specID = { 257 },
-	heal = true,
-	cooldown = 10
-}
--- Circle of Healing
-LCT_SpellData[34861] = {
-	class = "PRIEST",
-	specID = { 257 },
-	heal = true,
-	cooldown = 12
+	cooldown = 180,
 }
 
--- Priest/Shadow
--- Dispersion
-LCT_SpellData[47585] = {
+-- Spell 126135 (raidDefensive)
+LCT_SpellData[126135] = {
+	class = "PRIEST",
+	specID = { 257 },
+	defensive = true,
+	cooldown = 180,
+}
+
+-- Power Word: Barrier (raidDefensive)
+LCT_SpellData[62618] = {
+	class = "PRIEST",
+	specID = { 256 },
+	defensive = true,
+	duration = 10,
+	cooldown = 180,
+}
+
+-- Spell 15286 (raidDefensive)
+LCT_SpellData[15286] = {
 	class = "PRIEST",
 	specID = { 258 },
 	defensive = true,
-	duration = 6,
-	cooldown = 120
+	cooldown = 180,
 }
--- Psychic Horror
-LCT_SpellData[64044] = {
+
+-- Power Infusion (offensive)
+LCT_SpellData[10060] = {
+	class = "PRIEST",
+	talent = true,
+	offensive = true,
+	duration = 20,
+	cooldown = 120,
+}
+
+-- Shadowfiend (offensive)
+LCT_SpellData[34433] = {
+	class = "PRIEST",
+	offensive = true,
+	duration = 12,
+	cooldown = 180,
+}
+
+-- Fear Ward (counterCC)
+LCT_SpellData[6346] = {
+	class = "PRIEST",
+	defensive = true,
+	cooldown = 180,
+	cooldown_variants = { 120 },
+}
+
+-- Inner Focus (counterCC)
+LCT_SpellData[89485] = {
+	class = "PRIEST",
+	specID = { 256 },
+	defensive = true,
+	cooldown_starts_on_aura_fade = true,
+	cooldown = 45,
+}
+
+-- Spell 32379 (counterCC)
+LCT_SpellData[32379] = {
+	class = "PRIEST",
+	specID = { 256, 257 },
+	defensive = true,
+	cooldown = 8,
+}
+
+-- Spell 129176 (counterCC)
+LCT_SpellData[129176] = {
 	class = "PRIEST",
 	specID = { 258 },
-	cc = true,
-	cooldown = 45
+	defensive = true,
+	cooldown = 8,
 }
--- Silence
-LCT_SpellData[15487] = {
+
+-- Leap of Faith (movement)
+LCT_SpellData[73325] = {
 	class = "PRIEST",
-	specID = { 258, 256 },
-	silence = true,
-	cooldown = 45
+	defensive = true,
+	cooldown = 90,
 }
+
+-- Spell 64901 (other)
+LCT_SpellData[64901] = {
+	class = "PRIEST",
+	none = true,
+	cooldown = 360,
+}
+
+-- Spell 113277 (raidDefensive)
+LCT_SpellData[113277] = {
+	class = "PRIEST",
+	talent = true,
+	defensive = true,
+	cooldown = 480,
+}
+
+-- Alternate combat-log IDs.
+LCT_SpellData[724] = 126135
+LCT_SpellData[32747] = 15487

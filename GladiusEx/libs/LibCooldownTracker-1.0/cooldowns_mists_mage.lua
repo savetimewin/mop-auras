@@ -1,258 +1,144 @@
--- ================ MAGE ================
--- Mage/baseline
--- Blink
-LCT_SpellData[1953] = {
-	class = "MAGE",
-	defensive = true,
-	cooldown = 15
-}
--- Cone of Cold
-LCT_SpellData[120] = {
-	class = "MAGE",
-	offensive = true,
-	cooldown = 12
-}
--- Counterspell
+-- MAGE arena cooldowns.
+-- Generated from OmniCD's MoP spellDefaults; items and racials are intentionally excluded.
+
+-- Counterspell (interrupt)
 LCT_SpellData[2139] = {
 	class = "MAGE",
 	interrupt = true,
-	cooldown = 20,
+	cooldown = 24,
 }
--- Evocation
-LCT_SpellData[12051] = {
-	class = "MAGE",
-	defensive = true,
-	duration = 6,
-	cooldown = 120
-}
--- Fire Blast
-LCT_SpellData[2136] = {
-	class = "MAGE",
-	offensive = true,
-	cooldown = 8
-}
--- Frost Nova
-LCT_SpellData[122] = {
-	class = "MAGE",
-	cc = true,
-	cooldown = 25
-}
--- Freeze
-LCT_SpellData[33395] = {
-	class = "MAGE",
-	pet = true,
-	cc = true,
-	cooldown = 25
-}
--- Ice Block
-LCT_SpellData[45438] = {
-	class = "MAGE",
-	defensive = true,
-	immune = true,
-	duration = 10,
-	cooldown = 300
-}
--- Invisibility
-LCT_SpellData[66] = {
-	class = "MAGE",
-	defensive = true,
-	duration = 3,
-	cooldown = 300
-}
--- Remove Curse
+
+-- Remove Curse (dispel)
 LCT_SpellData[475] = {
 	class = "MAGE",
 	dispel = true,
 	cooldown_starts_on_dispel = true,
-	cooldown = 8
+	cooldown = 8,
 }
 
---[[
--- Time Warp
-LCT_SpellData[80353] = {
+-- Deep Freeze (cc)
+LCT_SpellData[44572] = {
 	class = "MAGE",
-	offensive = true,
-	duration = 40,
-	cooldown = 300
-}
-]]
--- Mage/talents
--- Alter Time
-LCT_SpellData[108978] = {
-	class = "MAGE",
-	defensive = true,
-	offensive = true,
-	duration = 10,
-	cooldown = 90
-}
--- Mirror Image
-LCT_SpellData[55342] = {
-	class = "MAGE",
-	offensive = true,
-	talent = true,
-	duration = 40,
-	cooldown = 120
-}
--- Blazing Speed
-LCT_SpellData[108843] = {
-	class = "MAGE",
-	talent = true,
-	defensive = true,
-	duration = 1.5,
-	cooldown = 25
-}
--- Presence of Mind
-LCT_SpellData[12043] = {
-	class = "MAGE",
-	talent = true,
 	cc = true,
-	cooldown_starts_on_aura_fade = true,
-	cooldown = 90
+	cooldown = 30,
 }
--- Cauterize
-LCT_SpellData[86949] = {
+
+-- Dragon's Breath (aoeCC)
+LCT_SpellData[31661] = {
 	class = "MAGE",
-	talent = true,
-	defensive = true,
-	duration = 6,
-	cooldown = 120
-}
--- Cold Snap
-LCT_SpellData[11958] = {
-	class = "MAGE",
-	talent = true,
-	defensive = true,
-	resets = { 45438, 122, 120 },
-	cooldown = 180
-}
--- Frostjaw
-LCT_SpellData[102051] = {
-	class = "MAGE",
-	talent = true,
-	silence = true,
+	specID = { 63 },
 	cc = true,
-	cooldown = 20
+	cooldown = 20,
 }
--- Greater Invisibility
-LCT_SpellData[110959] = {
-	class = "MAGE",
-	talent = true,
-	defensive = true,
-	replaces = 66,
-	duration = 20,
-	cooldown = 90
-}
--- Ice Barrier
-LCT_SpellData[11426] = {
-	class = "MAGE",
-	talent = true,
-	defensive = true,
-	duration = 60,
-	cooldown = 25
-}
--- Ice Floes
-LCT_SpellData[108839] = {
-	class = "MAGE",
-	talent = true,
-	offensive = true,
-	duration = 15,
-	cooldown = 20
-}
--- Ice Ward
-LCT_SpellData[111264] = {
-	class = "MAGE",
-	talent = true,
-	cc = true,
-	cooldown = 20
-}
--- Incanter's Ward
-LCT_SpellData[1463] = {
-	class = "MAGE",
-	talent = true,
-	defensive = true,
-	duration = 8,
-	cooldown = 25
-}
--- Ring of Frost
+
+-- Ring of Frost (aoeCC)
 LCT_SpellData[113724] = {
 	class = "MAGE",
 	talent = true,
 	cc = true,
 	duration = 10,
-	cooldown = 45
+	cooldown = 45,
 }
--- Temporal Shield
+
+-- Cold Snap (immunity)
+LCT_SpellData[45438] = {
+	class = "MAGE",
+	immune = true,
+	duration = 10,
+	cooldown = 300,
+}
+
+-- Alter Time (defensive)
+LCT_SpellData[108978] = {
+	class = "MAGE",
+	defensive = true,
+	duration = 10,
+	cooldown_starts_on_aura_fade = true,
+	cooldown = 180,
+	cooldown_variants = { 90 },
+}
+
+-- Cauterize (defensive)
+LCT_SpellData[86949] = {
+	class = "MAGE",
+	talent = true,
+	defensive = true,
+	duration = 6,
+	cooldown = 120,
+}
+
+-- Cold Snap (defensive)
+LCT_SpellData[11958] = {
+	class = "MAGE",
+	talent = true,
+	defensive = true,
+	resets = { 45438 },
+	cooldown = 180,
+}
+
+-- Greater Invisibility (defensive)
+LCT_SpellData[110959] = {
+	class = "MAGE",
+	talent = true,
+	defensive = true,
+	duration = 20,
+	cooldown = 90,
+}
+
+-- Temporal Shield (defensive)
 LCT_SpellData[115610] = {
 	class = "MAGE",
 	talent = true,
 	defensive = true,
 	duration = 4,
-	cooldown = 25
+	cooldown = 25,
 }
--- Mage/Arcane
--- Arcane Power
+
+-- Arcane Power (offensive)
 LCT_SpellData[12042] = {
 	class = "MAGE",
 	specID = { 62 },
 	offensive = true,
 	duration = 15,
-	cooldown = 90
+	cooldown = 90,
 }
 
--- Mage/Fire
--- Flamestrike
-LCT_SpellData[2120] = {
-	class = "MAGE",
-	specID = { 63 },
-	offensive = true,
-	duration = 8,
-	cooldown = 12
-}
--- Combustion
+-- Combustion (offensive)
 LCT_SpellData[11129] = {
 	class = "MAGE",
 	specID = { 63 },
+	offensive = true,
 	stun = true,
-	offensive = true,
-	cooldown = 45
-}
--- Dragon's Breath
-LCT_SpellData[31661] = {
-	class = "MAGE",
-	specID = { 63 },
-	cc = true,
-	cooldown = 20
+	cooldown = 45,
+	cooldown_variants = { 36 },
 }
 
--- Mage/Frost
--- Deep Freeze
-LCT_SpellData[44572] = {
-	class = "MAGE",
-	cc = true,
-	specID = { 64 },
-	cooldown = 30
-}
-
--- Frozen Orb
-LCT_SpellData[84714] = {
-	class = "MAGE",
-	specID = { 64 },
-	offensive = true,
-	duration = 10,
-	cooldown = 60
-}
--- Icy Veins
+-- Icy Veins (offensive)
 LCT_SpellData[12472] = {
 	class = "MAGE",
 	specID = { 64 },
 	offensive = true,
 	duration = 20,
-	cooldown = 180
+	cooldown = 180,
+	cooldown_variants = { 90 },
 }
--- Summon Water Elemental
-LCT_SpellData[31687] = {
+
+-- Mirror Image (offensive)
+LCT_SpellData[55342] = {
 	class = "MAGE",
-	specID = { 64 },
 	offensive = true,
-	cooldown = 60
+	duration = 40,
+	cooldown = 180,
 }
+
+-- Presence of Mind (other)
+LCT_SpellData[12043] = {
+	class = "MAGE",
+	talent = true,
+	none = true,
+	cooldown_starts_on_aura_fade = true,
+	cooldown = 90,
+}
+
+-- Alternate combat-log IDs.
+LCT_SpellData[87024] = 86949

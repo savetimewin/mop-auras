@@ -1,350 +1,205 @@
--- ================ WARLOCK ================
--- Warlock/baseline
--- Soulstone
-LCT_SpellData[20707] = {
-	class = "WARLOCK",
-	res = true,
-	cooldown = 600
-}
--- Unending Resolve
-LCT_SpellData[104773] = {
-	class = "WARLOCK",
-	defensive = true,
-	duration = 8,
-	cooldown = 180,
-	-- Glyph of Unending Resolve. Learned after a recast before the 180s
-	-- prediction expires, then used for future casts.
-	opt_lower_cooldown = 120
-}
--- Demonic Circle: Teleport
-LCT_SpellData[48020] = {
-	class = "WARLOCK",
-	defensive = true,
-	cooldown = 25,
-	-- Glyph of Demonic Circle. Learned after an observed early recast.
-	opt_lower_cooldown = 21
-}
---[[
-Demonic Circle: Teleport — ID 48020
+-- WARLOCK arena cooldowns.
+-- Generated from OmniCD's MoP spellDefaults; items and racials are intentionally excluded.
 
-Base cooldown is 30 seconds.
-
-Demonic Circle Cooldown Reduction, spell 33063: reduces it by 5 seconds, producing 25 seconds. AKA PVP GEAR SET BONUS!!!
-so I set cooldown = 25, because I am arena player.
-Glyph of Demonic Circle, spell 63309: reduces it by 4 seconds, producing 21 seconds.
-
-The two pages do not establish whether those reductions stack together, so I would not treat 21 seconds as confirmed without an in-game test.
-]]
--- Demonic gateway
-LCT_SpellData[111771] = {
-	class = "WARLOCK",
-	defensive = true,
-	cooldown = 10,
-}
-
--- Warlock/talent
--- Dark Regeneration
-LCT_SpellData[108359] = {
-	class = "WARLOCK",
-	talent = true,
-	defensive = true,
-	heal = true,
-	duration = 12,
-	cooldown = 120
-}
--- Howl of Terror
-LCT_SpellData[5484] = {
-	class = "WARLOCK",
-	talent = true,
-	cc = true,
-	cooldown = 35
-}
--- https://www.wowhead.com/mop-classic/spell=5484/howl-of-terror 
--- base cooldown is 40 seconds, but every damaging attack received reduces the remaining cooldown by 1 second. 
--- Its effective cooldown can therefore be lower than 40 seconds. Ima just set it 35.
--- Mortal Coil
-LCT_SpellData[6789] = {
-	class = "WARLOCK",
-	talent = true,
-	cc = true,
-	heal = true,
-	cooldown = 45
-}
--- Shadowfury
-LCT_SpellData[30283] = {
-	class = "WARLOCK",
-	talent = true,
-	stun = true,
-	cooldown = 30
-}
--- Dark Bargain
-LCT_SpellData[110913] = {
-	class = "WARLOCK",
-	talent = true,
-	defensive = true,
-	duration = 8,
-	cooldown = 180
-}
--- Sacrificial Pact
-LCT_SpellData[108416] = {
-	class = "WARLOCK",
-	talent = true,
-	defensive = true,
-	duration = 20,
-	cooldown = 60
-}
--- Blood Horror
-LCT_SpellData[111397] = {
-	class = "WARLOCK",
-	talent = true,
-	cc = true,
-	duration = 60,
-	cooldown = 60
-}
--- Unbound Will
+-- Unbound Will (pvptrinket)
 LCT_SpellData[108482] = {
 	class = "WARLOCK",
 	talent = true,
-	dispel = true,
-	cooldown = 120
+	defensive = true,
+	cooldown = 60,
 }
--- Grimoire of Service
+
+-- Grimoire of Service (interrupt)
 LCT_SpellData[108501] = {
 	class = "WARLOCK",
 	talent = true,
-	defensive = true,
-	cooldown = 120
-}
--- Kil'jaeden's Cunning
-LCT_SpellData[108505] = {
-	class = "WARLOCK",
-	talent = true,
-	offensive = true,
-	duration = 8,
-	cooldown = 60
-}
--- Mannoroth's fury
-LCT_SpellData[108508] = {
-	class = "WARLOCK",
-	talent = true,
-	offensive = true,
-	duration = 10,
-	cooldown = 60
-}
--- Warlock/265 - Affliction
--- Seed of Corruption
-LCT_SpellData[87385] = {
-	class = "WARLOCK",
-	specID = { 265 },
-	offensive = true,
-	cooldown = 60
-}
--- Dark Soul: Misery
-LCT_SpellData[113860] = {
-	class = "WARLOCK",
-	specID = { 265 },
-	offensive = true,
-	duration = 20,
-	cooldown = 20
+	interrupt = true,
+	cooldown = 120,
 }
 
--- Warlock/266 - Demonology
--- Demonic Leap
-LCT_SpellData[109151] = {
-	class = "WARLOCK",
-	specID = { 266 },
-	cooldown = 10
-}
--- Dark Soul: Knowledge
-LCT_SpellData[113861] = {
-	class = "WARLOCK",
-	specID = { 266 },
-	offensive = true,
-	duration = 20,
-	cooldown = 20
-}
--- Hand of Gul'dan
-LCT_SpellData[105174] = {
-	class = "WARLOCK",
-	specID = { 266 },
-	offensive = true,
-	charges = 2,
-	cooldown = 15
-}
--- Carrion Swarm
-LCT_SpellData[103967] = {
-	class = "WARLOCK",
-	specID = { 266 },
-	cc = true,
-	cooldown = 12
-}
-
--- Warlock/267 - Destruction
--- Havoc
-LCT_SpellData[80240] = {
-	class = "WARLOCK",
-	specID = { 267 },
-	offensive = true,
-	duration = 15,
-	cooldown = 25 -- Will be 20 at lvl100
-}
--- Flames of Xoroth
-LCT_SpellData[120451] = {
-	class = "WARLOCK",
-	specID = { 267 },
-	offensive = true,
-	defensive = true,
-	cooldown = 60
-}
--- Dark Soul: Instability
-LCT_SpellData[113858] = {
-	class = "WARLOCK",
-	specID = { 267 },
-	offensive = true,
-	duration = 20,
-	cooldown = 20
-}
--- Conflagrate
-LCT_SpellData[17962] = {
-	class = "WARLOCK",
-	specID = { 267 },
-	offensive = true,
-	charges = 2,
-	cooldown = 12
-}
-
--- Warlock/Felguard
--- Axe Toss
-LCT_SpellData[89766] = {
-	class = "WARLOCK",
-	pet = true,
-	stun = true,
-	cooldown = 30
-}
--- Felstorm
-LCT_SpellData[89751] = {
-	class = "WARLOCK",
-	pet = true,
-	offensive = true,
-	cooldown = 45
-}
--- Pursuit
-LCT_SpellData[30151] = {
-	class = "WARLOCK",
-	pet = true,
-	offensive = true,
-	cooldown = 15
-}
-
--- Warlock/Felhunter
--- Devour Magic
-LCT_SpellData[19505] = {
-	class = "WARLOCK",
-	pet = true,
-	purge = true,
-	cooldown = 15
-}
--- Spell Lock
+-- Spell Lock (interrupt)
 LCT_SpellData[19647] = {
 	class = "WARLOCK",
 	pet = true,
 	interrupt = true,
 	silence = true,
-	cooldown = 24
+	cooldown = 24,
 }
-LCT_SpellData[119910] = 19647
-LCT_SpellData[132409] = 19647
 
--- Warlock/Observer
--- Clone Magic
-LCT_SpellData[115284] = {
+-- Devour Magic (dispel)
+LCT_SpellData[19505] = {
 	class = "WARLOCK",
 	pet = true,
+	dispel = true,
 	purge = true,
-	cooldown = 15
-}
--- Optical Blast
-LCT_SpellData[115781] = {
-	class = "WARLOCK",
-	pet = true,
-	interrupt = true,
-	silence = true,
-	cooldown = 24
-}
-LCT_SpellData[119911] = 115781
-
-
--- Warlock/Fel Imp
--- Sear Magic
-LCT_SpellData[115276] = {
-	class = "WARLOCK",
-	pet = true,
-	dispel = true,
-	cooldown = 30
+	cooldown = 15,
 }
 
--- Warlock/Imp
--- Cauterize Master
-LCT_SpellData[119899] = {
+-- Mortal Coil (cc)
+LCT_SpellData[6789] = {
 	class = "WARLOCK",
-	pet = true,
-	heal = true,
-	duration = 12,
-	cooldown = 30
+	talent = true,
+	cc = true,
+	cooldown = 45,
 }
--- Flee
-LCT_SpellData[89792] = {
+
+-- Howl of Terror (aoeCC)
+LCT_SpellData[5484] = {
 	class = "WARLOCK",
-	pet = true,
+	cc = true,
+	reduce_on_damage_taken = 1,
+	cooldown = 40,
+}
+
+-- Shadowfury (aoeCC)
+LCT_SpellData[30283] = {
+	class = "WARLOCK",
+	talent = true,
+	cc = true,
+	stun = true,
+	cooldown = 30,
+}
+
+-- Dark Bargain (defensive)
+LCT_SpellData[110913] = {
+	class = "WARLOCK",
+	talent = true,
 	defensive = true,
-	cooldown = 20
-}
--- Single Magic
-LCT_SpellData[89808] = {
-	class = "WARLOCK",
-	pet = true,
-	dispel = true,
-	cooldown = 10
+	duration = 8,
+	cooldown = 180,
 }
 
--- Warlock/Shivarra
--- Fellash
-LCT_SpellData[115770] = {
+-- Sacrificial Pact (defensive)
+LCT_SpellData[108416] = {
 	class = "WARLOCK",
-	pet = true,
-	offensive = true,
-	knockback = true,
-	cooldown = 25
-}
-
--- Warlock/Succubus
--- Whiplash
-LCT_SpellData[6360] = {
-	class = "WARLOCK",
-	pet = true,
-	offensive = true,
-	knockback = true,
-	cooldown = 25
-}
-
--- Warlock/Voidlord
-
--- Warlock/Voidwalker
--- Shadow Bulwark
-LCT_SpellData[17767] = {
-	class = "WARLOCK",
-	pet = true,
+	talent = true,
 	defensive = true,
 	duration = 20,
-	cooldown = 120
+	cooldown = 60,
 }
 
--- Warlock/Wrathguard
--- Wrathstorm
-LCT_SpellData[115831] = {
+-- Unending Resolve (defensive)
+LCT_SpellData[104773] = {
 	class = "WARLOCK",
-	pet = true,
-	offensive = true,
-	duration = 6,
-	cooldown = 45
+	defensive = true,
+	duration = 8,
+	cooldown = 180,
+	cooldown_variants = { 120 },
 }
+
+-- Dark Regeneration (heal)
+LCT_SpellData[108359] = {
+	class = "WARLOCK",
+	talent = true,
+	heal = true,
+	duration = 12,
+	cooldown = 120,
+}
+
+-- Dark Soul: Instability (offensive)
+LCT_SpellData[113858] = {
+	class = "WARLOCK",
+	specID = { 267 },
+	offensive = true,
+	duration = 20,
+	opt_charges = 2,
+	cooldown = 120,
+}
+
+-- Dark Soul: Knowledge (offensive)
+LCT_SpellData[113861] = {
+	class = "WARLOCK",
+	specID = { 266 },
+	offensive = true,
+	duration = 20,
+	opt_charges = 2,
+	cooldown = 120,
+}
+
+-- Dark Soul: Misery (offensive)
+LCT_SpellData[113860] = {
+	class = "WARLOCK",
+	specID = { 265 },
+	offensive = true,
+	duration = 20,
+	opt_charges = 2,
+	cooldown = 120,
+}
+
+-- Demonic Circle: Teleport (movement)
+LCT_SpellData[48020] = {
+	class = "WARLOCK",
+	defensive = true,
+	cooldown = 30,
+	cooldown_variants = { 26, 25, 21 },
+}
+
+-- Alternate combat-log IDs.
+LCT_SpellData[6358] = 19505
+LCT_SpellData[6360] = 19647
+LCT_SpellData[17767] = 19505
+LCT_SpellData[89751] = 19647
+LCT_SpellData[89766] = 19505
+LCT_SpellData[89808] = 19505
+LCT_SpellData[111859] = 108501
+LCT_SpellData[111895] = 108501
+LCT_SpellData[111896] = 108501
+LCT_SpellData[111897] = 108501
+LCT_SpellData[111898] = 108501
+LCT_SpellData[115268] = 19505
+LCT_SpellData[115276] = 19505
+LCT_SpellData[115284] = 19505
+LCT_SpellData[115770] = 19647
+LCT_SpellData[115781] = 19647
+LCT_SpellData[115831] = 19647
+LCT_SpellData[118093] = 19647
+LCT_SpellData[119899] = 19647
+LCT_SpellData[119905] = 19647
+LCT_SpellData[119907] = 19647
+LCT_SpellData[119909] = 19647
+LCT_SpellData[119910] = 19647
+LCT_SpellData[119911] = 19647
+LCT_SpellData[119913] = 19647
+LCT_SpellData[119914] = 19647
+LCT_SpellData[119915] = 19647
+LCT_SpellData[132409] = 19647
+LCT_SpellData[132410] = 19647
+LCT_SpellData[132411] = 19647
+LCT_SpellData[132413] = 19647
+LCT_SpellData[137706] = 19647
+
+-- Cast-specific cooldown/icon overrides for merged abilities.
+LCT_SpellAliases[6358] = { spellid = 19505, cooldown = 1, icon = 136175 }
+LCT_SpellAliases[6360] = { spellid = 19647, cooldown = 25, icon = 460858 }
+LCT_SpellAliases[17767] = { spellid = 19505, cooldown = 120, icon = 136121 }
+LCT_SpellAliases[19505] = { spellid = 19505, cooldown = 15, icon = 136075 }
+LCT_SpellAliases[19647] = { spellid = 19647, cooldown = 24, icon = 136174 }
+LCT_SpellAliases[89751] = { spellid = 19647, cooldown = 45, icon = 236303 }
+LCT_SpellAliases[89766] = { spellid = 19505, cooldown = 30, icon = 236316 }
+LCT_SpellAliases[89808] = { spellid = 19505, cooldown = 10, icon = 135791 }
+LCT_SpellAliases[111859] = { spellid = 108501, cooldown = 120, icon = 136218 }
+LCT_SpellAliases[111895] = { spellid = 108501, cooldown = 120, icon = 136221 }
+LCT_SpellAliases[111896] = { spellid = 108501, cooldown = 120, icon = 136220 }
+LCT_SpellAliases[111897] = { spellid = 108501, cooldown = 120, icon = 136217 }
+LCT_SpellAliases[111898] = { spellid = 108501, cooldown = 120, icon = 136216 }
+LCT_SpellAliases[115268] = { spellid = 19505, cooldown = 1, icon = 237185 }
+LCT_SpellAliases[115276] = { spellid = 19505, cooldown = 20, icon = 135791 }
+LCT_SpellAliases[115284] = { spellid = 19505, cooldown = 15, icon = 236407 }
+LCT_SpellAliases[115770] = { spellid = 19647, cooldown = 25, icon = 468265 }
+LCT_SpellAliases[115781] = { spellid = 19647, cooldown = 24, icon = 136028 }
+LCT_SpellAliases[115831] = { spellid = 19647, cooldown = 45, icon = 236303 }
+LCT_SpellAliases[118093] = { spellid = 19647, cooldown = 60, icon = 132343 }
+LCT_SpellAliases[119899] = { spellid = 19647, cooldown = 30, icon = 463567 }
+LCT_SpellAliases[119905] = { spellid = 19647, cooldown = 30, icon = 463567 }
+LCT_SpellAliases[119907] = { spellid = 19647, cooldown = 60, icon = 132343 }
+LCT_SpellAliases[119909] = { spellid = 19647, cooldown = 25, icon = 460858 }
+LCT_SpellAliases[119910] = { spellid = 19647, cooldown = 24, icon = 136174 }
+LCT_SpellAliases[119911] = { spellid = 19647, cooldown = 24, icon = 136028 }
+LCT_SpellAliases[119913] = { spellid = 19647, cooldown = 25, icon = 468265 }
+LCT_SpellAliases[119914] = { spellid = 19647, cooldown = 45, icon = 236303 }
+LCT_SpellAliases[119915] = { spellid = 19647, cooldown = 45, icon = 236303 }
+LCT_SpellAliases[132409] = { spellid = 19647, cooldown = 24, icon = 136174 }
+LCT_SpellAliases[132410] = { spellid = 19647, cooldown = 15, icon = 236303 }
+LCT_SpellAliases[132411] = { spellid = 19647, cooldown = 10, icon = 135791 }
+LCT_SpellAliases[132413] = { spellid = 19647, cooldown = 120, icon = 136121 }
+LCT_SpellAliases[137706] = { spellid = 19647, cooldown = 25, icon = 460858 }

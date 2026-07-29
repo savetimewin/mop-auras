@@ -4,13 +4,15 @@
 -- luacheck: globals unpack InCombatLockdown ColorPickerFrame BackdropTemplateMixin UIDropDownMenu_SetWidth UIDropDownMenu_AddButton GameFontNormal
 -- luacheck: globals InterfaceOptionsFrame_OpenToCategory GetSpellInfo GameFontHighlightSmall hooksecurefunc ALL GameTooltip FillLocalizedClassList
 -- luacheck: globals OTHER PlaySound SOUNDKIT COMBATLOG_OBJECT_REACTION_HOSTILE CombatLogGetCurrentEventInfo IsInInstance strsplit UnitName GetRealmName
--- luacheck: globals UnitReaction UnitAura
+-- luacheck: globals UnitReaction UnitAura GetArenaOpponentSpec
 
 local _, addonTable = ...;
 local Interrupts = addonTable.Interrupts;
 local Trinkets = addonTable.Trinkets;
 local CooldownAliases = addonTable.CooldownAliases;
+local CooldownAliasMeta = addonTable.CooldownAliasMeta;
 local CooldownMeta = addonTable.CooldownMeta;
+local CooldownVariants = addonTable.CooldownVariants;
 local SpecHints = addonTable.SpecHints;
 local CooldownResets = addonTable.CooldownResets;
 local CooldownReductions = addonTable.CooldownReductions;
@@ -476,7 +478,23 @@ do
 		end
 	end
 
-	function RegisterCooldownForSource(srcGUID, spellID, cooldown, texture, started, isShared)
+	local function SelectCooldownVariant(spellID, currentCooldown, observed)
+		local variants = CooldownVariants[spellID];
+		if (not variants) then
+			return nil;
+		end
+
+		local selected;
+		for i = 1, #variants do
+			local candidate = variants[i];
+			if (candidate < currentCooldown and candidate <= observed + 1 and (not selected or candidate > selected)) then
+				selected = candidate;
+			end
+		end
+		return selected;
+	end
+
+	function RegisterCooldownForSource(srcGUID, spellID, cooldown, texture, started, isShared, suppressLearning)
 		if (srcGUID == nil or srcGUID == "") then
 			return false;
 		end
@@ -492,12 +510,21 @@ do
 		end
 
 		local meta = CooldownMeta[spellID] or {};
-		if (previous and not isShared and not meta.charges and previous.started and previous.expires > started + 1) then
+		local optionalCharges = meta.optionalCharges and meta.optionalCharges > (meta.charges or 1);
+		if (previous and not isShared and optionalCharges and previous.started and previous.expires > started + 1) then
+			previous.optionalChargesDetected = true;
+			previous.maxCharges = meta.optionalCharges;
+			previous.charges = 0;
+			previous.rechargeStarted = previous.rechargeStarted or previous.started;
+		elseif (previous and not isShared and not suppressLearning and not meta.charges and not optionalCharges and previous.started and previous.expires > started + 1) then
 			local observed = started - previous.started;
 			if (observed >= math_max(5, cooldown * 0.25) and observed < cooldown - 1) then
-				LearnedCooldowns[srcGUID] = LearnedCooldowns[srcGUID] or {};
-				LearnedCooldowns[srcGUID][spellID] = math_floor(observed + 0.5);
-				cooldown = LearnedCooldowns[srcGUID][spellID];
+				local selected = SelectCooldownVariant(spellID, cooldown, observed);
+				if (selected) then
+					LearnedCooldowns[srcGUID] = LearnedCooldowns[srcGUID] or {};
+					LearnedCooldowns[srcGUID][spellID] = selected;
+					cooldown = selected;
+				end
 			end
 		end
 
@@ -506,9 +533,10 @@ do
 		spellInfo.lastEvent = started;
 		spellInfo.rechargeDuration = cooldown;
 
-		if (meta.charges and meta.charges > 1 and not isShared) then
-			spellInfo.maxCharges = meta.charges;
-			spellInfo.charges = spellInfo.charges or meta.charges;
+		local maxCharges = spellInfo.optionalChargesDetected and meta.optionalCharges or meta.charges;
+		if (maxCharges and maxCharges > 1 and not isShared) then
+			spellInfo.maxCharges = maxCharges;
+			spellInfo.charges = spellInfo.charges or maxCharges;
 			RefreshChargeState(spellInfo, started);
 			if (spellInfo.charges > 0) then
 				spellInfo.charges = spellInfo.charges - 1;
@@ -2620,6 +2648,44 @@ do
 		end
 	end
 
+	local function ResolvePetOwnerGUID(srcGUID, meta)
+		if (not srcGUID or not meta or not meta.pet) then
+			return srcGUID;
+		end
+
+		if (UnitGUID("pet") == srcGUID) then
+			return LocalPlayerGUID or srcGUID;
+		end
+		for i = 1, 5 do
+			if (UnitGUID("arenapet" .. i) == srcGUID) then
+				return UnitGUID("arena" .. i) or srcGUID;
+			end
+		end
+		for i = 1, 4 do
+			if (UnitGUID("partypet" .. i) == srcGUID) then
+				return UnitGUID("party" .. i) or srcGUID;
+			end
+		end
+		for i = 1, 40 do
+			if (UnitGUID("raidpet" .. i) == srcGUID) then
+				return UnitGUID("raid" .. i) or srcGUID;
+			end
+		end
+		return srcGUID;
+	end
+
+	local function ResolveArenaSpec(srcGUID)
+		if (not srcGUID or not GetArenaOpponentSpec) then
+			return nil;
+		end
+		for i = 1, 5 do
+			if (UnitGUID("arena" .. i) == srcGUID) then
+				local specID = GetArenaOpponentSpec(i);
+				return specID and specID > 0 and specID or nil;
+			end
+		end
+	end
+
 	EventFrame.COMBAT_LOG_EVENT_UNFILTERED = function()
 		local cTime = GetTime();
 		local _, eventType, _, srcGUID, _, srcFlags, _, destGUID, _, _, _, rawSpellID = CombatLogGetCurrentEventInfo();
@@ -2631,8 +2697,12 @@ do
 			return;
 		end
 
-		local spellID = rawSpellID and (CooldownAliases[rawSpellID] or rawSpellID);
-		local specID = rawSpellID and (SpecHints[rawSpellID] or SpecHints[spellID]);
+		local aliasMeta = rawSpellID and CooldownAliasMeta[rawSpellID];
+		local spellID = aliasMeta and aliasMeta.spellID or (rawSpellID and (CooldownAliases[rawSpellID] or rawSpellID));
+		local meta = spellID and CooldownMeta[spellID];
+		srcGUID = ResolvePetOwnerGUID(srcGUID, meta);
+		local specID = ResolveArenaSpec(srcGUID) or
+			(rawSpellID and (SpecHints[rawSpellID] or SpecHints[spellID]));
 		if (specID and srcGUID) then
 			DetectedSpecs[srcGUID] = specID;
 		end
@@ -2644,8 +2714,7 @@ do
 			or (srcGUID ~= nil and srcGUID ~= "" and srcGUID ~= LocalPlayerGUID and spellID ~= nil and (eventType == "SPELL_CAST_SUCCESS" or eventType == "SPELL_AURA_APPLIED" or eventType == "SPELL_MISSED" or eventType == "SPELL_SUMMON"));
 		if (isTrackedSource) then
 			local entry = db.SpellCDs[spellID];
-			local cooldown = spellID and GetCooldownForSource(srcGUID, spellID);
-			local meta = spellID and CooldownMeta[spellID];
+			local cooldown = aliasMeta and aliasMeta.cooldown or (spellID and GetCooldownForSource(srcGUID, spellID));
 			local shouldStart = false;
 			if (meta) then
 				if (meta.startOnDispel) then
@@ -2658,7 +2727,9 @@ do
 			end
 
 			if (cooldown ~= nil and entry and entry.enabled) then
-				if (shouldStart and RegisterCooldownForSource(srcGUID, spellID, cooldown, SpellTextureByID[spellID], cTime)) then
+				local texture = aliasMeta and aliasMeta.texture or SpellTextureByID[spellID];
+				local suppressLearning = aliasMeta and aliasMeta.cooldown ~= nil;
+				if (shouldStart and RegisterCooldownForSource(srcGUID, spellID, cooldown, texture, cTime, false, suppressLearning)) then
 					RegisterSharedCooldowns(srcGUID, spellID, cTime);
 					UpdateNameplatesForSource(srcGUID);
 				end

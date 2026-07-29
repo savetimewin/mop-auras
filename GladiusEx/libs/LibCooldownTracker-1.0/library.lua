@@ -12,7 +12,7 @@
 		spells_data = lib:GetCooldownsData()
 ]]
 
-local version = 11
+local version = 12
 local lib = LibStub:NewLibrary("LibCooldownTracker-1.0", version)
 local IsRetail = WOW_PROJECT_ID == WOW_PROJECT_MAINLINE
 local LGIST = IsRetail and LibStub:GetLibrary("LibGroupInSpecT-1.1")
@@ -98,7 +98,7 @@ do
 				end
 
 				-- insert into lookup tables
-				if spelldata.class then
+				if spelldata.class and not spelldata.hidden then
 					class_spelldata[spelldata.class] = class_spelldata[spelldata.class] or {}
 					class_spelldata[spelldata.class][spellid] = spelldata
 				end
@@ -118,7 +118,9 @@ do
 end
 
 local SpellData = LCT_SpellData
+local SpellAliases = LCT_SpellAliases or {}
 LCT_SpellData = nil
+LCT_SpellAliases = nil
 
 -- state
 lib.guid_to_unitid = lib.guid_to_unitid or {} -- [guid] = unitid
@@ -245,12 +247,12 @@ local function GetCooldownTime(spellid, unit)
 	if button and spelldata.cooldown_overload then
 		local overloads = spelldata.cooldown_overload
 		if button.specID and overloads[button.specID] then
-			return overloads[button.specID]
-		end
-
-		local class = button.class or select(2, UnitClass(unit))
-		if class and overloads[class] then
-			return overloads[class]
+			time = overloads[button.specID]
+		else
+			local class = button.class or select(2, UnitClass(unit))
+			if class and overloads[class] then
+				time = overloads[class]
+			end
 		end
 	end
 
@@ -264,6 +266,32 @@ local function GetCooldownTime(spellid, unit)
 	end
 
 	return time
+end
+
+-- Modifier cooldowns are not guessed from arbitrary early casts. Only values
+-- explicitly supplied by the MoP data may replace the default duration.
+local function LearnCooldownVariant(spelldata, tps, now)
+	local variants = spelldata.cooldown_variants
+	if not variants and spelldata.opt_lower_cooldown then
+		variants = { spelldata.opt_lower_cooldown }
+	end
+	if not variants then return end
+
+	local previous_start = tps.cooldown_start or tps.used_start
+	if not previous_start then return end
+
+	local observed = now - previous_start
+	local current = tps.cooldown or spelldata.cooldown
+	local selected
+	for i = 1, #variants do
+		local candidate = variants[i]
+		if candidate < current and candidate <= observed + 1 and (not selected or candidate > selected) then
+			selected = candidate
+		end
+	end
+	if selected then
+		tps.cooldown = selected
+	end
 end
 
 local function AuraByIdPredicate(auraNameToFind, _, _, ...)
@@ -303,7 +331,7 @@ local function check_reduce(reduce, unit, spellid)
 
 	local buffs = reduce.buffs or reduce.buff and { reduce.buff }
 	if buffs then
-		for buff in pairs(buffs) do
+		for _, buff in ipairs(buffs) do
 			if not FindAuraById(buff, unit) then
 				return false
 			end
@@ -312,7 +340,10 @@ local function check_reduce(reduce, unit, spellid)
 
 	local specIDs = reduce.specIDs or reduce.specID and { reduce.specID }
 	local unitSpec = GladiusEx and GladiusEx.buttons[unit] and GladiusEx.buttons[unit].specID
-	if specIDs and unitSpec then
+	if specIDs then
+		if not unitSpec then
+			return false
+		end
 		local hasSpec = any(specIDs, function (spec) return spec == unitSpec end) 
 		if not hasSpec then
 			-- we're not one of the required specs
@@ -324,12 +355,18 @@ local function check_reduce(reduce, unit, spellid)
 end
 
 local function CooldownEvent(event, unit, spellid)
+	local raw_spellid = spellid
+	local cast_override = SpellAliases[raw_spellid]
 	local spelldata = SpellData[spellid]
 	if not spelldata then return end
 
 	if type(spelldata) == "number" then
 		spellid = spelldata
 		spelldata = SpellData[spelldata]
+	end
+	if cast_override and cast_override.spellid then
+		spellid = cast_override.spellid
+		spelldata = SpellData[spellid]
 	end
   if not spelldata then
     -- TODO log error
@@ -345,9 +382,6 @@ local function CooldownEvent(event, unit, spellid)
     end
 
     local tpu = lib.tracked_players[unit]
-    if spelldata.ignore_cooldown_event then
-      return
-    end
 
     if tpu[spellid] then
       -- check if the same spell cast was detected recently
@@ -376,6 +410,7 @@ local function CooldownEvent(event, unit, spellid)
     local tps = tpu[spellid]
 
 		-- Find out if casting this spell reduces any cooldown
+		local reduced_any = false
 		local reduces = spelldata.reduces or spelldata.reduce and { spelldata.reduce }
 		if reduces then
 			for i = 1, #reduces do
@@ -385,22 +420,31 @@ local function CooldownEvent(event, unit, spellid)
 				if check_reduce(reduce, unit, spellid) then
 					local reduce_spellids = reduce.spellids or reduce.spellid and { reduce.spellid }
 					if reduce_spellids then
-						for each_spellid in pairs(reduce_spellids) do
+						for _, each_spellid in ipairs(reduce_spellids) do
 							if tpu[each_spellid] and tpu[each_spellid].cooldown_start then
 								tpu[each_spellid].cooldown_end = tpu[each_spellid].cooldown_end - reduce.duration
+								reduced_any = true
 							end
 						end
 					end
 
 					if reduce.all then
-						for each_tps in ipairs(tpu) do
+						for _, each_tps in pairs(tpu) do
 							if each_tps.cooldown_start then
 								each_tps.cooldown_end = each_tps.cooldown_end - reduce.duration
+								reduced_any = true
 							end
 						end
 					end
 				end
 			end
+		end
+
+		if spelldata.ignore_cooldown_event then
+			if reduced_any then
+				lib.callbacks:Fire("LCT_CooldownUsed", unit, spellid)
+			end
+			return
 		end
 
     -- find what actions are needed
@@ -448,6 +492,8 @@ local function CooldownEvent(event, unit, spellid)
 
     -- apply actions
     if used_start then
+      local previous_cooldown_start = tps.cooldown_start
+      local previous_used_start = tps.used_start
       tps.used_start = now
       tps.used_end = duration and (now + duration)
 
@@ -491,9 +537,15 @@ local function CooldownEvent(event, unit, spellid)
       end
 
       -- Did we figure out we got our timer wrong?
-      if use_lower_cd and spelldata.opt_lower_cooldown then
-        tps.cooldown = spelldata.opt_lower_cooldown
+      if use_lower_cd and not cast_override then
+        tps.cooldown_start = previous_cooldown_start
+        tps.used_start = previous_used_start
+        LearnCooldownVariant(spelldata, tps, now)
+        tps.cooldown_start = previous_cooldown_start
+        tps.used_start = now
       end
+
+      tps.icon = cast_override and cast_override.icon or nil
 
       -- Some cooldown-reset abilities restore charges instead of resetting the
       -- entire spell. This generic behavior was accidentally removed by the
@@ -546,7 +598,7 @@ local function CooldownEvent(event, unit, spellid)
     if cooldown_start then
       -- if the spell has charges and the cooldown is already in progress, it does not need to be reset
       if not tps.charges or not tps.cooldown_end or tps.cooldown_end <= now then
-        local cooldown_time = GetCooldownTime(spellid, unit)
+        local cooldown_time = cast_override and cast_override.cooldown or GetCooldownTime(spellid, unit)
         tps.cooldown_start = cooldown_time and now
         tps.cooldown_end = cooldown_time and (now + cooldown_time)
 
@@ -896,6 +948,27 @@ function events:UNIT_SPELLCAST_SUCCEEDED(event, unit, lineID, spellId)
 end
 
 function events:CombatLogEvent(_, timestamp, event, hideCaster, sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, destName, destFlags, destRaidFlags, spellId, spellName, spellSchool, auraType)
+	if event == "SWING_DAMAGE" or event == "RANGE_DAMAGE" or
+	   event == "SPELL_DAMAGE" or event == "SPELL_PERIODIC_DAMAGE" then
+		local damaged_unit = lib.guid_to_unitid[destGUID]
+		local tracked = damaged_unit and lib.tracked_players[damaged_unit]
+		if tracked then
+			local now = GetTime()
+			local changed = false
+			for tracked_spellid, tracked_spell in pairs(tracked) do
+				local tracked_data = SpellData[tracked_spellid]
+				local reduction = tracked_data and tracked_data.reduce_on_damage_taken
+				if reduction and tracked_spell.cooldown_end and tracked_spell.cooldown_end > now then
+					tracked_spell.cooldown_end = math.max(now, tracked_spell.cooldown_end - reduction)
+					changed = true
+				end
+			end
+			if changed then
+				lib.callbacks:Fire("LCT_CooldownUsed", damaged_unit)
+			end
+		end
+	end
+
 	-- Check the spell before doing the slower pet-owner fallback.
 	local spelldata = SpellData[spellId]
 	if not spelldata then return end
@@ -1006,4 +1079,3 @@ function events:ARENA_COOLDOWNS_UPDATE(event, unit)
   lib.tracked_players[unit][spellid].cooldown_end = (startTime / 1000) + (duration / 1000)
   lib.callbacks:Fire("LCT_CooldownUsed", unit, spellid)
 end
-

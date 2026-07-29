@@ -1,299 +1,165 @@
--- ================ DK ================
+-- DEATHKNIGHT arena cooldowns.
+-- Generated from OmniCD's MoP spellDefaults; items and racials are intentionally excluded.
 
--- DK/baseline
--- Death Grip
-LCT_SpellData[49576] = {
-	class = "DEATHKNIGHT",
-	offensive = true,
-	cooldown = 25
-}
--- Mind Freeze
+-- Mind Freeze (interrupt)
 LCT_SpellData[47528] = {
 	class = "DEATHKNIGHT",
 	interrupt = true,
-	cooldown = 15
+	cooldown = 15,
 }
--- Strangulate
+
+-- Asphyxiate (cc)
+LCT_SpellData[108194] = {
+	class = "DEATHKNIGHT",
+	talent = true,
+	cc = true,
+	stun = true,
+	silence = true,
+	replaces = 47476,
+	cooldown = 30,
+}
+
+-- Remorseless Winter (cc)
+LCT_SpellData[108200] = {
+	class = "DEATHKNIGHT",
+	talent = true,
+	cc = true,
+	stun = true,
+	duration = 8,
+	cooldown = 60,
+}
+
+-- Gorefiend's Grasp (aoeCC)
+LCT_SpellData[108199] = {
+	class = "DEATHKNIGHT",
+	talent = true,
+	cc = true,
+	cooldown = 60,
+}
+
+-- Death Grip (disarm)
+LCT_SpellData[49576] = {
+	class = "DEATHKNIGHT",
+	cc = true,
+	cooldown = 25,
+}
+
+-- Strangulate (disarm)
 LCT_SpellData[47476] = {
 	class = "DEATHKNIGHT",
+	cc = true,
 	silence = true,
-	cooldown = 60
+	cooldown = 60,
 }
--- Death and Decay
-LCT_SpellData[43265] = {
-	class = "DEATHKNIGHT",
-	offensive = true,
-	duration = 10,
-	cooldown = 30
-}
--- Icebound Fortitude
-LCT_SpellData[48792] = {
-	class = "DEATHKNIGHT",
-	defensive = true,
-	duration = 8,
-	cooldown = 180
-}
--- Anti-Magic Shell
+
+-- Anti-Magic Shell (defensive)
 LCT_SpellData[48707] = {
 	class = "DEATHKNIGHT",
 	defensive = true,
 	duration = 5,
-	cooldown = 45
+	cooldown = 45,
 }
--- Raise Ally
-LCT_SpellData[61999] = {
+
+-- Dancing Rune Weapon (defensive)
+LCT_SpellData[49028] = {
 	class = "DEATHKNIGHT",
-	res = true,
-	cooldown = 600
-}
--- Empower Rune Weapon
-LCT_SpellData[47568] = {
-	class = "DEATHKNIGHT",
-	offensive = true,
-	cooldown = 300
-}
--- Army of the Dead
-LCT_SpellData[42650] = {
-	class = "DEATHKNIGHT",
-	offensive = true,
-	duration = 40,
-	cooldown = 600
-}
--- Outbreak
-LCT_SpellData[77575] = {
-	class = "DEATHKNIGHT",
-	offensive = true,
-	cooldown = 60
-}
--- Dark Simulacrum
-LCT_SpellData[77606] = {
-	class = "DEATHKNIGHT",
+	specID = { 250 },
+	defensive = true,
 	duration = 8,
-	cooldown = 60
+	cooldown = 90,
 }
 
+-- Icebound Fortitude (defensive)
+LCT_SpellData[48792] = {
+	class = "DEATHKNIGHT",
+	defensive = true,
+	duration = 8,
+	cooldown = 180,
+}
 
--- DK/talent
--- Plague Leech
-LCT_SpellData[123693] = {
+-- Purgatory (defensive)
+LCT_SpellData[114556] = {
 	class = "DEATHKNIGHT",
 	talent = true,
-	offensive = true,
-	cooldown = 25
+	defensive = true,
+	cooldown = 180,
 }
--- Unholy Blight
-LCT_SpellData[115989] = {
-	class = "DEATHKNIGHT",
-	talent = true,
-	offensive = true,
-	cooldown = 90
-}
--- Anti-Magic Zone
+
+-- Anti-Magic Zone (raidDefensive)
 LCT_SpellData[51052] = {
 	class = "DEATHKNIGHT",
 	talent = true,
 	defensive = true,
 	duration = 3,
-	cooldown = 120
+	cooldown = 120,
 }
--- Lichborne
-LCT_SpellData[49039] = {
-	class = "DEATHKNIGHT",
-	talent = true,
-	offensive = true,
-	defensive = true,
-	duration = 10,
-	cooldown = 120
-}
--- Asphyxiate
-LCT_SpellData[108194] = {
-	class = "DEATHKNIGHT",
-	talent = true,
-	stun = true,
-	silence = true,
-	cooldown = 30
-}
--- Death's Advance
-LCT_SpellData[96268] = {
-	class = "DEATHKNIGHT",
-	talent = true,
-	defensive = true,
-	duration = 6,
-	cooldown = 30
-}
--- Death Pact
+
+-- Death Pact (heal)
 LCT_SpellData[48743] = {
 	class = "DEATHKNIGHT",
 	talent = true,
 	heal = true,
-	cooldown = 120
-}
--- Desecrated Ground
-LCT_SpellData[108201] = {
-	class = "DEATHKNIGHT",
-	talent = true,
-	defensive = true,
-	duration = 10,
-	cooldown = 120
-}
--- Gorefiend's Grasp
-LCT_SpellData[108199] = {
-	class = "DEATHKNIGHT",
-	talent = true,
-	cc = true,
-	cooldown = 60
-}
--- Remorseless Winter
-LCT_SpellData[108200] = {
-	class = "DEATHKNIGHT",
-	talent = true,
-	stun = true,
-	duration = 8,
-	cooldown = 60
-}
--- DK/250 - Blood
--- Vampiric Blood
-LCT_SpellData[55233] = {
-	class = "DEATHKNIGHT",
-	specID = { 250 },
-	heal = true,
-	defensive = true,
-	duration = 10,
-	cooldown = 60
-}
--- Bone Shield
-LCT_SpellData[49222] = {
-	class = "DEATHKNIGHT",
-	specID = { 250 },
-	defensive = true,
-	cooldown = 60
-}
--- Dancing Rune Weapon
-LCT_SpellData[49028] = {
-	class = "DEATHKNIGHT",
-	specID = { 250 },
-	offensive = true,
-	defensive = true,
-	duration = 8,
-	cooldown = 90
-}
--- Dark command
-LCT_SpellData[56222] = {
-	class ="DEATHKNIGHT",
-	specID = { 250 },
-	cooldown = 8
-}
--- Rune Tap
-LCT_SpellData[48982] = {
-	class = "DEATHKNIGHT",
-	specID = { 250 },
-	defensive = true,
-	duration = 3,
-	charges = 2,
-	cooldown = 40
-}
--- Soul Reaper
-LCT_SpellData[114866] = {
-	class = "DEATHKNIGHT",
-	specID = { 250 },
-	offensive = true,
-	cooldown = 6
+	cooldown = 120,
 }
 
--- DK/251 - Frost
--- Pillar of Frost
+-- Empower Rune Weapon (offensive)
+LCT_SpellData[47568] = {
+	class = "DEATHKNIGHT",
+	offensive = true,
+	cooldown = 300,
+}
+
+-- Pillar of Frost (offensive)
 LCT_SpellData[51271] = {
 	class = "DEATHKNIGHT",
 	specID = { 251 },
 	offensive = true,
-	defensive = true,
 	duration = 20,
-	cooldown = 60
-}
--- Soul Reaper
-LCT_SpellData[130735] = {
-	class = "DEATHKNIGHT",
-	specID = { 251 },
-	offensive = true,
-	cooldown = 6
+	cooldown = 60,
 }
 
--- DK/252 - Unholy
--- Summon Gargoyle
+-- Summon Gargoyle (offensive)
 LCT_SpellData[49206] = {
 	class = "DEATHKNIGHT",
 	specID = { 252 },
 	offensive = true,
 	duration = 30,
-	cooldown = 180
-}
--- Soul Reaper
-LCT_SpellData[130736] = {
-	class = "DEATHKNIGHT",
-	specID = { 252 },
-	offensive = true,
-	cooldown = 6
-}
--- Raise dead
-LCT_SpellData[46584] = {
-	class = "DEATHKNIGHT",
-	specID = { 252 },
-	cooldown = 60
+	cooldown = 180,
 }
 
--- DK/pet
--- Gnaw
-LCT_SpellData[47481] = {
+-- Unholy Frenzy (offensive)
+LCT_SpellData[49016] = {
 	class = "DEATHKNIGHT",
-	pet = true,
-	stun = true,
-	cooldown = 60
-}
-LCT_SpellData[91800] = 47481
--- Huddle
-LCT_SpellData[47484] = {
-	class = "DEATHKNIGHT",
-	pet = true,
-	defensive = true,
-	duration = 10,
-	cooldown = 45
-}
-LCT_SpellData[91838] = 47484
--- Leap (Unholy)
-LCT_SpellData[47482] = {
-	class = "DEATHKNIGHT",
-	pet = true,
-	interrupt = true,
-	cc = true,
-	cooldown = 30
-}
--- Leap
-LCT_SpellData[91809] = {
-	class = "DEATHKNIGHT",
-	pet = true,
-	cooldown = 30
-}
--- Monstruous Blow
-LCT_SpellData[91797] = {
-	class = "DEATHKNIGHT",
-	pet = true,
+	specID = { 252 },
 	offensive = true,
-	stun = true,
-	cooldown = 60
+	cooldown = 180,
 }
--- Putrid Bulwark
-LCT_SpellData[91837] = {
+
+-- Desecrated Ground (counterCC)
+LCT_SpellData[108201] = {
 	class = "DEATHKNIGHT",
-	pet = true,
+	talent = true,
 	defensive = true,
 	duration = 10,
-	cooldown = 45
+	cooldown = 120,
 }
--- Shambling Rush
-LCT_SpellData[91802] = {
+
+-- Lichborne (counterCC)
+LCT_SpellData[49039] = {
 	class = "DEATHKNIGHT",
-	pet = true,
-	interrupt = true,
-	cc = true,
-	cooldown = 30
+	talent = true,
+	defensive = true,
+	duration = 10,
+	cooldown = 120,
 }
+
+-- Spell 113072 (defensive)
+LCT_SpellData[113072] = {
+	class = "DEATHKNIGHT",
+	talent = true,
+	defensive = true,
+	cooldown = 180,
+}
+
+-- Alternate combat-log IDs.
+LCT_SpellData[123981] = 114556

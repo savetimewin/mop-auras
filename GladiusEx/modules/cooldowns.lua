@@ -751,7 +751,7 @@ local function UpdateGroupIconFrames(unit, group, sorted_spells)
         if spelldata.pvp_trinket then
             icon = GetPvPTrinketIcon(unit, db, spelldata)
         else
-            icon = spelldata.icon
+            icon = (tracked and tracked.icon) or spelldata.icon
         end
 
         -- set border color
@@ -766,10 +766,10 @@ local function UpdateGroupIconFrames(unit, group, sorted_spells)
 
         -- charges
         local charges
-        if spelldata.charges then
-            charges = (tracked and tracked.charges) or spelldata.charges
-        elseif tracked and tracked.charges_detected then
+        if tracked and tracked.charges_detected then
             charges = tracked.charges or spelldata.opt_charges
+        elseif spelldata.charges then
+            charges = spelldata.charges
         end
 
         -- update frame state
