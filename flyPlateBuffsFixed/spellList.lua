@@ -289,6 +289,7 @@ local war_personal_stackable_debuffs = {
 	115798, -- Weakened Blows 1.4 -- target with this debuff does 10% less physical damage
 	113746, -- Sunder Armor 1.3 -- 4% less armor per stack
 	73975, -- necrotic strike
+	44457, -- Living Bomb
 }
 
 -- size 1.8
@@ -561,12 +562,10 @@ local constraint_debuffs = {
 	41425, -- Hypothermia
 	87023, -- Cauterize
 	25771, -- Forbearance
-	113942, -- Demonic Gateway Cooldown
 	770, -- Faerie Fire, No Check Spell ID, just the debuff name
 	31615, -- Hunter's Mark, No Check Spell ID, just the debuff name
 	1543, -- Flare -- don't check id, not sure exact debuff id
 	34709, -- Shadow Sight -- Stealth Detection. -- Invisibility Detection. -- Increases damage taken by 5%.
-	44457, -- Living Bomb, the contraint is sheep will break on targets that have living bomb, therefore, added.
 }
 
 

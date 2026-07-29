@@ -357,12 +357,10 @@ function GladiusEx.Data.DefaultClassicon()
 
         -- Constraint Debuffs
         [GladiusEx:SafeGetSpellName(87023)] = 2, -- Cauterize
-        [GladiusEx:SafeGetSpellName(113942)] = 2, -- Demonic Gateway Cooldown
         [GladiusEx:SafeGetSpellName(770)] = 2, -- Faerie Fire, No Check Spell ID, just the debuff name
         [GladiusEx:SafeGetSpellName(31615)] = 2, -- Hunter's Mark, No Check Spell ID, just the debuff name
         [GladiusEx:SafeGetSpellName(1543)] = 2, -- Flare -- don't check id, not sure exact debuff id
         [GladiusEx:SafeGetSpellName(34709)] = 2, -- Shadow Sight -- Stealth Detection. -- Invisibility Detection. -- Increases damage taken by 5%.
-        [GladiusEx:SafeGetSpellName(44457)] = 2, -- Living Bomb, the contraint is sheep will break on targets that have living bomb, therefore, added.
 
         -- Stance/Forms
         [GladiusEx:SafeGetSpellName(119030)] = 1.2, -- Spectral Guise
