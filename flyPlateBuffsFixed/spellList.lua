@@ -289,11 +289,12 @@ local war_personal_stackable_debuffs = {
 	115798, -- Weakened Blows 1.4 -- target with this debuff does 10% less physical damage
 	113746, -- Sunder Armor 1.3 -- 4% less armor per stack
 	73975, -- necrotic strike
-	44457, -- Living Bomb
+	44457, -- Living Bomb 1.5
 }
 
 -- size 1.8
 local major_defensive_buffs = {
+	108271, -- Astral Shift
 	16188,-- Ancestral Swiftness, can either be defensive or offensive but want size to be big so added here
 	114214, -- Angelic bulwark
 	110909, -- Alter Time 
@@ -382,6 +383,7 @@ local minor_defensive_buffs = {
 	16689, -- Nature's Grasp Buff
 	114039, -- Hand of Purity
 	111264, -- Ice Ward
+	15286, -- Vampiric Embrace
 }
 
 -- size 1.6
@@ -432,6 +434,8 @@ local major_offensive_buffs = {
 local  minor_offensive_buffs = {
 	114206, -- Skull Banner -- 20% Crit Damage
 	116267, -- incanter's absorption
+	120676, -- Stormlash Totem Effect
+	57761, -- Brain Freeze
 	-- 93435, -- Roar of Courage
 	-- 104423, -- Windsong
 	-- 12880, -- Enrage

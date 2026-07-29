@@ -127,7 +127,7 @@ LCT_SpellData[115310] = {
 }
 
 -- Spell 123995 (offensive)
-LCT_SpellData[123995] = {
+LCT_SpellData[132578] = {
 	class = "MONK",
 	talent = true,
 	offensive = true,

@@ -306,6 +306,7 @@ function GladiusEx.Data.DefaultClassicon()
         [GladiusEx:SafeGetSpellName(122291)] = 5, -- Unending Resolve (Druid) (Symbiosis)
         [GladiusEx:SafeGetSpellName(114030)] = 5, -- Vigilance
         [GladiusEx:SafeGetSpellName(131523)] = 5, -- Zen Meditation
+        [GladiusEx:SafeGetSpellName(108271)] = 5, -- Astral Shift
         
         -- Higher Constraint Debuffs
         [GladiusEx:SafeGetSpellName(41425)] = 4.5, -- Hypothermia
@@ -317,6 +318,7 @@ function GladiusEx.Data.DefaultClassicon()
         [GladiusEx:SafeGetSpellName(16689)] = 4, -- Nature's Grasp
         [GladiusEx:SafeGetSpellName(102342)] = 4, -- Ironbark
         [GladiusEx:SafeGetSpellName(111264)] = 4, -- Ice Ward
+        [GladiusEx:SafeGetSpellName(15286)] = 4, -- Vampiric Embrace
 
 		-- 3 Movement Freedom
 		[GladiusEx:SafeGetSpellName(124488)] = 3, -- Zen Focus
