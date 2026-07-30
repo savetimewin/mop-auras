@@ -7,7 +7,6 @@ LCT_SpellData[108482] = {
 	talent = true,
 	defensive = true,
 	mobility = true,
-	cc_break = true,
 	cooldown = 60,
 }
 
@@ -70,15 +69,6 @@ LCT_SpellData[30283] = {
 	talent = true,
 	cc = true,
 	stun = true,
-	cooldown = 30,
-}
-
--- Blood Horror
-LCT_SpellData[111397] = {
-	class = "WARLOCK",
-	talent = true,
-	defensive = true,
-	cc = true,
 	cooldown = 30,
 }
 
@@ -148,24 +138,6 @@ LCT_SpellData[113860] = {
 	cooldown = 120,
 }
 
--- Mannoroth's Fury
-LCT_SpellData[108508] = {
-	class = "WARLOCK",
-	talent = true,
-	offensive = true,
-	duration = 10,
-	cooldown = 60,
-}
-
--- Havoc
-LCT_SpellData[80240] = {
-	class = "WARLOCK",
-	specID = { 267 },
-	offensive = true,
-	duration = 15,
-	cooldown = 25,
-}
-
 -- Demonic Circle: Teleport (movement)
 LCT_SpellData[48020] = {
 	class = "WARLOCK",
@@ -173,14 +145,6 @@ LCT_SpellData[48020] = {
 	mobility = true,
 	cooldown = 30,
 	cooldown_variants = { 26, 25, 21 },
-}
-
--- Demonic Leap
-LCT_SpellData[109151] = {
-	class = "WARLOCK",
-	specID = { 266 },
-	mobility = true,
-	cooldown = 10,
 }
 
 -- Demonic Gateway reuse debuff. This applies to the player who used a

@@ -8,15 +8,6 @@ LCT_SpellData[96231] = {
 	cooldown = 15,
 }
 
--- Avenger's Shield
-LCT_SpellData[31935] = {
-	class = "PALADIN",
-	specID = { 66 },
-	interrupt = true,
-	silence = true,
-	cooldown = 15,
-}
-
 -- Cleanse (dispel)
 LCT_SpellData[4987] = {
 	class = "PALADIN",
@@ -47,13 +38,6 @@ LCT_SpellData[853] = {
 LCT_SpellData[20066] = {
 	class = "PALADIN",
 	talent = true,
-	cc = true,
-	cooldown = 15,
-}
-
--- Turn Evil
-LCT_SpellData[10326] = {
-	class = "PALADIN",
 	cc = true,
 	cooldown = 15,
 }
@@ -182,21 +166,11 @@ LCT_SpellData[86698] = {
 	cooldown = 180,
 }
 
--- Holy Avenger
-LCT_SpellData[105809] = {
-	class = "PALADIN",
-	talent = true,
-	offensive = true,
-	duration = 18,
-	cooldown = 120,
-}
-
 -- Hand of Freedom (freedom)
 LCT_SpellData[1044] = {
 	class = "PALADIN",
 	defensive = true,
 	mobility = true,
-	cc_break = true,
 	duration = 6,
 	opt_charges = 2,
 	cooldown = 25,

@@ -53,15 +53,6 @@ LCT_SpellData[51490] = {
 	cooldown_variants = { 35, 22.5, 17.5 },
 }
 
--- Earthgrab Totem
-LCT_SpellData[51485] = {
-	class = "SHAMAN",
-	talent = true,
-	cc = true,
-	replaces = 2484,
-	cooldown = 30,
-}
-
 -- Astral Shift (defensive)
 LCT_SpellData[108271] = {
 	class = "SHAMAN",
@@ -201,7 +192,6 @@ LCT_SpellData[8177] = {
 LCT_SpellData[8143] = {
 	class = "SHAMAN",
 	defensive = true,
-	cc_break = true,
 	duration = 10,
 	cooldown = 60,
 }
@@ -212,7 +202,6 @@ LCT_SpellData[58875] = {
 	specID = { 263 },
 	defensive = true,
 	mobility = true,
-	cc_break = true,
 	duration = 15,
 	cooldown = 60,
 	cooldown_variants = { 45 },
@@ -223,26 +212,24 @@ LCT_SpellData[108273] = {
 	class = "SHAMAN",
 	talent = true,
 	mobility = true,
-	cc_break = true,
 	duration = 6,
 	cooldown = 60,
 }
 
--- Spiritwalker's Grace (mobility / casting empowerment)
+-- Spiritwalker's Grace (mobility)
 LCT_SpellData[79206] = {
 	class = "SHAMAN",
 	mobility = true,
-	casting = true,
 	duration = 15,
 	cooldown = 120,
 }
 
--- Ancestral Swiftness (casting empowerment)
+-- Ancestral Swiftness (misc)
 LCT_SpellData[16188] = {
 	class = "SHAMAN",
 	talent = true,
 	none = true,
-	casting = true,
+	misc = true,
 	cooldown_starts_on_aura_fade = true,
 	cooldown = 90,
 }

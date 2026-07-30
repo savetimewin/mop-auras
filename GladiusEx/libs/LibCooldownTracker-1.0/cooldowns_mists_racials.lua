@@ -70,7 +70,6 @@ LCT_SpellData[68992] = {
 LCT_SpellData[20589] = {
 	race = "Gnome",
 	defensive = true,
-	cc_break = true,
 	cooldown = 60,
 }
 -- Quaking Palm (Pandaren)

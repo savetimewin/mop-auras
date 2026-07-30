@@ -393,232 +393,319 @@ function GladiusEx.Data.DefaultClassicon()
 end
 
 function GladiusEx.Data.DefaultCooldowns()
-    -- Fresh Arena profiles use the owner's saved GladiusEx layout, with the
-    -- explicit OmniCD overrides applied on top. Detection metadata remains in
-    -- LibCooldownTracker, so spec, talent, pet, and Symbiosis gating is unchanged.
     return {
-        {
-            -- Defensives
-            [1160] = true,
-            [6262] = true,
-            [46924] = true,
-            [48982] = true,
-            [49222] = true,
-            [55233] = true,
-            [55709] = true,
-            [103840] = true,
-            [105809] = true,
-            [108291] = true,
-            [108945] = true,
-            [115295] = true,
-            [116680] = true,
-            [122465] = true,
-        },
-        {
-            -- CC Removal / Dispels
-            [475] = true,
-            [527] = true,
-            [1044] = true,
-            [2782] = true,
-            [4987] = true,
-            [6346] = true,
-            [8143] = true,
-            [18499] = true,
-            [19505] = true,
-            [19801] = true,
-            [20589] = true,
-            [32375] = true,
-            [49039] = true,
-            [51886] = true,
-            [53271] = true,
-            [58875] = true,
-            [77130] = true,
-            [88423] = true,
-            [108273] = true,
-            [108482] = true,
-            [110717] = true,
-            [114029] = true,
-            [114239] = true,
-            [115310] = true,
-            [115450] = true,
-            [116841] = true,
-            [122288] = true,
-        },
-        {
-            -- Crowd Control / Interrupts
-            [99] = true,
-            [1250619] = true,
-            [122] = true,
-            [408] = true,
-            [853] = true,
-            [1499] = true,
-            [1766] = true,
-            [1776] = true,
-            [2094] = true,
-            [2139] = true,
-            [5211] = true,
-            [5246] = true,
-            [5484] = true,
-            [6552] = true,
-            [6789] = true,
-            [8122] = true,
-            [10326] = true,
-            [13813] = true,
-            [15487] = true,
-            [19386] = true,
-            [19503] = true,
-            [19647] = true,
-            [20066] = true,
-            [20549] = true,
-            [28730] = true,
-            [30283] = true,
-            [31661] = true,
-            [31935] = true,
-            [34490] = true,
-            [44572] = true,
-            [46968] = true,
-            [47476] = true,
-            [47482] = true,
-            [47528] = true,
-            [49576] = true,
-            [51485] = true,
-            [51490] = true,
-            [51514] = true,
-            [57994] = true,
-            [64044] = true,
-            [76577] = true,
-            [77606] = true,
-            [78675] = true,
-            [80240] = true,
-            [80964] = true,
-            [88625] = true,
-            [89766] = true,
-            [91797] = true,
-            [96231] = true,
-            [102060] = true,
-            [102359] = true,
-            [102793] = true,
-            [105593] = true,
-            [107079] = true,
-            [107566] = true,
-            [107570] = true,
-            [108194] = true,
-            [108199] = true,
-            [108269] = true,
-            [108920] = true,
-            [108921] = true,
-            [109248] = true,
-            [109259] = true,
-            [110693] = true,
-            [110698] = true,
-            [111397] = true,
-            [113004] = true,
-            [113286] = true,
-            [113656] = true,
-            [115078] = true,
-            [115750] = true,
-            [116705] = true,
-            [116844] = true,
-            [117368] = true,
-            [118000] = true,
-            [119381] = true,
-            [119392] = true,
-            [126458] = true,
-            [147362] = true,
-        },
-        {
-            -- Offensives
-            [1719] = true,
-            [5217] = true,
-            [10060] = true,
-            [11129] = true,
-            [12042] = true,
-            [12292] = true,
-            [12472] = true,
-            [13750] = true,
-            [13809] = true,
-            [14183] = true,
-            [14185] = true,
-            [16166] = true,
-            [31884] = true,
-            [47568] = true,
-            [49016] = true,
-            [49028] = true,
-            [49206] = true,
-            [50334] = true,
-            [51271] = true,
-            [51533] = true,
-            [51690] = true,
-            [51713] = true,
-            [55342] = true,
-            [64382] = true,
-            [79140] = true,
-            [84714] = true,
-            [19647] = true,
-            [102558] = true,
-            [105809] = true,
-            [106951] = true,
-            [107574] = true,
-            [108508] = true,
-            [109259] = true,
-            [112071] = true,
-            [113858] = true,
-            [113860] = true,
-            [113861] = true,
-            [114049] = true,
-            [114207] = true,
-            [115080] = true,
-            [115288] = true,
-            [115989] = true,
-            [121471] = true,
-            [123904] = true,
-            [137619] = true,
-        },
-        {
-            -- Mobility / Mana / Casting / Misc
-            [781] = true,
-            [1850] = true,
-            [1953] = true,
-            [2983] = true,
-            [3411] = true,
-            [12043] = true,
-            [16188] = true,
-            [29166] = true,
-            [34433] = true,
-            [36554] = true,
-            [48020] = true,
-            [54428] = true,
-            [64901] = true,
-            [73325] = true,
-            [79206] = true,
-            [85499] = true,
-            [89485] = true,
-            [96268] = true,
-            [101545] = true,
-            [102280] = true,
-            [102417] = true,
-            [106898] = true,
-            [108843] = true,
-            [109132] = true,
-            [109151] = true,
-            [110718] = true,
-            [110806] = true,
-            [112833] = true,
-            [113073] = true,
-            [113942] = true,
-            [121536] = true,
-            [122292] = true,
-            [122294] = true,
-            [123040] = true,
-            [1250619] = true,
-            [132158] = true,
-        },
-        {
-            -- PvP Trinket
-            [42292] = true,
-            [59752] = true,
-        },
-    }
+		{
+			-- OmniCD MoP arena class/spec/talent defaults.
+			-- DEATHKNIGHT
+			[47528] = true, -- interrupt
+			[108194] = true, -- cc
+			[108200] = true, -- cc
+			[108199] = true, -- aoeCC
+			[49576] = true, -- disarm
+			[47476] = true, -- disarm
+			[48707] = true, -- defensive
+			[49028] = true, -- defensive
+			[48792] = true, -- defensive
+			[114556] = true, -- defensive
+			[51052] = true, -- raidDefensive
+			[48743] = true, -- heal
+			[47568] = true, -- offensive
+			[51271] = true, -- offensive
+			[49206] = true, -- offensive
+			[49016] = true, -- offensive
+			[108201] = true, -- counterCC
+			[49039] = true, -- counterCC
+			[96268] = true, -- movement: Death's Advance
+			[113072] = true, -- Symbiosis: Might of Ursoc (Blood)
+			[113516] = true, -- Symbiosis: Wild Mushroom: Plague (Frost/Unholy)
+			-- DRUID
+			[80964] = true, -- interrupt
+			[78675] = true, -- interrupt
+			[88423] = true, -- dispel
+			[2782] = true, -- dispel
+			[99] = true, -- aoeCC
+			[5211] = true, -- cc
+			[132469] = true, -- aoeCC
+			[22812] = true, -- defensive
+			[106922] = true, -- defensive
+			[108238] = true, -- defensive
+			[61336] = true, -- defensive
+			[102342] = true, -- externalDefensive
+			[124974] = true, -- raidDefensive
+			[740] = true, -- raidDefensive
+			[50334] = true, -- offensive
+			[106951] = true, -- offensive
+			[112071] = true, -- offensive
+			[102558] = true, -- offensive
+			[1850] = true, -- mobility: Dash
+			[102280] = true, -- mobility: Displacer Beast
+			[102417] = true, -- mobility: Wild Charge
+			[106898] = true, -- mobility: Stampeding Roar
+			[29166] = true, -- mana: Innervate
+			[132158] = true, -- misc: Nature's Swiftness
+			-- Symbiosis (Druid side; only the aura-detected spell is shown)
+			[110570] = true, -- Anti-Magic Shell
+			[122285] = true, -- Bone Shield
+			[110575] = true, -- Icebound Fortitude
+			[110588] = true, -- Misdirection
+			[110597] = true, -- Play Dead
+			[110600] = true, -- Ice Trap
+			[110617] = true, -- Deterrence
+			[110621] = true, -- Mirror Image
+			[110693] = true, -- Frost Nova
+			[110696] = true, -- Ice Block
+			[126458] = true, -- Grapple Weapon
+			[126449] = true, -- Clash
+			[126453] = true, -- Elusive Brew
+			[126456] = true, -- Fortifying Brew
+			[110698] = true, -- Hammer of Justice
+			[110700] = true, -- Divine Shield
+			[110701] = true, -- Consecration
+			[122288] = true, -- Cleanse
+			[110707] = true, -- Mass Dispel
+			[110715] = true, -- Dispersion
+			[110717] = true, -- Fear Ward
+			[110718] = true, -- Leap of Faith
+			[110788] = true, -- Cloak of Shadows
+			[110730] = true, -- Redirect
+			[110791] = true, -- Evasion
+			[110807] = true, -- Feral Spirit
+			[110806] = true, -- Spiritwalker's Grace
+			[122291] = true, -- Unending Resolve
+			[110810] = true, -- Soul Swap
+			[122290] = true, -- Life Tap
+			[112970] = true, -- Demonic Circle: Teleport
+			[122292] = true, -- Intervene
+			[112997] = true, -- Shattering Blow
+			[113002] = true, -- Spell Reflection
+			[113004] = true, -- Intimidating Roar
+			-- HUNTER
+			[147362] = true, -- interrupt
+			[34490] = true, -- interrupt
+			[1499] = true, -- cc
+			[19577] = true, -- cc
+			[19503] = true, -- cc
+			[19386] = true, -- cc
+			[109248] = true, -- aoeCC
+			[19263] = true, -- immunity
+			[51753] = true, -- defensive
+			[53480] = true, -- externalDefensive
+			[109304] = true, -- heal
+			[131894] = true, -- offensive
+			[19574] = true, -- offensive
+			[3045] = true, -- offensive
+			[121818] = true, -- offensive
+			[53271] = true, -- mobility: Master's Call
+			[781] = true, -- mobility: Disengage
+			[113073] = true, -- Symbiosis: Dash
+			-- MAGE
+			[2139] = true, -- interrupt
+			[475] = true, -- dispel
+			[44572] = true, -- cc
+			[31661] = true, -- aoeCC
+			[113724] = true, -- aoeCC
+			[45438] = true, -- defensive: Ice Block
+			[108978] = true, -- defensive
+			[86949] = true, -- defensive
+			[11958] = true, -- defensive
+			[110959] = true, -- defensive
+			[115610] = true, -- defensive
+			[12042] = true, -- offensive
+			[11129] = true, -- offensive
+			[12472] = true, -- offensive
+			[55342] = true, -- offensive
+			[108843] = true, -- mobility: Blazing Speed
+			[1953] = true, -- mobility: Blink
+			[12043] = true, -- misc: Presence of Mind
+			[12051] = true, -- mana: Evocation
+			[113074] = true, -- Symbiosis: Healing Touch
+			-- MONK
+			[137562] = true, -- pvptrinket
+			[116705] = true, -- interrupt
+			[115450] = true, -- dispel
+			[115078] = true, -- cc
+			[119381] = true, -- aoeCC
+			[116844] = true, -- aoeCC
+			[117368] = true, -- disarm
+			[122278] = true, -- defensive
+			[122783] = true, -- defensive
+			[115203] = true, -- defensive
+			[122465] = true, -- immunity: Dematerialize (Mistweaver)
+			[122470] = true, -- defensive
+			[115176] = true, -- defensive
+			[115213] = true, -- externalDefensive
+			[116849] = true, -- externalDefensive
+			[115310] = true, -- raidDefensive
+			[113656] = true, -- offensive: Fists of Fury (Windwalker)
+			[115288] = true, -- offensive: Energizing Brew (Windwalker)
+			[132578] = true, -- offensive: Invoke Xuen, the White Tiger
+			[116841] = true, -- mobility: Tiger's Lust
+			[115008] = true, -- mobility: Chi Torpedo
+			[101545] = true, -- mobility: Flying Serpent Kick (Windwalker)
+			[109132] = true, -- mobility: Roll
+			[122057] = true, -- mobility/cc: Clash (Brewmaster)
+			[119996] = true, -- mobility: Transcendence: Transfer
+			[113306] = true, -- Symbiosis: Survival Instincts (Brewmaster)
+			[127361] = true, -- Symbiosis: Bear Hug (Windwalker)
+			-- PALADIN
+			[96231] = true, -- interrupt
+			[4987] = true, -- dispel
+			[105593] = true, -- cc
+			[853] = true, -- cc
+			[20066] = true, -- cc
+			[115750] = true, -- aoeCC
+			[642] = true, -- immunity
+			[31850] = true, -- defensive
+			[498] = true, -- defensive
+			[86659] = true, -- defensive
+			[1022] = true, -- externalDefensive
+			[114039] = true, -- externalDefensive
+			[6940] = true, -- externalDefensive
+			[31821] = true, -- raidDefensive
+			[86669] = true, -- heal
+			[31884] = true, -- offensive
+			[31842] = true, -- offensive
+			[114157] = true, -- offensive
+			[86698] = true, -- offensive
+			[1044] = true, -- mobility: Hand of Freedom
+			[54428] = true, -- mana: Divine Plea (Holy)
+			[85499] = true, -- mobility: Speed of Light
+			[113075] = true, -- Symbiosis: Barkskin (Protection)
+			-- PRIEST
+			[15487] = true, -- interrupt
+			[32375] = true, -- dispel
+			[527] = true, -- dispel
+			[88625] = true, -- cc
+			[64044] = true, -- cc
+			[108921] = true, -- cc
+			[8122] = true, -- aoeCC
+			[19236] = true, -- defensive
+			[47585] = true, -- defensive
+			[108968] = true, -- defensive
+			[47788] = true, -- externalDefensive
+			[33206] = true, -- externalDefensive
+			[64843] = true, -- raidDefensive
+			[126135] = true, -- raidDefensive
+			[62618] = true, -- raidDefensive
+			[15286] = true, -- raidDefensive
+			[10060] = true, -- offensive
+			[34433] = true, -- offensive/mana: Shadowfiend
+			[123040] = true, -- offensive/mana: Mindbender
+			[6346] = true, -- counterCC
+			[89485] = true, -- counterCC
+			[32379] = true, -- counterCC
+			[129176] = true, -- counterCC
+			[121536] = true, -- mobility: Angelic Feather
+			[114239] = true, -- mobility: Phantasm
+			[73325] = true, -- mobility: Leap of Faith
+			[64901] = true, -- mana: Hymn of Hope
+			[112833] = true, -- misc: Spectral Guise
+			[113277] = true, -- Symbiosis: Tranquility (Shadow)
+			-- ROGUE
+			[1766] = true, -- interrupt
+			[2094] = true, -- cc
+			[408] = true, -- cc
+			[76577] = true, -- cc
+			[51722] = true, -- disarm
+			[31230] = true, -- defensive
+			[31224] = true, -- defensive
+			[74001] = true, -- defensive
+			[5277] = true, -- defensive
+			[14185] = true, -- defensive
+			[1856] = true, -- defensive
+			[13750] = true, -- offensive
+			[51690] = true, -- offensive
+			[121471] = true, -- offensive
+			[51713] = true, -- offensive
+			[79140] = true, -- offensive
+			[36554] = true, -- mobility: Shadowstep
+			[2983] = true, -- mobility: Sprint
+			[113613] = true, -- Symbiosis: Growl
+			-- SHAMAN
+			[57994] = true, -- interrupt
+			[51886] = true, -- dispel
+			[77130] = true, -- dispel
+			[51514] = true, -- cc
+			[108269] = true, -- aoeCC
+			[51490] = true, -- aoeCC
+			[108271] = true, -- defensive
+			[108285] = true, -- defensive
+			[2062] = true, -- defensive
+			[30884] = true, -- defensive
+			[30823] = true, -- defensive
+			[108270] = true, -- defensive
+			[108281] = true, -- raidDefensive
+			[108280] = true, -- raidDefensive
+			[98008] = true, -- raidDefensive
+			[114049] = true, -- offensive
+			[16166] = true, -- offensive
+			[51533] = true, -- offensive
+			[2894] = true, -- offensive
+			[120668] = true, -- offensive
+			[8177] = true, -- counterCC
+			[8143] = true, -- counterCC
+			[58875] = true, -- mobility: Spirit Walk
+			[108273] = true, -- mobility: Windwalk Totem
+			[79206] = true, -- mobility: Spiritwalker's Grace
+			[16188] = true, -- misc: Ancestral Swiftness
+			[16190] = true, -- mana: Mana Tide Totem
+			[113286] = true, -- Symbiosis: Solar Beam (Elemental/Enhancement)
+			[113289] = true, -- Symbiosis: Prowl (Restoration)
+			-- WARLOCK
+			[108482] = true, -- defensive/mobility: Unbound Will
+			[108501] = true, -- interrupt
+			[19647] = true, -- interrupt
+			[19505] = true, -- dispel
+			[89766] = true, -- Axe Toss (Felguard/Wrathguard)
+			[6789] = true, -- cc
+			[5484] = true, -- aoeCC
+			[30283] = true, -- aoeCC
+			[110913] = true, -- defensive
+			[108416] = true, -- defensive
+			[104773] = true, -- defensive
+			[108359] = true, -- heal
+			[113858] = true, -- offensive
+			[113861] = true, -- offensive
+			[113860] = true, -- offensive
+			[48020] = true, -- mobility: Demonic Circle: Teleport
+			[113942] = true, -- mobility: Demonic Gateway reuse debuff
+			[113295] = true, -- Symbiosis: Rejuvenation
+			-- WARRIOR
+			[102060] = true, -- interrupt
+			[6552] = true, -- interrupt
+			[5246] = true, -- cc
+			[46968] = true, -- cc
+			[107570] = true, -- cc
+			[118000] = true, -- aoeCC
+			[676] = true, -- disarm
+			[114203] = true, -- defensive
+			[118038] = true, -- defensive
+			[12975] = true, -- defensive
+			[871] = true, -- defensive
+			[114030] = true, -- externalDefensive
+			[97462] = true, -- raidDefensive
+			[55694] = true, -- heal
+			[107574] = true, -- offensive/mobility: Avatar
+			[86346] = true, -- offensive
+			[1719] = true, -- offensive
+			[114207] = true, -- offensive
+			[18499] = true, -- counterCC
+			[3411] = true, -- counterCC
+			[114028] = true, -- counterCC
+			[114029] = true, -- counterCC
+			[23920] = true, -- counterCC
+			[1250619] = true, -- mobility: Charge
+			[6544] = true, -- mobility: Heroic Leap
+			[64382] = true, -- misc: Shattering Throw
+			[122294] = true, -- Symbiosis: Stampeding Shout (Arms/Fury)
+			[122286] = true, -- Symbiosis: Savage Defense (Protection)
+		},
+		{
+			-- Existing PvP trinket/racial group (unchanged).
+			[42292] = true,
+			[59752] = true
+		}
+	}
 end
 
 function GladiusEx.Data.InterruptModifiers()
@@ -765,4 +852,6 @@ end
 function GladiusEx.Data.GetNumArenaOpponentSpecs()
     return GetNumArenaOpponentSpecs()
 end
+
+
 

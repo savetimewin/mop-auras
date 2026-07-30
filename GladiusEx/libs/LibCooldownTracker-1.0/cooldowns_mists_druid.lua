@@ -63,22 +63,6 @@ LCT_SpellData[132469] = {
 	cooldown = 30,
 }
 
--- Mass Entanglement
-LCT_SpellData[102359] = {
-	class = "DRUID",
-	talent = true,
-	cc = true,
-	cooldown = 30,
-}
-
--- Ursol's Vortex
-LCT_SpellData[102793] = {
-	class = "DRUID",
-	talent = true,
-	cc = true,
-	cooldown = 60,
-}
-
 -- Barkskin (defensive)
 LCT_SpellData[22812] = {
 	class = "DRUID",
@@ -178,24 +162,6 @@ LCT_SpellData[102558] = {
 	cooldown = 180,
 }
 
--- Heart of the Wild
-LCT_SpellData[108291] = {
-	class = "DRUID",
-	talent = true,
-	offensive = true,
-	cooldown = 360,
-	cooldown_overload = { [104] = 180 },
-}
-
--- Tiger's Fury
-LCT_SpellData[5217] = {
-	class = "DRUID",
-	specID = { 103 },
-	offensive = true,
-	duration = 6,
-	cooldown = 30,
-}
-
 -- Innervate (mana)
 LCT_SpellData[29166] = {
 	class = "DRUID",
@@ -204,12 +170,12 @@ LCT_SpellData[29166] = {
 	cooldown = 180,
 }
 
--- Nature's Swiftness (casting empowerment)
+-- Nature's Swiftness (misc)
 LCT_SpellData[132158] = {
 	class = "DRUID",
 	specID = { 102, 103, 105 },
 	none = true,
-	casting = true,
+	misc = true,
 	cooldown_starts_on_aura_fade = true,
 	cooldown = 60,
 }
@@ -250,7 +216,6 @@ LCT_SpellData[106898] = {
 -- Alternate combat-log IDs.
 LCT_SpellData[80965] = 80964
 LCT_SpellData[93985] = 80964
-LCT_SpellData[106839] = 80964
 LCT_SpellData[97547] = 78675
 LCT_SpellData[102543] = 102558
 LCT_SpellData[102560] = 102558
@@ -259,4 +224,3 @@ LCT_SpellData[49376] = 102417
 LCT_SpellData[102383] = 102417
 LCT_SpellData[102401] = 102417
 LCT_SpellData[102416] = 102417
-LCT_SpellData[77761] = 106898

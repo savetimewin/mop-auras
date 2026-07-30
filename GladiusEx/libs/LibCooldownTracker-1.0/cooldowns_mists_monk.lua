@@ -33,15 +33,6 @@ LCT_SpellData[115078] = {
 	cooldown = 15,
 }
 
--- Charging Ox Wave
-LCT_SpellData[119392] = {
-	class = "MONK",
-	talent = true,
-	cc = true,
-	stun = true,
-	cooldown = 30,
-}
-
 -- Leg Sweep (aoeCC)
 LCT_SpellData[119381] = {
 	class = "MONK",
@@ -91,15 +82,6 @@ LCT_SpellData[115203] = {
 	defensive = true,
 	duration = 20,
 	cooldown = 180,
-}
-
--- Guard
-LCT_SpellData[115295] = {
-	class = "MONK",
-	specID = { 268 },
-	defensive = true,
-	duration = 30,
-	cooldown = 30,
 }
 
 -- Dematerialize (Mistweaver passive immunity / 10-second internal cooldown)
@@ -152,7 +134,6 @@ LCT_SpellData[115310] = {
 	specID = { 270 },
 	defensive = true,
 	mass_dispel = true,
-	cc_break = true,
 	cooldown = 180,
 }
 
@@ -161,8 +142,6 @@ LCT_SpellData[113656] = {
 	class = "MONK",
 	specID = { 269 },
 	offensive = true,
-	cc = true,
-	stun = true,
 	duration = 4,
 	cooldown = 25,
 }
@@ -176,24 +155,16 @@ LCT_SpellData[115288] = {
 	cooldown = 60,
 }
 
--- Touch of Death
-LCT_SpellData[115080] = {
-	class = "MONK",
-	offensive = true,
-	cooldown = 90,
-}
-
 -- Invoke Xuen, the White Tiger (offensive)
-LCT_SpellData[123904] = {
+LCT_SpellData[132578] = {
 	class = "MONK",
 	talent = true,
 	offensive = true,
 	cooldown = 180,
 }
 
--- Alternate spell and threat-aura IDs used by combat logs and older data.
-LCT_SpellData[132578] = 123904
-LCT_SpellData[123995] = 123904
+-- Hidden threat aura used by older data sources.
+LCT_SpellData[123995] = 132578
 
 -- Tiger's Lust (freedom)
 LCT_SpellData[116841] = {
@@ -201,7 +172,6 @@ LCT_SpellData[116841] = {
 	talent = true,
 	defensive = true,
 	mobility = true,
-	cc_break = true,
 	duration = 6,
 	cooldown = 30,
 }
@@ -235,16 +205,6 @@ LCT_SpellData[109132] = {
 	cooldown_variants = { 15 },
 }
 
--- Thunder Focus Tea
-LCT_SpellData[116680] = {
-	class = "MONK",
-	specID = { 270 },
-	heal = true,
-	casting = true,
-	cooldown = 45,
-	cooldown_variants = { 40 },
-}
-
 -- Clash (gap closer / stun)
 LCT_SpellData[122057] = {
 	class = "MONK",
@@ -264,6 +224,3 @@ LCT_SpellData[119996] = {
 	cooldown = 25,
 	cooldown_variants = { 20 },
 }
-
--- Legacy Roll combat-log ID.
-LCT_SpellData[121827] = 109132

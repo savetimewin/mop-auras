@@ -15,13 +15,6 @@ LCT_SpellData[2094] = {
 	cooldown = 120,
 }
 
--- Gouge
-LCT_SpellData[1776] = {
-	class = "ROGUE",
-	cc = true,
-	cooldown = 10,
-}
-
 -- Kidney Shot (cc)
 LCT_SpellData[408] = {
 	class = "ROGUE",
@@ -136,22 +129,6 @@ LCT_SpellData[79140] = {
 	offensive = true,
 	duration = 20,
 	cooldown = 120,
-}
-
--- Premeditation
-LCT_SpellData[14183] = {
-	class = "ROGUE",
-	specID = { 261 },
-	offensive = true,
-	cooldown = 20,
-}
-
--- Marked for Death
-LCT_SpellData[137619] = {
-	class = "ROGUE",
-	talent = true,
-	offensive = true,
-	cooldown = 60,
 }
 
 -- Shadowstep (movement)

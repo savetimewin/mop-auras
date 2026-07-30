@@ -60,14 +60,6 @@ LCT_SpellData[48707] = {
 	cooldown = 45,
 }
 
--- Bone Shield
-LCT_SpellData[49222] = {
-	class = "DEATHKNIGHT",
-	specID = { 250 },
-	defensive = true,
-	cooldown = 60,
-}
-
 -- Dancing Rune Weapon (defensive)
 LCT_SpellData[49028] = {
 	class = "DEATHKNIGHT",
@@ -91,23 +83,6 @@ LCT_SpellData[114556] = {
 	talent = true,
 	defensive = true,
 	cooldown = 180,
-}
-
--- Rune Tap
-LCT_SpellData[48982] = {
-	class = "DEATHKNIGHT",
-	specID = { 250 },
-	defensive = true,
-	cooldown = 30,
-}
-
--- Vampiric Blood
-LCT_SpellData[55233] = {
-	class = "DEATHKNIGHT",
-	specID = { 250 },
-	defensive = true,
-	duration = 10,
-	cooldown = 60,
 }
 
 -- Anti-Magic Zone (raidDefensive)
@@ -152,14 +127,6 @@ LCT_SpellData[49206] = {
 	cooldown = 180,
 }
 
--- Unholy Blight
-LCT_SpellData[115989] = {
-	class = "DEATHKNIGHT",
-	talent = true,
-	offensive = true,
-	cooldown = 90,
-}
-
 -- Unholy Frenzy (offensive)
 LCT_SpellData[49016] = {
 	class = "DEATHKNIGHT",
@@ -182,7 +149,6 @@ LCT_SpellData[49039] = {
 	class = "DEATHKNIGHT",
 	talent = true,
 	defensive = true,
-	cc_break = true,
 	duration = 10,
 	cooldown = 120,
 }
@@ -194,33 +160,6 @@ LCT_SpellData[96268] = {
 	mobility = true,
 	duration = 6,
 	cooldown = 30,
-}
-
--- Dark Simulacrum
-LCT_SpellData[77606] = {
-	class = "DEATHKNIGHT",
-	misc = true,
-	cooldown = 60,
-	cooldown_overload = { [250] = 30 },
-}
-
--- Leap (Unholy ghoul)
-LCT_SpellData[47482] = {
-	class = "DEATHKNIGHT",
-	pet = true,
-	interrupt = true,
-	cc = true,
-	cooldown = 30,
-}
-
--- Monstrous Blow (Dark Transformation ghoul)
-LCT_SpellData[91797] = {
-	class = "DEATHKNIGHT",
-	pet = true,
-	offensive = true,
-	cc = true,
-	stun = true,
-	cooldown = 60,
 }
 
 -- Alternate combat-log IDs.
