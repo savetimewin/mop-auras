@@ -153,11 +153,42 @@ LCT_SpellData[112071] = {
 	cooldown = 180,
 }
 
--- Incarnation (offensive)
-LCT_SpellData[102558] = {
+-- Incarnation: Chosen of Elune (Balance) (offensive)
+LCT_SpellData[102560] = {
 	class = "DRUID",
+	specID = { 102 },
 	talent = true,
 	offensive = true,
+	duration = 30,
+	cooldown = 180,
+}
+
+-- Incarnation: King of the Jungle (Feral) (offensive)
+LCT_SpellData[102543] = {
+	class = "DRUID",
+	specID = { 103 },
+	talent = true,
+	offensive = true,
+	duration = 30,
+	cooldown = 180,
+}
+
+-- Incarnation: Son of Ursoc (Guardian) (offensive)
+LCT_SpellData[102558] = {
+	class = "DRUID",
+	specID = { 104 },
+	talent = true,
+	offensive = true,
+	duration = 30,
+	cooldown = 180,
+}
+
+-- Incarnation: Tree of Life (Restoration) (defensive)
+LCT_SpellData[33891] = {
+	class = "DRUID",
+	specID = { 105 },
+	talent = true,
+	defensive = true,
 	duration = 30,
 	cooldown = 180,
 }
@@ -217,10 +248,9 @@ LCT_SpellData[106898] = {
 LCT_SpellData[80965] = 80964
 LCT_SpellData[93985] = 80964
 LCT_SpellData[97547] = 78675
-LCT_SpellData[102543] = 102558
-LCT_SpellData[102560] = 102558
 LCT_SpellData[16979] = 102417
 LCT_SpellData[49376] = 102417
 LCT_SpellData[102383] = 102417
 LCT_SpellData[102401] = 102417
 LCT_SpellData[102416] = 102417
+

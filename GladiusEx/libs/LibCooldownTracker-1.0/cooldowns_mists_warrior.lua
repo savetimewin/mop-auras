@@ -171,6 +171,9 @@ LCT_SpellData[3411] = {
 	class = "WARRIOR",
 	defensive = true,
 	mobility = true,
+	-- MoP's spell API can return Safeguard's replacement texture for Intervene.
+	-- Pin the baseline Intervene artwork so the two cooldowns stay distinguishable.
+	icon = 132365, -- Ability_Warrior_VictoryRush
 	cooldown = 30,
 }
 
@@ -230,3 +233,4 @@ LCT_SpellData[64382] = {
 	mass_dispel = true,
 	cooldown = 300,
 }
+

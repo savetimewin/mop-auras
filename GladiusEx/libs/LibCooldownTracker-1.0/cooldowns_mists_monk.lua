@@ -156,15 +156,18 @@ LCT_SpellData[115288] = {
 }
 
 -- Invoke Xuen, the White Tiger (offensive)
-LCT_SpellData[132578] = {
+LCT_SpellData[123904] = {
 	class = "MONK",
 	talent = true,
 	offensive = true,
+	duration = 45,
 	cooldown = 180,
 }
 
--- Hidden threat aura used by older data sources.
-LCT_SpellData[123995] = 132578
+-- Alternate Xuen spell IDs emitted by combat-log/aura data.
+-- Both resolve to the canonical talent spell above, so only one icon is shown.
+LCT_SpellData[132578] = 123904
+LCT_SpellData[123995] = 123904
 
 -- Tiger's Lust (freedom)
 LCT_SpellData[116841] = {

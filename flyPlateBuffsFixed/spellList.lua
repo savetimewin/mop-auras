@@ -399,6 +399,7 @@ local major_offensive_buffs = {
 	23505, -- Battleground Damage buff
 	23451, -- Battleground Speed buff 
 	50334, -- Berserk
+	102543, -- Incarnation: King of the Jungle
 	23505, -- Berserking (BG DMG BUFF)
 	13877, -- Blade Flurry 
 	20572, -- Blood Fury 
@@ -408,6 +409,7 @@ local major_offensive_buffs = {
 	126679, -- Call of Victory 
 	126700, -- Surge of Victory
 	112071, -- Celestial Alignment
+	102560, -- Incarnation: Chosen of Elune
 	113858, -- Dark Soul: Instability
 	113861, -- Dark Soul: Knowledge
 	113860, -- Dark Soul: Misery

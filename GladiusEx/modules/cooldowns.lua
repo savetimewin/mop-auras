@@ -4,6 +4,7 @@ local LSM = LibStub("LibSharedMedia-3.0")
 local CT = LibStub("LibCooldownTracker-1.0")
 local LCG = LibStub("LibCustomGlow-1.0")
 local fn = LibStub("LibFunctional-1.0")
+local ACR = LibStub("AceConfigRegistry-3.0")
 
 -- global functions
 local tinsert, tremove, tsort = table.insert, table.remove, table.sort
@@ -1477,6 +1478,10 @@ function Cooldowns:GetGroupName(unit, group)
 end
 
 function Cooldowns:MakeGroupOptions(unit, group)
+    local function RefreshOptions()
+        ACR:NotifyChange("GladiusEx")
+    end
+
     local function getOption(info)
         return (info.arg and self:GetGroupDB(unit, group)[info.arg] or self:GetGroupDB(unit, group)[info[#info]])
     end
@@ -2150,6 +2155,7 @@ function Cooldowns:MakeGroupOptions(unit, group)
                                 end
                             end
                             GladiusEx:UpdateFrames()
+                            RefreshOptions()
                         end,
                         disabled = function()
                             return not self:IsUnitEnabled(unit)
@@ -2167,6 +2173,7 @@ function Cooldowns:MakeGroupOptions(unit, group)
                                 end
                             end
                             GladiusEx:UpdateFrames()
+                            RefreshOptions()
                         end,
                         disabled = function()
                             return not self:IsUnitEnabled(unit)
@@ -2192,6 +2199,7 @@ function Cooldowns:MakeGroupOptions(unit, group)
                                     local opp_db = self:GetGroupDB(opp, opp_group)
                                     self:GetGroupDB(unit, group).cooldownsSpells = opp_db.cooldownsSpells
                                     GladiusEx:UpdateFrames()
+                                    RefreshOptions()
                                     return
                                 end
                             end
@@ -2325,6 +2333,7 @@ function Cooldowns:MakeGroupOptions(unit, group)
                             end
                         end
                         GladiusEx:UpdateFrames()
+                        RefreshOptions()
                     end,
                     disabled = function()
                         return not self:IsUnitEnabled(unit)
@@ -2344,6 +2353,7 @@ function Cooldowns:MakeGroupOptions(unit, group)
                             end
                         end
                         GladiusEx:UpdateFrames()
+                        RefreshOptions()
                     end,
                     disabled = function()
                         return not self:IsUnitEnabled(unit)
@@ -2363,12 +2373,30 @@ function Cooldowns:MakeGroupOptions(unit, group)
     local function setSpell(info, value)
         self:GetGroupDB(unit, group).cooldownsSpells[info.arg] = value
         GladiusEx:UpdateFrames()
+        RefreshOptions()
     end
 
     local args = group_options.args.cooldowns.args
     local cooldownsData = CT:GetCooldownsData()
     local spellNameOrder = {}
     local sortedSpellIds = {}
+
+    local function GetSelectedClassSpellCount(class)
+        local count = 0
+        local cooldownsSpells = self:GetGroupDB(unit, group).cooldownsSpells
+        for spellid, spelldata in pairs(cooldownsData) do
+            if
+                type(spelldata) == "table" and
+                    spelldata.class == class and
+                    (not spelldata.cooldown or spelldata.cooldown < 600) and
+                    not spelldata.hidden and
+                    cooldownsSpells[spellid]
+             then
+                count = count + 1
+            end
+        end
+        return count
+    end
 
     for spellid, spelldata in pairs(cooldownsData) do
         if type(spelldata) == "table" and (not spelldata.cooldown or spelldata.cooldown < 600) and not spelldata.hidden then
@@ -2561,13 +2589,20 @@ function Cooldowns:MakeGroupOptions(unit, group)
                 end
                 args.arena_mechanics.args["spell" .. spellid] = spellconfig
             elseif spelldata.class then
+                local class = spelldata.class
                 local ico =
-                    spelldata.class == "DEATHKNIGHT" and [[Interface\ICONS\Spell_DEATHKNIGHT_classicon]] or
-                    [[Interface\ICONS\ClassIcon_]] .. spelldata.class
-                if not args[spelldata.class] then
-                    args[spelldata.class] = {
+                    class == "DEATHKNIGHT" and [[Interface\ICONS\Spell_DEATHKNIGHT_classicon]] or
+                    [[Interface\ICONS\ClassIcon_]] .. class
+                if not args[class] then
+                    args[class] = {
                         type = "group",
-                        name = LOCALIZED_CLASS_NAMES_MALE[spelldata.class],
+                        name = function()
+                            return string.format(
+                                "%s |cff9f9f9f[%i]|r",
+                                LOCALIZED_CLASS_NAMES_MALE[class],
+                                GetSelectedClassSpellCount(class)
+                            )
+                        end,
                         icon = ico,
                         disabled = function()
                             return not self:IsUnitEnabled(unit)
@@ -2587,7 +2622,7 @@ function Cooldowns:MakeGroupOptions(unit, group)
                             sectionName = string.format("|T%s:18:18:0:0|t %s", icon, sectionName)
                         end
                         AddClassSpell(
-                            args[spelldata.class].args,
+                            args[class].args,
                             "spec" .. specID,
                             sectionName,
                             100 + specID,
@@ -2598,7 +2633,7 @@ function Cooldowns:MakeGroupOptions(unit, group)
                     end
                 elseif spelldata.talent then
                     AddClassSpell(
-                        args[spelldata.class].args,
+                        args[class].args,
                         "talents",
                         "Talents",
                         2,
@@ -2608,7 +2643,7 @@ function Cooldowns:MakeGroupOptions(unit, group)
                     )
                 elseif spelldata.pet then
                     AddClassSpell(
-                        args[spelldata.class].args,
+                        args[class].args,
                         "pets",
                         L["Pet"],
                         10000,
@@ -2618,7 +2653,7 @@ function Cooldowns:MakeGroupOptions(unit, group)
                     )
                 else
                     AddClassSpell(
-                        args[spelldata.class].args,
+                        args[class].args,
                         "base",
                         "Baseline",
                         1,

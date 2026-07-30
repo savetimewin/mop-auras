@@ -177,13 +177,15 @@ function GladiusEx.Data.DefaultClassicon()
         [GladiusEx:SafeGetSpellName(44544)]	= 8.5, -- Fingers of Frost
         [GladiusEx:SafeGetSpellName(12042)]	= 8.5, -- Arcane Power
         [GladiusEx:SafeGetSpellName(114050)] = 8.5, -- Ascendance (Elemental Shaman)
+        [GladiusEx:SafeGetSpellName(16166)] = 8.4, -- Elemental Mastery
         [GladiusEx:SafeGetSpellName(114051)] = 8.5, -- Ascendance (Enhancement Shaman)
         [GladiusEx:SafeGetSpellName(112071)] = 8.5, -- Celestial Alignment
         [GladiusEx:SafeGetSpellName(113858)] = 8.5, -- Dark Soul: Instability
         [GladiusEx:SafeGetSpellName(113861)] = 8.5, -- Dark Soul: Knowledge
         [GladiusEx:SafeGetSpellName(113860)] = 8.5, -- Dark Soul: Misery
-        -- [GladiusEx:SafeGetSpellName(16166)] = 8.5, -- Elemental Mastery
-        
+        [GladiusEx:SafeGetSpellName(112071)] = 8.5, -- Celestial Alignment
+        [GladiusEx:SafeGetSpellName(102560)] = 8.4, -- Incarnation: Chosen of Elune
+
         -- Roots
         [GladiusEx:SafeGetSpellName(96294)]	= 8, -- Chains of Ice (Chilblains)
         [GladiusEx:SafeGetSpellName(25999)]	= 8, -- Charge
@@ -220,6 +222,7 @@ function GladiusEx.Data.DefaultClassicon()
 
         -- Offensive - Melee Burst CD disarm not effective can be stopped with roots
         [GladiusEx:SafeGetSpellName(50334)]	= 7.5, -- Berserk
+        [GladiusEx:SafeGetSpellName(102543)] = 7.4, -- Incarnation: King of the Jungle
         [GladiusEx:SafeGetSpellName(115288)] = 7.5, -- Energizing Brew
 
         -- Disarms
@@ -429,6 +432,7 @@ function GladiusEx.Data.DefaultCooldowns()
 			[22812] = true, -- defensive
 			[106922] = true, -- defensive
 			[108238] = true, -- defensive
+			[33891] = true, -- defensive: Incarnation: Tree of Life (Restoration)
 			[61336] = true, -- defensive
 			[102342] = true, -- externalDefensive
 			[124974] = true, -- raidDefensive
@@ -436,7 +440,9 @@ function GladiusEx.Data.DefaultCooldowns()
 			[50334] = true, -- offensive
 			[106951] = true, -- offensive
 			[112071] = true, -- offensive
-			[102558] = true, -- offensive
+			[102560] = true, -- offensive: Incarnation: Chosen of Elune (Balance)
+			[102543] = true, -- offensive: Incarnation: King of the Jungle (Feral)
+			[102558] = true, -- offensive: Incarnation: Son of Ursoc (Guardian)
 			[1850] = true, -- mobility: Dash
 			[102280] = true, -- mobility: Displacer Beast
 			[102417] = true, -- mobility: Wild Charge
@@ -852,6 +858,7 @@ end
 function GladiusEx.Data.GetNumArenaOpponentSpecs()
     return GetNumArenaOpponentSpecs()
 end
+
 
 
 
