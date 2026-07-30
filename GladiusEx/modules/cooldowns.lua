@@ -18,18 +18,99 @@ local TESTING_EXTRA_SPELLS = GladiusEx.IS_RETAIL and {336126} or {42292}
 
 local GetDefaultSpells = GladiusEx.Data.DefaultCooldowns
 local CATEGORY_NAMES = {
+    cc_break = "CC Removal",
+    casting = "Casting Empowerment",
     mobility = "Mobility",
-    mana = "Mana",
-    misc = "Misc",
+    mana = "Mana Recovery",
+    misc = "Miscellaneous",
+    purge = "Purge",
 }
 local CATEGORY_DEFAULT_COLORS = {
+    cc_break = {r = 1, g = 1, b = 1},
+    casting = {r = 0.75, g = 0.45, b = 1},
     mobility = {r = 1, g = 0.65, b = 0},
     mana = {r = 0.2, g = 0.55, b = 1},
     misc = {r = 0.75, g = 0.75, b = 0.75},
+    purge = {r = 1, g = 1, b = 1},
 }
 
 local function GetCategoryName(category)
     return CATEGORY_NAMES[category] or L["cat:" .. category]
+end
+
+local CONFIG_CATEGORY_ORDER = {
+    "defensive",
+    "offensive",
+    "crowd_control",
+    "interrupt",
+    "mobility",
+    "mana",
+    "casting",
+    "cc_break",
+    "dispel",
+    "heal",
+    "pvp_trinket",
+    "misc",
+    "uncat",
+}
+
+local CONFIG_CATEGORY_NAMES = {
+    defensive = "Defensives",
+    offensive = "Offensives",
+    crowd_control = "Crowd Control",
+    interrupt = "Interrupts",
+    mobility = "Mobility",
+    mana = "Mana Recovery",
+    casting = "Casting Empowerment",
+    cc_break = "CC Removal",
+    dispel = "Dispels & Purges",
+    heal = "Healing",
+    pvp_trinket = "PvP Trinkets",
+    misc = "Miscellaneous",
+    uncat = "Uncategorized",
+}
+
+local CLASS_ORDER = {
+    DEATHKNIGHT = 1,
+    DRUID = 2,
+    HUNTER = 3,
+    MAGE = 4,
+    MONK = 5,
+    PALADIN = 6,
+    PRIEST = 7,
+    ROGUE = 8,
+    SHAMAN = 9,
+    WARLOCK = 10,
+    WARRIOR = 11,
+}
+
+local function GetConfigCategory(spelldata)
+    if spelldata.pvp_trinket then
+        return "pvp_trinket"
+    elseif spelldata.cc_break then
+        return "cc_break"
+    elseif spelldata.dispel or spelldata.mass_dispel or spelldata.purge then
+        return "dispel"
+    elseif spelldata.interrupt then
+        return "interrupt"
+    elseif spelldata.cc or spelldata.stun or spelldata.silence or spelldata.knockback then
+        return "crowd_control"
+    elseif spelldata.casting then
+        return "casting"
+    elseif spelldata.defensive or spelldata.immune then
+        return "defensive"
+    elseif spelldata.offensive then
+        return "offensive"
+    elseif spelldata.mobility then
+        return "mobility"
+    elseif spelldata.mana then
+        return "mana"
+    elseif spelldata.heal then
+        return "heal"
+    elseif spelldata.misc or spelldata.none then
+        return "misc"
+    end
+    return "uncat"
 end
 
 local function MakeGroupDb(settings)
@@ -63,8 +144,10 @@ local function MakeGroupDb(settings)
         cooldownsIconCooldownAlpha = 0.2,
         cooldownsCatPriority = {
             "pvp_trinket",
+            "cc_break",
             "dispel",
             "mass_dispel",
+            "purge",
             "immune",
             "interrupt",
             "silence",
@@ -76,13 +159,16 @@ local function MakeGroupDb(settings)
             "defensive",
             "heal",
             "mana",
+            "casting",
             "misc",
             "uncat"
         },
         cooldownsCatColors = {
             ["pvp_trinket"] = {r = 0, g = 0, b = 0},
+            ["cc_break"] = {r = 1, g = 1, b = 1},
             ["dispel"] = {r = 1, g = 1, b = 1},
             ["mass_dispel"] = {r = 1, g = 1, b = 1},
+            ["purge"] = {r = 1, g = 1, b = 1},
             ["immune"] = {r = 0, g = 0, b = 1},
             ["interrupt"] = {r = 1, g = 0, b = 1},
             ["silence"] = {r = 1, g = 0, b = 1},
@@ -94,6 +180,7 @@ local function MakeGroupDb(settings)
             ["defensive"] = {r = 0, g = 1, b = 0},
             ["heal"] = {r = 0, g = 1, b = 0},
             ["mana"] = {r = 0.2, g = 0.55, b = 1},
+            ["casting"] = {r = 0.75, g = 0.45, b = 1},
             ["misc"] = {r = 0.75, g = 0.75, b = 0.75},
             ["uncat"] = {r = 1, g = 1, b = 1}
         },
@@ -109,15 +196,27 @@ local function MakeGroupDb(settings)
     return fn.merge(defaults, settings or {})
 end
 
-local defaults = {
-    num_groups = 2,
-    group_table = {
-        [1] = "group_1",
-        [2] = "group_2"
-    }
-}
+local defaultSpellGroups = GetDefaultSpells()
+local hasArenaQuadrantDefaults = defaultSpellGroups[6] ~= nil
 
-local g1_defaults =
+local function MergeSpellGroups(first, last)
+    local merged = {}
+    for index = first, last do
+        for spellid, enabled in pairs(defaultSpellGroups[index] or {}) do
+            if enabled then
+                merged[spellid] = true
+            end
+        end
+    end
+    return merged
+end
+
+local partyPrimarySpells =
+    hasArenaQuadrantDefaults and MergeSpellGroups(1, 5) or defaultSpellGroups[1]
+local partyTrinketSpells =
+    hasArenaQuadrantDefaults and defaultSpellGroups[6] or defaultSpellGroups[2]
+
+local partyPrimaryDefaults =
     MakeGroupDb {
     cooldownsGroupId = 1,
     cooldownsBorderSize = 0,
@@ -125,10 +224,10 @@ local g1_defaults =
     cooldownsPaddingY = 2,
     cooldownsSpacingX = 2,
     cooldownsSpacingY = 0,
-    cooldownsSpells = GetDefaultSpells()[1]
+    cooldownsSpells = partyPrimarySpells or {}
 }
 
-local g2_defaults =
+local partyTrinketDefaults =
     MakeGroupDb {
     cooldownsGroupId = 2,
     cooldownsPerColumn = 2,
@@ -137,71 +236,210 @@ local g2_defaults =
     cooldownsCrop = true,
     cooldownsTooltips = false,
     cooldownsBorderSize = 1,
-    cooldownsBorderAvailAlpha = 1.0,
-    cooldownsBorderUsingAlpha = 1.0,
-    cooldownsBorderCooldownAlpha = 1.0,
-    cooldownsIconAvailAlpha = 1.0,
-    cooldownsIconUsingAlpha = 1.0,
-    cooldownsIconCooldownAlpha = 1.0,
-    cooldownsSpells = GetDefaultSpells()[2],
+    cooldownsBorderAvailAlpha = 1,
+    cooldownsBorderUsingAlpha = 1,
+    cooldownsBorderCooldownAlpha = 1,
+    cooldownsIconAvailAlpha = 1,
+    cooldownsIconUsingAlpha = 1,
+    cooldownsIconCooldownAlpha = 1,
+    cooldownsSpells = partyTrinketSpells or {},
 }
 
-local Cooldowns =
-    GladiusEx:NewGladiusExModule(
-    "Cooldowns",
-    fn.merge(
-        defaults,
-        {
-            groups = {
-                ["group_1"] = fn.merge(
-                    g1_defaults,
-                    {
-                        cooldownsAttachTo = "Frame",
-                        cooldownsAnchor = "TOPLEFT",
-                        cooldownsRelativePoint = "BOTTOMLEFT",
-                        cooldownsGrow = "DOWNRIGHT",
-                        cooldownsOffsetY = -25
-                    }
-                ),
-                ["group_2"] = fn.merge(
-                    g2_defaults,
-                    {
-                        cooldownsAttachTo = "Frame",
-                        cooldownsAnchor = "TOPLEFT",
-                        cooldownsRelativePoint = "TOPRIGHT",
-                        cooldownsGrow = "DOWNRIGHT",
-                        cooldownsOffsetX = 5
-                    }
-                )
+local standardArenaDefaults = {
+    num_groups = 2,
+    group_table = {
+        [1] = "group_1",
+        [2] = "group_2"
+    },
+    groups = {
+        ["group_1"] = fn.merge(
+            partyPrimaryDefaults,
+            {
+                cooldownsAttachTo = "Frame",
+                cooldownsAnchor = "TOPLEFT",
+                cooldownsRelativePoint = "BOTTOMLEFT",
+                cooldownsGrow = "DOWNRIGHT",
+                cooldownsOffsetY = -25
             }
-        }
-    ),
-    fn.merge(
-        defaults,
-        {
-            groups = {
-                ["group_1"] = fn.merge(
-                    g1_defaults,
-                    {
-                        cooldownsAttachTo = "Frame",
-                        cooldownsAnchor = "TOPRIGHT",
-                        cooldownsRelativePoint = "BOTTOMRIGHT",
-                        cooldownsGrow = "DOWNLEFT"
-                    }
-                ),
-                ["group_2"] = fn.merge(
-                    g2_defaults,
-                    {
-                        cooldownsAttachTo = "Frame",
-                        cooldownsAnchor = "TOPRIGHT",
-                        cooldownsRelativePoint = "TOPLEFT",
-                        cooldownsGrow = "DOWNLEFT"
-                    }
-                )
+        ),
+        ["group_2"] = fn.merge(
+            partyTrinketDefaults,
+            {
+                cooldownsAttachTo = "Frame",
+                cooldownsAnchor = "TOPLEFT",
+                cooldownsRelativePoint = "TOPRIGHT",
+                cooldownsGrow = "DOWNRIGHT",
+                cooldownsOffsetX = 5
             }
+        )
+    }
+}
+
+local arenaDefaults = standardArenaDefaults
+if hasArenaQuadrantDefaults then
+    local function MakeQuadrantGroup(settings)
+        return MakeGroupDb(
+            fn.merge(
+                {
+                    cooldownsBorderSize = 0,
+                    cooldownsPaddingX = 0,
+                    cooldownsPaddingY = 2,
+                    cooldownsSpacingX = 0,
+                    cooldownsSpacingY = 0,
+                    cooldownsPerColumn = 5,
+                    cooldownsMax = 5,
+                    cooldownsSize = 20,
+                    cooldownsBorderAvailAlpha = 1,
+                    cooldownsBorderUsingAlpha = 1,
+                    cooldownsBorderCooldownAlpha = 1,
+                    cooldownsIconAvailAlpha = 1,
+                    cooldownsIconUsingAlpha = 1,
+                    cooldownsIconCooldownAlpha = 1,
+                },
+                settings
+            )
+        )
+    end
+
+    arenaDefaults = {
+        num_groups = 6,
+        group_table = {
+            [1] = "group_1",
+            [2] = "group_2",
+            [3] = "group_243843732",
+            [4] = "group_1850885390",
+            [5] = "group_1849825734",
+            [6] = "group_1141254317",
+        },
+        groups = {
+            ["group_1"] = MakeQuadrantGroup {
+                name = "Defensives",
+                cooldownsGroupId = 1,
+                cooldownsAttachTo = "Frame",
+                cooldownsAnchor = "BOTTOMLEFT",
+                cooldownsRelativePoint = "BOTTOMLEFT",
+                cooldownsGrow = "DOWNRIGHT",
+                cooldownsOffsetX = 0,
+                cooldownsOffsetY = -22,
+                cooldownsBorderAvailAlpha = 0.4,
+                cooldownsBorderUsingAlpha = 0.4,
+                cooldownsIconAvailAlpha = 0.4,
+                cooldownsIconUsingAlpha = 0.4,
+                cooldownsSpells = defaultSpellGroups[1],
+            },
+            ["group_2"] = MakeGroupDb {
+                name = "CC Removal / Dispels",
+                cooldownsGroupId = 2,
+                cooldownsAttachTo = "Frame",
+                cooldownsAnchor = "TOPLEFT",
+                cooldownsRelativePoint = "TOPRIGHT",
+                cooldownsGrow = "DOWNRIGHT",
+                cooldownsOffsetX = 42,
+                cooldownsOffsetY = 0,
+                cooldownsPerColumn = 5,
+                cooldownsMax = 5,
+                cooldownsSize = 41,
+                cooldownsTooltips = true,
+                cooldownsBorderSize = 1,
+                cooldownsBorderAvailAlpha = 1,
+                cooldownsBorderUsingAlpha = 1,
+                cooldownsBorderCooldownAlpha = 1,
+                cooldownsIconAvailAlpha = 1,
+                cooldownsIconUsingAlpha = 1,
+                cooldownsIconCooldownAlpha = 1,
+                cooldownsSpells = defaultSpellGroups[2],
+            },
+            ["group_243843732"] = MakeQuadrantGroup {
+                name = "CC / Interrupts / Roots",
+                cooldownsGroupId = 243843732,
+                cooldownsAttachTo = "Frame",
+                cooldownsAnchor = "BOTTOMLEFT",
+                cooldownsRelativePoint = "BOTTOMLEFT",
+                cooldownsGrow = "DOWNRIGHT",
+                cooldownsOffsetX = 0,
+                cooldownsOffsetY = -42,
+                cooldownsSpells = defaultSpellGroups[3],
+            },
+            ["group_1850885390"] = MakeQuadrantGroup {
+                name = "Offensives",
+                cooldownsGroupId = 1850885390,
+                cooldownsAttachTo = "Frame",
+                cooldownsAnchor = "BOTTOMRIGHT",
+                cooldownsRelativePoint = "BOTTOMRIGHT",
+                cooldownsGrow = "DOWNRIGHT",
+                cooldownsOffsetX = 63,
+                cooldownsOffsetY = -22,
+                cooldownsSpells = defaultSpellGroups[4],
+            },
+            ["group_1849825734"] = MakeQuadrantGroup {
+                name = "Mobility / Mana / Casting / Misc",
+                cooldownsGroupId = 1849825734,
+                cooldownsAttachTo = "Frame",
+                cooldownsAnchor = "BOTTOMRIGHT",
+                cooldownsRelativePoint = "BOTTOMRIGHT",
+                cooldownsGrow = "DOWNRIGHT",
+                cooldownsOffsetX = 23,
+                cooldownsOffsetY = -42,
+                cooldownsSpells = defaultSpellGroups[5],
+            },
+            ["group_1141254317"] = MakeGroupDb {
+                name = "Trinket",
+                cooldownsGroupId = 1141254317,
+                cooldownsAttachTo = "HealthBar",
+                cooldownsAnchor = "TOPLEFT",
+                cooldownsRelativePoint = "BOTTOMLEFT",
+                cooldownsGrow = "DOWNRIGHT",
+                cooldownsOffsetX = 100,
+                cooldownsOffsetY = 28,
+                cooldownsPerColumn = 1,
+                cooldownsMax = 1,
+                cooldownsSize = 42,
+                cooldownsPaddingX = 0,
+                cooldownsPaddingY = 0,
+                cooldownsSpacingX = 0,
+                cooldownsSpacingY = 0,
+                cooldownsBorderSize = 1,
+                cooldownsBorderAvailAlpha = 1,
+                cooldownsBorderUsingAlpha = 1,
+                cooldownsBorderCooldownAlpha = 1,
+                cooldownsIconAvailAlpha = 1,
+                cooldownsIconUsingAlpha = 1,
+                cooldownsIconCooldownAlpha = 1,
+                cooldownsSpells = defaultSpellGroups[6],
+            },
         }
-    )
-)
+    }
+end
+
+local partyDefaults = {
+    num_groups = 2,
+    group_table = {
+        [1] = "group_1",
+        [2] = "group_2"
+    },
+    groups = {
+        ["group_1"] = fn.merge(
+            partyPrimaryDefaults,
+            {
+                cooldownsAttachTo = "Frame",
+                cooldownsAnchor = "TOPRIGHT",
+                cooldownsRelativePoint = "BOTTOMRIGHT",
+                cooldownsGrow = "DOWNLEFT"
+            }
+        ),
+        ["group_2"] = fn.merge(
+            partyTrinketDefaults,
+            {
+                cooldownsAttachTo = "Frame",
+                cooldownsAnchor = "TOPRIGHT",
+                cooldownsRelativePoint = "TOPLEFT",
+                cooldownsGrow = "DOWNLEFT"
+            }
+        )
+    }
+}
+
+local Cooldowns = GladiusEx:NewGladiusExModule("Cooldowns", arenaDefaults, partyDefaults)
 
 local MAX_ICONS = 40
 
@@ -262,7 +500,7 @@ local function EnsureCooldownCategories(groupdb)
             end
         end
 
-        local required = {"mobility", "mana", "misc"}
+        local required = {"cc_break", "purge", "mobility", "mana", "casting", "misc"}
         for index = 1, #required do
             local category = required[index]
             if not seen[category] then
@@ -2088,6 +2326,7 @@ function Cooldowns:MakeGroupOptions(unit, group)
             },
             cooldowns = {
                 type = "group",
+                childGroups = "tab",
                 name = function()
                     local count = 0
                     local cooldownsSpells = self:GetGroupDB(unit, group).cooldownsSpells
@@ -2171,18 +2410,6 @@ function Cooldowns:MakeGroupOptions(unit, group)
                             return not self:IsUnitEnabled(unit)
                         end,
                         order = 0.7
-                    },
-                    preracesep = {
-                        type = "group",
-                        name = "",
-                        order = 2,
-                        args = {}
-                    },
-                    preitemsep = {
-                        type = "group",
-                        name = "",
-                        order = 4,
-                        args = {}
                     }
                 }
             }
@@ -2336,6 +2563,78 @@ function Cooldowns:MakeGroupOptions(unit, group)
     end
 
     local args = group_options.args.cooldowns.args
+    for index, configCategory in ipairs(CONFIG_CATEGORY_ORDER) do
+        local category = configCategory
+        args[category] = {
+            type = "group",
+            name = function()
+                local enabled = 0
+                local total = 0
+                local cooldownsSpells = self:GetGroupDB(unit, group).cooldownsSpells
+                for spellid, spelldata in pairs(CT:GetCooldownsData()) do
+                    if
+                        type(spelldata) == "table" and
+                        (not spelldata.cooldown or spelldata.cooldown < 600) and
+                        not spelldata.hidden and
+                        GetConfigCategory(spelldata) == category
+                    then
+                        total = total + 1
+                        if cooldownsSpells[spellid] then
+                            enabled = enabled + 1
+                        end
+                    end
+                end
+                return string.format("%s [%i/%i]", CONFIG_CATEGORY_NAMES[category], enabled, total)
+            end,
+            childGroups = "tree",
+            order = 10 + index,
+            args = {
+                enableall = {
+                    type = "execute",
+                    name = L["Enable all"],
+                    desc = L["Enable all the spells in this category"],
+                    func = function()
+                        for spellid, spelldata in pairs(CT:GetCooldownsData()) do
+                            if
+                                type(spelldata) == "table" and
+                                not spelldata.hidden and
+                                GetConfigCategory(spelldata) == category
+                            then
+                                self:GetGroupDB(unit, group).cooldownsSpells[spellid] = true
+                            end
+                        end
+                        GladiusEx:UpdateFrames()
+                    end,
+                    disabled = function()
+                        return not self:IsUnitEnabled(unit)
+                    end,
+                    order = 0.1
+                },
+                disableall = {
+                    type = "execute",
+                    name = L["Disable all"],
+                    desc = L["Disable all the spells in this category"],
+                    func = function()
+                        for spellid, spelldata in pairs(CT:GetCooldownsData()) do
+                            if
+                                type(spelldata) == "table" and
+                                not spelldata.hidden and
+                                GetConfigCategory(spelldata) == category
+                            then
+                                self:GetGroupDB(unit, group).cooldownsSpells[spellid] = false
+                            end
+                        end
+                        GladiusEx:UpdateFrames()
+                    end,
+                    disabled = function()
+                        return not self:IsUnitEnabled(unit)
+                    end,
+                    order = 0.2
+                }
+            }
+        }
+    end
+
     for spellid, spelldata in pairs(CT:GetCooldownsData()) do
         if type(spelldata) == "table" and (not spelldata.cooldown or spelldata.cooldown < 600) and not spelldata.hidden then
             local cats = {}
@@ -2345,14 +2644,20 @@ function Cooldowns:MakeGroupOptions(unit, group)
             if spelldata.cc then
                 tinsert(cats, L["cat:cc"])
             end
+            if spelldata.cc_break then
+                tinsert(cats, GetCategoryName("cc_break"))
+            end
+            if spelldata.casting then
+                tinsert(cats, GetCategoryName("casting"))
+            end
             if spelldata.mobility then
-                tinsert(cats, "Mobility")
+                tinsert(cats, GetCategoryName("mobility"))
             end
             if spelldata.mana then
-                tinsert(cats, "Mana")
+                tinsert(cats, GetCategoryName("mana"))
             end
             if spelldata.misc then
-                tinsert(cats, "Misc")
+                tinsert(cats, GetCategoryName("misc"))
             end
             if spelldata.offensive then
                 tinsert(cats, L["cat:offensive"])
@@ -2371,6 +2676,9 @@ function Cooldowns:MakeGroupOptions(unit, group)
             end
             if spelldata.mass_dispel then
                 tinsert(cats, L["cat:mass_dispel"])
+            end
+            if spelldata.purge then
+                tinsert(cats, GetCategoryName("purge"))
             end
             if spelldata.heal then
                 tinsert(cats, L["cat:heal"])
@@ -2502,149 +2810,51 @@ function Cooldowns:MakeGroupOptions(unit, group)
                 end,
                 order = spelldata.name:byte(1) * 0xff + spelldata.name:byte(2)
             }
-            if spelldata.universal then
-                if not args.arena_mechanics then
-                    args.arena_mechanics = {
-                        type = "group",
-                        name = "Arena Mechanics",
-                        icon = [[Interface\Icons\Spell_Warlock_DemonicPortal_Purple]],
-                        disabled = function()
-                            return not self:IsUnitEnabled(unit)
-                        end,
-                        order = 4,
-                        args = {}
-                    }
-                end
-                args.arena_mechanics.args["spell" .. spellid] = spellconfig
-            elseif spelldata.class then
-                local ico =
+            local configCategory = GetConfigCategory(spelldata)
+            local categoryArgs = args[configCategory].args
+            local ownerKey, ownerName, ownerIcon, ownerOrder
+
+            if spelldata.class then
+                ownerKey = spelldata.class
+                ownerName = LOCALIZED_CLASS_NAMES_MALE[spelldata.class] or spelldata.class
+                ownerIcon =
                     spelldata.class == "DEATHKNIGHT" and [[Interface\ICONS\Spell_DEATHKNIGHT_classicon]] or
                     [[Interface\ICONS\ClassIcon_]] .. spelldata.class
-                if not args[spelldata.class] then
-                    args[spelldata.class] = {
-                        type = "group",
-                        name = LOCALIZED_CLASS_NAMES_MALE[spelldata.class],
-                        icon = ico,
-                        disabled = function()
-                            return not self:IsUnitEnabled(unit)
-                        end,
-                        order = 1,
-                        args = {}
-                    }
-                end
-
-                if spelldata.specID then
-                    -- spec
-                    for _, specID in ipairs(spelldata.specID) do
-                        if not args[spelldata.class].args["spec" .. specID] then
-                            local _, name, description, icon, role, class =
-                                GladiusEx.Data.GetSpecializationInfoByID(specID)
-                            args[spelldata.class].args["spec" .. specID] = {
-                                type = "group",
-                                name = name or "",
-                                icon = icon or "",
-                                disabled = function()
-                                    return not self:IsUnitEnabled(unit)
-                                end,
-                                order = 3 + specID,
-                                args = {}
-                            }
-                        end
-                        args[spelldata.class].args["spec" .. specID].args["spell" .. spellid] = spellconfig
-                    end
-                elseif spelldata.talent then
-                    -- talent
-                    if not args[spelldata.class].args.talents then
-                        args[spelldata.class].args.talents = {
-                            type = "group",
-                            name = L["Talent"],
-                            disabled = function()
-                                return not self:IsUnitEnabled(unit)
-                            end,
-                            order = 2,
-                            args = {}
-                        }
-                    end
-                    args[spelldata.class].args.talents.args["spell" .. spellid] = spellconfig
-                elseif spelldata.pet then
-                    -- pet
-                    if not args[spelldata.class].args.pets then
-                        args[spelldata.class].args.pets = {
-                            type = "group",
-                            name = L["Pet"],
-                            disabled = function()
-                                return not self:IsUnitEnabled(unit)
-                            end,
-                            order = 1000,
-                            args = {}
-                        }
-                    end
-                    args[spelldata.class].args.pets.args["spell" .. spellid] = spellconfig
-                else
-                    -- baseline
-                    if not args[spelldata.class].args.base then
-                        args[spelldata.class].args.base = {
-                            type = "group",
-                            name = "Baseline",
-                            disabled = function()
-                                return not self:IsUnitEnabled(unit)
-                            end,
-                            order = 1,
-                            args = {}
-                        }
-                    end
-                    args[spelldata.class].args.base.args["spell" .. spellid] = spellconfig
-                end
+                ownerOrder = 10 + (CLASS_ORDER[spelldata.class] or 50)
             elseif spelldata.race then
-                -- racial
-                if not args[spelldata.race] then
-                    args[spelldata.race] = {
-                        type = "group",
-                        name = spelldata.race,
-                        icon = function()
-                            return [[Interface\CHARACTERFRAME\TEMPORARYPORTRAIT]] ..
-                                (random(0, 1) == 0 and "-FEMALE-" or "-MALE-") .. spelldata.race
-                        end,
-                        disabled = function()
-                            return not self:IsUnitEnabled(unit)
-                        end,
-                        order = 3,
-                        args = {}
-                    }
-                end
-                args[spelldata.race].args["spell" .. spellid] = spellconfig
+                ownerKey = "RACIALS"
+                ownerName = "Racials"
+                ownerIcon = [[Interface\Icons\Achievement_Character_Human_Female]]
+                ownerOrder = 100
             elseif spelldata.item then
-                -- item
-                if not args.items then
-                    args.items = {
-                        type = "group",
-                        name = L["Items"],
-                        icon = [[Interface\Icons\Trade_Engineering]],
-                        disabled = function()
-                            return not self:IsUnitEnabled(unit)
-                        end,
-                        order = 5,
-                        args = {}
-                    }
-                end
-                args.items.args["spell" .. spellid] = spellconfig
-            elseif spelldata.pvp_trinket then
-                -- pvp trinket
-                if not args.pvp_trinket then
-                    args.pvp_trinket = {
-                        type = "group",
-                        name = "PVP Trinket",
-                        disabled = function()
-                            return not self:IsUnitEnabled(unit)
-                        end,
-                        order = 15,
-                        args = {}
-                    }
-                end
-                args.pvp_trinket.args["spell" .. spellid] = spellconfig
+                ownerKey = "ITEMS"
+                ownerName = L["Items"]
+                ownerIcon = [[Interface\Icons\Trade_Engineering]]
+                ownerOrder = 110
+            elseif spelldata.universal then
+                ownerKey = "ARENA_MECHANICS"
+                ownerName = "Arena Mechanics"
+                ownerIcon = [[Interface\Icons\Spell_Warlock_DemonicPortal_Purple]]
+                ownerOrder = 120
             else
-                GladiusEx:Print("Bad spelldata for", spellid, ": could not find type")
+                ownerKey = "OTHER"
+                ownerName = "Other"
+                ownerOrder = 130
             end
+
+            if not categoryArgs[ownerKey] then
+                categoryArgs[ownerKey] = {
+                    type = "group",
+                    name = ownerName,
+                    icon = ownerIcon,
+                    disabled = function()
+                        return not self:IsUnitEnabled(unit)
+                    end,
+                    order = ownerOrder,
+                    args = {}
+                }
+            end
+            categoryArgs[ownerKey].args["spell" .. spellid] = spellconfig
         end
     end
 

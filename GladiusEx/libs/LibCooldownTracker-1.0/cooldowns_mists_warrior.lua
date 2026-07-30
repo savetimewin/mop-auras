@@ -57,10 +57,27 @@ LCT_SpellData[118000] = {
 	cooldown = 60,
 }
 
+-- Staggering Shout
+LCT_SpellData[107566] = {
+	class = "WARRIOR",
+	talent = true,
+	cc = true,
+	cooldown = 40,
+}
+
 -- Disarm (disarm)
 LCT_SpellData[676] = {
 	class = "WARRIOR",
 	cc = true,
+	cooldown = 60,
+}
+
+-- Demoralizing Shout
+LCT_SpellData[1160] = {
+	class = "WARRIOR",
+	specID = { 73 },
+	defensive = true,
+	duration = 10,
 	cooldown = 60,
 }
 
@@ -124,6 +141,14 @@ LCT_SpellData[55694] = {
 	cooldown = 60,
 }
 
+-- Impending Victory
+LCT_SpellData[103840] = {
+	class = "WARRIOR",
+	talent = true,
+	heal = true,
+	cooldown = 30,
+}
+
 -- Avatar (offensive)
 LCT_SpellData[107574] = {
 	class = "WARRIOR",
@@ -132,6 +157,24 @@ LCT_SpellData[107574] = {
 	mobility = true,
 	duration = 24,
 	cooldown = 180,
+}
+
+-- Bladestorm
+LCT_SpellData[46924] = {
+	class = "WARRIOR",
+	talent = true,
+	offensive = true,
+	duration = 6,
+	cooldown = 60,
+}
+
+-- Bloodbath
+LCT_SpellData[12292] = {
+	class = "WARRIOR",
+	talent = true,
+	offensive = true,
+	duration = 12,
+	cooldown = 60,
 }
 
 -- Colossus Smash (offensive)
@@ -162,6 +205,7 @@ LCT_SpellData[114207] = {
 LCT_SpellData[18499] = {
 	class = "WARRIOR",
 	defensive = true,
+	cc_break = true,
 	duration = 6,
 	cooldown = 30,
 }
@@ -189,6 +233,7 @@ LCT_SpellData[114029] = {
 	talent = true,
 	defensive = true,
 	mobility = true,
+	cc_break = true,
 	duration = 6,
 	replaces = 3411,
 	cooldown = 30,

@@ -31,6 +31,14 @@ LCT_SpellData[31661] = {
 	cooldown = 20,
 }
 
+-- Frost Nova
+LCT_SpellData[122] = {
+	class = "MAGE",
+	cc = true,
+	cooldown = 25,
+	cooldown_variants = { 20 },
+}
+
 -- Ring of Frost (aoeCC)
 LCT_SpellData[113724] = {
 	class = "MAGE",
@@ -123,6 +131,15 @@ LCT_SpellData[12472] = {
 	cooldown_variants = { 90 },
 }
 
+-- Frozen Orb
+LCT_SpellData[84714] = {
+	class = "MAGE",
+	specID = { 64 },
+	offensive = true,
+	duration = 10,
+	cooldown = 60,
+}
+
 -- Mirror Image (offensive)
 LCT_SpellData[55342] = {
 	class = "MAGE",
@@ -131,12 +148,12 @@ LCT_SpellData[55342] = {
 	cooldown = 180,
 }
 
--- Presence of Mind (misc)
+-- Presence of Mind (casting empowerment)
 LCT_SpellData[12043] = {
 	class = "MAGE",
 	talent = true,
 	none = true,
-	misc = true,
+	casting = true,
 	cooldown_starts_on_aura_fade = true,
 	cooldown = 90,
 }

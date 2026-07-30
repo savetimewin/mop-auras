@@ -116,7 +116,7 @@ AddSymbiosisSpell(122288, { class = "DRUID", specID = { 105 }, dispel = true, co
 
 AddSymbiosisSpell(110707, { class = "DRUID", specID = { 102 }, dispel = true, mass_dispel = true, cooldown = 60 })
 AddSymbiosisSpell(110715, { class = "DRUID", specID = { 103 }, defensive = true, duration = 6, cooldown = 180 })
-AddSymbiosisSpell(110717, { class = "DRUID", specID = { 104 }, defensive = true, cooldown = 180 })
+AddSymbiosisSpell(110717, { class = "DRUID", specID = { 104 }, defensive = true, cc_break = true, cooldown = 180 })
 AddSymbiosisSpell(110718, { class = "DRUID", specID = { 105 }, defensive = true, mobility = true, cooldown = 90 })
 
 AddSymbiosisSpell(110788, { class = "DRUID", specID = { 102 }, defensive = true, immune = true, duration = 5, cooldown = 120 })

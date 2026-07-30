@@ -52,6 +52,14 @@ LCT_SpellData[108921] = {
 	cooldown = 45,
 }
 
+-- Void Tendrils
+LCT_SpellData[108920] = {
+	class = "PRIEST",
+	talent = true,
+	cc = true,
+	cooldown = 30,
+}
+
 -- Psychic Scream (aoeCC)
 LCT_SpellData[8122] = {
 	class = "PRIEST",
@@ -66,6 +74,16 @@ LCT_SpellData[19236] = {
 	talent = true,
 	defensive = true,
 	cooldown = 120,
+}
+
+-- Angelic Bulwark (passive absorb / 90-second internal cooldown)
+LCT_SpellData[108945] = {
+	class = "PRIEST",
+	talent = true,
+	defensive = true,
+	track_on_destination = true,
+	duration = 20,
+	cooldown = 90,
 }
 
 -- Dispersion (defensive)
@@ -171,6 +189,7 @@ LCT_SpellData[123040] = {
 LCT_SpellData[6346] = {
 	class = "PRIEST",
 	defensive = true,
+	cc_break = true,
 	cooldown = 180,
 	cooldown_variants = { 120 },
 }
@@ -180,6 +199,7 @@ LCT_SpellData[89485] = {
 	class = "PRIEST",
 	specID = { 256 },
 	defensive = true,
+	casting = true,
 	cooldown_starts_on_aura_fade = true,
 	cooldown = 45,
 }
@@ -214,6 +234,7 @@ LCT_SpellData[114239] = {
 	class = "PRIEST",
 	talent = true,
 	mobility = true,
+	cc_break = true,
 	duration = 5,
 	cooldown = 30,
 }
