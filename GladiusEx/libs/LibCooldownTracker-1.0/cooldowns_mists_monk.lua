@@ -155,13 +155,16 @@ LCT_SpellData[115288] = {
 	cooldown = 60,
 }
 
--- Spell 123995 (offensive)
+-- Invoke Xuen, the White Tiger (offensive)
 LCT_SpellData[132578] = {
 	class = "MONK",
 	talent = true,
 	offensive = true,
 	cooldown = 180,
 }
+
+-- Hidden threat aura used by older data sources.
+LCT_SpellData[123995] = 132578
 
 -- Tiger's Lust (freedom)
 LCT_SpellData[116841] = {

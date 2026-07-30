@@ -207,6 +207,7 @@ LCT_SpellData[23920] = {
 LCT_SpellData[1250619] = {
 	class = "WARRIOR",
 	mobility = true,
+	opt_charges = 2,
 	cooldown = 20,
 	cooldown_variants = { 12 },
 }

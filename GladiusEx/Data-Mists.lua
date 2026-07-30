@@ -504,7 +504,7 @@ function GladiusEx.Data.DefaultCooldowns()
 			[44572] = true, -- cc
 			[31661] = true, -- aoeCC
 			[113724] = true, -- aoeCC
-			[45438] = true, -- immunity
+			[45438] = true, -- defensive: Ice Block
 			[108978] = true, -- defensive
 			[86949] = true, -- defensive
 			[11958] = true, -- defensive
@@ -538,7 +538,7 @@ function GladiusEx.Data.DefaultCooldowns()
 			[115310] = true, -- raidDefensive
 			[113656] = true, -- offensive: Fists of Fury (Windwalker)
 			[115288] = true, -- offensive: Energizing Brew (Windwalker)
-			[123995] = true, -- offensive
+			[132578] = true, -- offensive: Invoke Xuen, the White Tiger
 			[116841] = true, -- mobility: Tiger's Lust
 			[115008] = true, -- mobility: Chi Torpedo
 			[101545] = true, -- mobility: Flying Serpent Kick (Windwalker)
@@ -852,7 +852,6 @@ end
 function GladiusEx.Data.GetNumArenaOpponentSpecs()
     return GetNumArenaOpponentSpecs()
 end
-
 
 
 

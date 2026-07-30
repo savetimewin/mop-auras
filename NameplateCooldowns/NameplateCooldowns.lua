@@ -19,6 +19,7 @@ local CooldownReductions = addonTable.CooldownReductions;
 local CastReductions = addonTable.CastReductions;
 local DamageTakenReductions = addonTable.DamageTakenReductions;
 local SharedCooldowns = addonTable.SharedCooldowns;
+local ExclusiveCooldowns = addonTable.ExclusiveCooldowns;
 
 --@non-debug@
 local buildTimestamp = "40400.1-release";
@@ -2648,6 +2649,14 @@ do
 		end
 	end
 
+	local function RemoveExclusiveCooldown(srcGUID, spellID)
+		local exclusiveID = ExclusiveCooldowns[spellID];
+		local spells = SpellsPerPlayerGUID[srcGUID];
+		if (exclusiveID and spells) then
+			spells[exclusiveID] = nil;
+		end
+	end
+
 	local function ResolvePetOwnerGUID(srcGUID, meta)
 		if (not srcGUID or not meta or not meta.pet) then
 			return srcGUID;
@@ -2729,6 +2738,9 @@ do
 			if (cooldown ~= nil and entry and entry.enabled) then
 				local texture = aliasMeta and aliasMeta.texture or SpellTextureByID[spellID];
 				local suppressLearning = aliasMeta and aliasMeta.cooldown ~= nil;
+				if (shouldStart) then
+					RemoveExclusiveCooldown(srcGUID, spellID);
+				end
 				if (shouldStart and RegisterCooldownForSource(srcGUID, spellID, cooldown, texture, cTime, false, suppressLearning)) then
 					RegisterSharedCooldowns(srcGUID, spellID, cTime);
 					UpdateNameplatesForSource(srcGUID);

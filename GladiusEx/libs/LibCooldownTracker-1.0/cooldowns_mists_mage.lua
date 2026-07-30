@@ -40,7 +40,7 @@ LCT_SpellData[113724] = {
 	cooldown = 45,
 }
 
--- Cold Snap (defensive)
+-- Ice Block (defensive)
 LCT_SpellData[45438] = {
 	class = "MAGE",
 	defensive = true,

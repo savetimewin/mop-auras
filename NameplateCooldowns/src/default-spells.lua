@@ -535,14 +535,19 @@ addonTable.CastReductions = {
 addonTable.DamageTakenReductions = { [5484] = 1 };
 
 addonTable.SharedCooldowns = {
-	-- Existing universal PvP links (unchanged).
-	[42292] = { { 59752, 120, true }, { 7744, 30, true } },
-	[59752] = { { 42292, 120 } },
+	-- Universal PvP shared lockouts.
+	[42292] = { { 7744, 30, true } },
 	[7744] = { { 42292, 30 } },
 	[2062] = { { 2894, 60 } },
 	[2894] = { { 2062, 60 } },
 	[6552] = { { 102060, 15, true } },
 	[102060] = { { 6552, 15 } },
+};
+
+-- These are alternative CC breaks. Keep only the one actually observed for each player.
+addonTable.ExclusiveCooldowns = {
+	[42292] = 59752, -- PvP Trinket replaces Will to Survive
+	[59752] = 42292, -- Will to Survive replaces PvP Trinket
 };
 
 addonTable.Interrupts = {};
