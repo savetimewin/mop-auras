@@ -27,9 +27,39 @@ local CATEGORY_DEFAULT_COLORS = {
     mana = {r = 0.2, g = 0.55, b = 1},
     misc = {r = 0.75, g = 0.75, b = 0.75},
 }
+local SPELL_LIST_CATEGORY_ORDER = {
+    "defensive",
+    "offensive",
+    "cc",
+    "stun",
+    "interrupt",
+    "silence",
+    "dispel",
+    "mass_dispel",
+    "immune",
+    "heal",
+    "knockback",
+    "mobility",
+    "mana",
+    "misc",
+    "pvp_trinket",
+    "covenant",
+    "uncat",
+}
+local SPELL_LIST_SECTION_ORDER_STEP = 1000000
+local SPELL_LIST_CATEGORY_ORDER_STEP = 10000
 
 local function GetCategoryName(category)
     return CATEGORY_NAMES[category] or L["cat:" .. category]
+end
+
+local function GetSpellListCategory(spelldata)
+    for order, category in ipairs(SPELL_LIST_CATEGORY_ORDER) do
+        if category ~= "uncat" and spelldata[category] then
+            return category, order
+        end
+    end
+    return "uncat", #SPELL_LIST_CATEGORY_ORDER
 end
 
 local function MakeGroupDb(settings)
@@ -2336,56 +2366,70 @@ function Cooldowns:MakeGroupOptions(unit, group)
     end
 
     local args = group_options.args.cooldowns.args
-    for spellid, spelldata in pairs(CT:GetCooldownsData()) do
+    local cooldownsData = CT:GetCooldownsData()
+    local spellNameOrder = {}
+    local sortedSpellIds = {}
+
+    for spellid, spelldata in pairs(cooldownsData) do
+        if type(spelldata) == "table" and (not spelldata.cooldown or spelldata.cooldown < 600) and not spelldata.hidden then
+            tinsert(sortedSpellIds, spellid)
+        end
+    end
+    tsort(
+        sortedSpellIds,
+        function(leftSpellId, rightSpellId)
+            local leftData = cooldownsData[leftSpellId]
+            local rightData = cooldownsData[rightSpellId]
+            local leftName = string.lower(tostring(leftData and leftData.name or leftSpellId))
+            local rightName = string.lower(tostring(rightData and rightData.name or rightSpellId))
+            if leftName == rightName then
+                return tostring(leftSpellId) < tostring(rightSpellId)
+            end
+            return leftName < rightName
+        end
+    )
+    for order, spellid in ipairs(sortedSpellIds) do
+        spellNameOrder[spellid] = order
+    end
+
+    local function AddClassSpell(classArgs, sectionKey, sectionName, sectionOrder, spellid, spelldata, spellconfig)
+        local sectionOrderBase = sectionOrder * SPELL_LIST_SECTION_ORDER_STEP
+        local sectionHeaderKey = "section_" .. sectionKey
+        if not classArgs[sectionHeaderKey] then
+            classArgs[sectionHeaderKey] = {
+                type = "header",
+                name = sectionName,
+                order = sectionOrderBase,
+            }
+        end
+
+        local category, categoryOrder = GetSpellListCategory(spelldata)
+        local categoryOrderBase = categoryOrder * SPELL_LIST_CATEGORY_ORDER_STEP
+        local categoryHeaderKey = sectionHeaderKey .. "_category_" .. category
+        if not classArgs[categoryHeaderKey] then
+            classArgs[categoryHeaderKey] = {
+                type = "description",
+                name = "|cff9f9f9f" .. GetCategoryName(category) .. "|r",
+                width = "full",
+                order = sectionOrderBase + categoryOrderBase,
+            }
+        end
+
+        local option = {}
+        for key, value in pairs(spellconfig) do
+            option[key] = value
+        end
+        option.order = sectionOrderBase + categoryOrderBase + (spellNameOrder[spellid] or 1)
+        classArgs[sectionKey .. "_spell" .. spellid] = option
+    end
+
+    for spellid, spelldata in pairs(cooldownsData) do
         if type(spelldata) == "table" and (not spelldata.cooldown or spelldata.cooldown < 600) and not spelldata.hidden then
             local cats = {}
-            if spelldata.pvp_trinket then
-                tinsert(cats, L["cat:pvp_trinket"])
-            end
-            if spelldata.cc then
-                tinsert(cats, L["cat:cc"])
-            end
-            if spelldata.mobility then
-                tinsert(cats, "Mobility")
-            end
-            if spelldata.mana then
-                tinsert(cats, "Mana")
-            end
-            if spelldata.misc then
-                tinsert(cats, "Misc")
-            end
-            if spelldata.offensive then
-                tinsert(cats, L["cat:offensive"])
-            end
-            if spelldata.defensive then
-                tinsert(cats, L["cat:defensive"])
-            end
-            if spelldata.silence then
-                tinsert(cats, L["cat:silence"])
-            end
-            if spelldata.interrupt then
-                tinsert(cats, L["cat:interrupt"])
-            end
-            if spelldata.dispel then
-                tinsert(cats, L["cat:dispel"])
-            end
-            if spelldata.mass_dispel then
-                tinsert(cats, L["cat:mass_dispel"])
-            end
-            if spelldata.heal then
-                tinsert(cats, L["cat:heal"])
-            end
-            if spelldata.knockback then
-                tinsert(cats, L["cat:knockback"])
-            end
-            if spelldata.stun then
-                tinsert(cats, L["cat:stun"])
-            end
-            if spelldata.immune then
-                tinsert(cats, L["cat:immune"])
-            end
-            if spelldata.covenant then
-                tinsert(cats, L["cat:covenant"])
+            for _, category in ipairs(SPELL_LIST_CATEGORY_ORDER) do
+                if category ~= "uncat" and spelldata[category] then
+                    tinsert(cats, GetCategoryName(category))
+                end
             end
             -- specID takes category precedence over talent, so specify it to make it clear
             if spelldata.specID and spelldata.talent then
@@ -2500,7 +2544,7 @@ function Cooldowns:MakeGroupOptions(unit, group)
                 disabled = function()
                     return not self:IsUnitEnabled(unit)
                 end,
-                order = spelldata.name:byte(1) * 0xff + spelldata.name:byte(2)
+                order = spellNameOrder[spellid] or 1
             }
             if spelldata.universal then
                 if not args.arena_mechanics then
@@ -2534,66 +2578,54 @@ function Cooldowns:MakeGroupOptions(unit, group)
                 end
 
                 if spelldata.specID then
-                    -- spec
+                    -- Specialization spells stay on the class page under inline
+                    -- specialization headers instead of creating another tree level.
                     for _, specID in ipairs(spelldata.specID) do
-                        if not args[spelldata.class].args["spec" .. specID] then
-                            local _, name, description, icon, role, class =
-                                GladiusEx.Data.GetSpecializationInfoByID(specID)
-                            args[spelldata.class].args["spec" .. specID] = {
-                                type = "group",
-                                name = name or "",
-                                icon = icon or "",
-                                disabled = function()
-                                    return not self:IsUnitEnabled(unit)
-                                end,
-                                order = 3 + specID,
-                                args = {}
-                            }
+                        local _, name, description, icon = GladiusEx.Data.GetSpecializationInfoByID(specID)
+                        local sectionName = string.format("Specialization: %s", name or specID)
+                        if icon and icon ~= "" then
+                            sectionName = string.format("|T%s:18:18:0:0|t %s", icon, sectionName)
                         end
-                        args[spelldata.class].args["spec" .. specID].args["spell" .. spellid] = spellconfig
+                        AddClassSpell(
+                            args[spelldata.class].args,
+                            "spec" .. specID,
+                            sectionName,
+                            100 + specID,
+                            spellid,
+                            spelldata,
+                            spellconfig
+                        )
                     end
                 elseif spelldata.talent then
-                    -- talent
-                    if not args[spelldata.class].args.talents then
-                        args[spelldata.class].args.talents = {
-                            type = "group",
-                            name = L["Talent"],
-                            disabled = function()
-                                return not self:IsUnitEnabled(unit)
-                            end,
-                            order = 2,
-                            args = {}
-                        }
-                    end
-                    args[spelldata.class].args.talents.args["spell" .. spellid] = spellconfig
+                    AddClassSpell(
+                        args[spelldata.class].args,
+                        "talents",
+                        "Talents",
+                        2,
+                        spellid,
+                        spelldata,
+                        spellconfig
+                    )
                 elseif spelldata.pet then
-                    -- pet
-                    if not args[spelldata.class].args.pets then
-                        args[spelldata.class].args.pets = {
-                            type = "group",
-                            name = L["Pet"],
-                            disabled = function()
-                                return not self:IsUnitEnabled(unit)
-                            end,
-                            order = 1000,
-                            args = {}
-                        }
-                    end
-                    args[spelldata.class].args.pets.args["spell" .. spellid] = spellconfig
+                    AddClassSpell(
+                        args[spelldata.class].args,
+                        "pets",
+                        L["Pet"],
+                        10000,
+                        spellid,
+                        spelldata,
+                        spellconfig
+                    )
                 else
-                    -- baseline
-                    if not args[spelldata.class].args.base then
-                        args[spelldata.class].args.base = {
-                            type = "group",
-                            name = "Baseline",
-                            disabled = function()
-                                return not self:IsUnitEnabled(unit)
-                            end,
-                            order = 1,
-                            args = {}
-                        }
-                    end
-                    args[spelldata.class].args.base.args["spell" .. spellid] = spellconfig
+                    AddClassSpell(
+                        args[spelldata.class].args,
+                        "base",
+                        "Baseline",
+                        1,
+                        spellid,
+                        spelldata,
+                        spellconfig
+                    )
                 end
             elseif spelldata.race then
                 -- racial
