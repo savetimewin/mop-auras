@@ -40,10 +40,10 @@ LCT_SpellData[113724] = {
 	cooldown = 45,
 }
 
--- Cold Snap (immunity)
+-- Cold Snap (defensive)
 LCT_SpellData[45438] = {
 	class = "MAGE",
-	immune = true,
+	defensive = true,
 	duration = 10,
 	cooldown = 300,
 }
@@ -131,13 +131,40 @@ LCT_SpellData[55342] = {
 	cooldown = 180,
 }
 
--- Presence of Mind (other)
+-- Presence of Mind (misc)
 LCT_SpellData[12043] = {
 	class = "MAGE",
 	talent = true,
 	none = true,
+	misc = true,
 	cooldown_starts_on_aura_fade = true,
 	cooldown = 90,
+}
+
+-- Evocation (mana)
+LCT_SpellData[12051] = {
+	class = "MAGE",
+	mana = true,
+	duration = 6,
+	cooldown = 120,
+}
+
+-- Blazing Speed (movement)
+LCT_SpellData[108843] = {
+	class = "MAGE",
+	talent = true,
+	mobility = true,
+	duration = 1.5,
+	cooldown = 25,
+}
+
+-- Blink (movement)
+LCT_SpellData[1953] = {
+	class = "MAGE",
+	mobility = true,
+	duration = 1,
+	opt_charges = 2,
+	cooldown = 15,
 }
 
 -- Alternate combat-log IDs.

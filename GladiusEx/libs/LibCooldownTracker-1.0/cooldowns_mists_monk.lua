@@ -5,6 +5,7 @@
 LCT_SpellData[137562] = {
 	class = "MONK",
 	defensive = true,
+	mobility = true,
 	duration = 6,
 	cooldown = 120,
 }
@@ -83,6 +84,16 @@ LCT_SpellData[115203] = {
 	cooldown = 180,
 }
 
+-- Dematerialize (Mistweaver passive immunity / 10-second internal cooldown)
+LCT_SpellData[122465] = {
+	class = "MONK",
+	specID = { 270 },
+	immune = true,
+	track_on_destination = true,
+	duration = 2.5,
+	cooldown = 10,
+}
+
 -- Touch of Karma (defensive)
 LCT_SpellData[122470] = {
 	class = "MONK",
@@ -126,6 +137,24 @@ LCT_SpellData[115310] = {
 	cooldown = 180,
 }
 
+-- Fists of Fury (offensive)
+LCT_SpellData[113656] = {
+	class = "MONK",
+	specID = { 269 },
+	offensive = true,
+	duration = 4,
+	cooldown = 25,
+}
+
+-- Energizing Brew (offensive)
+LCT_SpellData[115288] = {
+	class = "MONK",
+	specID = { 269 },
+	offensive = true,
+	duration = 6,
+	cooldown = 60,
+}
+
 -- Spell 123995 (offensive)
 LCT_SpellData[132578] = {
 	class = "MONK",
@@ -139,30 +168,56 @@ LCT_SpellData[116841] = {
 	class = "MONK",
 	talent = true,
 	defensive = true,
+	mobility = true,
 	duration = 6,
 	cooldown = 30,
+}
+
+-- Chi Torpedo (movement)
+LCT_SpellData[115008] = {
+	class = "MONK",
+	talent = true,
+	mobility = true,
+	charges = 2,
+	replaces = 109132,
+	cooldown = 20,
+	cooldown_variants = { 15 },
+}
+
+-- Flying Serpent Kick (movement)
+LCT_SpellData[101545] = {
+	class = "MONK",
+	specID = { 269 },
+	mobility = true,
+	duration = 2,
+	cooldown = 25,
+}
+
+-- Roll (movement)
+LCT_SpellData[109132] = {
+	class = "MONK",
+	mobility = true,
+	charges = 2,
+	cooldown = 20,
+	cooldown_variants = { 15 },
+}
+
+-- Clash (gap closer / stun)
+LCT_SpellData[122057] = {
+	class = "MONK",
+	specID = { 268 },
+	cc = true,
+	stun = true,
+	mobility = true,
+	duration = 4,
+	cooldown = 35,
 }
 
 -- Transcendence: Transfer (movement)
 LCT_SpellData[119996] = {
 	class = "MONK",
 	defensive = true,
+	mobility = true,
 	cooldown = 25,
 	cooldown_variants = { 20 },
-}
-
--- Spell 113306 (defensive)
-LCT_SpellData[113306] = {
-	class = "MONK",
-	talent = true,
-	defensive = true,
-	cooldown = 180,
-}
-
--- Spell 127361 (cc)
-LCT_SpellData[127361] = {
-	class = "MONK",
-	talent = true,
-	cc = true,
-	cooldown = 60,
 }

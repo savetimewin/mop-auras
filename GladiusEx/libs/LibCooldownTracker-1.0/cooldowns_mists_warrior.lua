@@ -129,6 +129,7 @@ LCT_SpellData[107574] = {
 	class = "WARRIOR",
 	talent = true,
 	offensive = true,
+	mobility = true,
 	duration = 24,
 	cooldown = 180,
 }
@@ -169,6 +170,7 @@ LCT_SpellData[18499] = {
 LCT_SpellData[3411] = {
 	class = "WARRIOR",
 	defensive = true,
+	mobility = true,
 	cooldown = 30,
 }
 
@@ -186,6 +188,7 @@ LCT_SpellData[114029] = {
 	class = "WARRIOR",
 	talent = true,
 	defensive = true,
+	mobility = true,
 	duration = 6,
 	replaces = 3411,
 	cooldown = 30,
@@ -200,18 +203,29 @@ LCT_SpellData[23920] = {
 	cooldown_variants = { 20 },
 }
 
--- Shattering Throw (other)
+-- Charge (movement)
+LCT_SpellData[1250619] = {
+	class = "WARRIOR",
+	mobility = true,
+	cooldown = 20,
+	cooldown_variants = { 12 },
+}
+
+-- Some MoP data sources still report Charge using its legacy spell ID.
+LCT_SpellData[100] = 1250619
+
+-- Heroic Leap (movement)
+LCT_SpellData[6544] = {
+	class = "WARRIOR",
+	mobility = true,
+	cooldown = 45,
+}
+
+-- Shattering Throw (misc)
 LCT_SpellData[64382] = {
 	class = "WARRIOR",
 	none = true,
+	misc = true,
 	mass_dispel = true,
 	cooldown = 300,
-}
-
--- Spell 122286 (defensive)
-LCT_SpellData[122286] = {
-	class = "WARRIOR",
-	talent = true,
-	defensive = true,
-	cooldown = 60,
 }

@@ -16,6 +16,7 @@
 	<Script file="cooldowns_mists_shaman.lua"/>
 	<Script file="cooldowns_mists_warlock.lua"/>
 	<Script file="cooldowns_mists_warrior.lua"/>
+	<Script file="cooldowns_mists_symbiosis.lua"/>
 	<Script file="cooldowns_mists_racials.lua"/>
 	<Script file="cooldowns_mists_items.lua"/>
 	<Script file="library.lua"/>

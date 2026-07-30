@@ -6,6 +6,7 @@ LCT_SpellData[108482] = {
 	class = "WARLOCK",
 	talent = true,
 	defensive = true,
+	mobility = true,
 	cooldown = 60,
 }
 
@@ -33,6 +34,17 @@ LCT_SpellData[19505] = {
 	dispel = true,
 	purge = true,
 	cooldown = 15,
+}
+
+-- Axe Toss (Felguard/Wrathguard stun)
+LCT_SpellData[89766] = {
+	class = "WARLOCK",
+	specID = { 266 },
+	pet = true,
+	cc = true,
+	stun = true,
+	duration = 4,
+	cooldown = 30,
 }
 
 -- Mortal Coil (cc)
@@ -130,8 +142,20 @@ LCT_SpellData[113860] = {
 LCT_SpellData[48020] = {
 	class = "WARLOCK",
 	defensive = true,
+	mobility = true,
 	cooldown = 30,
 	cooldown_variants = { 26, 25, 21 },
+}
+
+-- Demonic Gateway reuse debuff. This applies to the player who used a
+-- gateway, regardless of class, and is intentionally hidden until observed.
+LCT_SpellData[113942] = {
+	universal = true,
+	detected_only = true,
+	track_on_destination = true,
+	mobility = true,
+	duration = 60,
+	cooldown = 60,
 }
 
 -- Alternate combat-log IDs.
@@ -139,7 +163,6 @@ LCT_SpellData[6358] = 19505
 LCT_SpellData[6360] = 19647
 LCT_SpellData[17767] = 19505
 LCT_SpellData[89751] = 19647
-LCT_SpellData[89766] = 19505
 LCT_SpellData[89808] = 19505
 LCT_SpellData[111859] = 108501
 LCT_SpellData[111895] = 108501
@@ -175,7 +198,6 @@ LCT_SpellAliases[17767] = { spellid = 19505, cooldown = 120, icon = 136121 }
 LCT_SpellAliases[19505] = { spellid = 19505, cooldown = 15, icon = 136075 }
 LCT_SpellAliases[19647] = { spellid = 19647, cooldown = 24, icon = 136174 }
 LCT_SpellAliases[89751] = { spellid = 19647, cooldown = 45, icon = 236303 }
-LCT_SpellAliases[89766] = { spellid = 19505, cooldown = 30, icon = 236316 }
 LCT_SpellAliases[89808] = { spellid = 19505, cooldown = 10, icon = 135791 }
 LCT_SpellAliases[111859] = { spellid = 108501, cooldown = 120, icon = 136218 }
 LCT_SpellAliases[111895] = { spellid = 108501, cooldown = 120, icon = 136221 }

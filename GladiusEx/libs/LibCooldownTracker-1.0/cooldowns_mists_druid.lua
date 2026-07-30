@@ -162,165 +162,55 @@ LCT_SpellData[102558] = {
 	cooldown = 180,
 }
 
--- Innervate (other)
+-- Innervate (mana)
 LCT_SpellData[29166] = {
 	class = "DRUID",
-	none = true,
+	mana = true,
+	duration = 10,
 	cooldown = 180,
 }
 
--- Nature's Swiftness (other)
+-- Nature's Swiftness (misc)
 LCT_SpellData[132158] = {
 	class = "DRUID",
 	specID = { 102, 103, 105 },
 	none = true,
+	misc = true,
 	cooldown_starts_on_aura_fade = true,
 	cooldown = 60,
 }
 
--- Spell 110570 (defensive)
-LCT_SpellData[110570] = {
+-- Dash (movement)
+LCT_SpellData[1850] = {
 	class = "DRUID",
-	talent = true,
-	defensive = true,
-	cooldown = 45,
-}
-
--- Spell 110575 (defensive)
-LCT_SpellData[110575] = {
-	class = "DRUID",
-	talent = true,
-	defensive = true,
+	mobility = true,
+	duration = 15,
 	cooldown = 180,
 }
 
--- Spell 110617 (immunity)
-LCT_SpellData[110617] = {
+-- Displacer Beast (movement)
+LCT_SpellData[102280] = {
 	class = "DRUID",
 	talent = true,
-	immune = true,
-	cooldown = 120,
-}
-
--- Spell 110696 (immunity)
-LCT_SpellData[110696] = {
-	class = "DRUID",
-	talent = true,
-	immune = true,
-	cooldown = 300,
-}
-
--- Spell 126458 (disarm)
-LCT_SpellData[126458] = {
-	class = "DRUID",
-	talent = true,
-	cc = true,
-	cooldown = 60,
-}
-
--- Spell 126449 (cc)
-LCT_SpellData[126449] = {
-	class = "DRUID",
-	talent = true,
-	cc = true,
-	cooldown = 35,
-}
-
--- Spell 126456 (defensive)
-LCT_SpellData[126456] = {
-	class = "DRUID",
-	talent = true,
-	defensive = true,
-	cooldown = 180,
-}
-
--- Spell 110698 (cc)
-LCT_SpellData[110698] = {
-	class = "DRUID",
-	talent = true,
-	cc = true,
-	cooldown = 60,
-}
-
--- Spell 110700 (immunity)
-LCT_SpellData[110700] = {
-	class = "DRUID",
-	talent = true,
-	immune = true,
-	cooldown = 300,
-}
-
--- Spell 122288 (dispel)
-LCT_SpellData[122288] = {
-	class = "DRUID",
-	talent = true,
-	dispel = true,
-	cooldown_starts_on_dispel = true,
-	cooldown = 8,
-}
-
--- Spell 110707 (dispel)
-LCT_SpellData[110707] = {
-	class = "DRUID",
-	talent = true,
-	dispel = true,
-	cooldown = 60,
-}
-
--- Spell 110715 (defensive)
-LCT_SpellData[110715] = {
-	class = "DRUID",
-	talent = true,
-	defensive = true,
-	cooldown = 180,
-}
-
--- Spell 110718 (movement)
-LCT_SpellData[110718] = {
-	class = "DRUID",
-	talent = true,
-	defensive = true,
-	cooldown = 90,
-}
-
--- Spell 110788 (defensive)
-LCT_SpellData[110788] = {
-	class = "DRUID",
-	talent = true,
-	defensive = true,
-	cooldown = 120,
-}
-
--- Spell 110791 (defensive)
-LCT_SpellData[110791] = {
-	class = "DRUID",
-	talent = true,
-	defensive = true,
-	cooldown = 180,
-}
-
--- Spell 122291 (defensive)
-LCT_SpellData[122291] = {
-	class = "DRUID",
-	talent = true,
-	defensive = true,
-	cooldown = 180,
-}
-
--- Spell 112970 (movement)
-LCT_SpellData[112970] = {
-	class = "DRUID",
-	talent = true,
-	defensive = true,
+	mobility = true,
+	duration = 4,
 	cooldown = 30,
 }
 
--- Spell 113004 (cc)
-LCT_SpellData[113004] = {
+-- Wild Charge (movement)
+LCT_SpellData[102417] = {
 	class = "DRUID",
 	talent = true,
-	cc = true,
-	cooldown = 90,
+	mobility = true,
+	cooldown = 15,
+}
+
+-- Stampeding Roar (movement)
+LCT_SpellData[106898] = {
+	class = "DRUID",
+	mobility = true,
+	duration = 8,
+	cooldown = 120,
 }
 
 -- Alternate combat-log IDs.
@@ -329,3 +219,8 @@ LCT_SpellData[93985] = 80964
 LCT_SpellData[97547] = 78675
 LCT_SpellData[102543] = 102558
 LCT_SpellData[102560] = 102558
+LCT_SpellData[16979] = 102417
+LCT_SpellData[49376] = 102417
+LCT_SpellData[102383] = 102417
+LCT_SpellData[102401] = 102417
+LCT_SpellData[102416] = 102417

@@ -76,7 +76,7 @@ LCT_SpellData[5277] = {
 LCT_SpellData[14185] = {
 	class = "ROGUE",
 	defensive = true,
-	resets = { 1856, 5277, 51722 },
+	resets = { 1856, 5277, 51722, 2983 },
 	cooldown = 300,
 }
 
@@ -129,6 +129,23 @@ LCT_SpellData[79140] = {
 	offensive = true,
 	duration = 20,
 	cooldown = 120,
+}
+
+-- Shadowstep (movement)
+LCT_SpellData[36554] = {
+	class = "ROGUE",
+	talent = true,
+	mobility = true,
+	duration = 2,
+	cooldown = 20,
+}
+
+-- Sprint (movement)
+LCT_SpellData[2983] = {
+	class = "ROGUE",
+	mobility = true,
+	duration = 8,
+	cooldown = 60,
 }
 
 -- Combat-log-only Restless Blades triggers.

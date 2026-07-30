@@ -12,7 +12,7 @@
 		spells_data = lib:GetCooldownsData()
 ]]
 
-local version = 12
+local version = 13
 local lib = LibStub:NewLibrary("LibCooldownTracker-1.0", version)
 local IsRetail = WOW_PROJECT_ID == WOW_PROJECT_MAINLINE
 local LGIST = IsRetail and LibStub:GetLibrary("LibGroupInSpecT-1.1")
@@ -44,6 +44,7 @@ local class_spelldata = {}
 local race_spelldata = {}
 local item_spelldata = {}
 local pvp_spelldata = {}
+local universal_spelldata = {}
 
 -- generate lookup tables
 do
@@ -102,6 +103,9 @@ do
 					class_spelldata[spelldata.class] = class_spelldata[spelldata.class] or {}
 					class_spelldata[spelldata.class][spellid] = spelldata
 				end
+				if spelldata.universal and not spelldata.hidden then
+					universal_spelldata[spellid] = spelldata
+				end
 				if spelldata.race then
 					race_spelldata[spelldata.race] = race_spelldata[spelldata.race] or {}
 					race_spelldata[spelldata.race][spellid] = spelldata
@@ -119,8 +123,10 @@ end
 
 local SpellData = LCT_SpellData
 local SpellAliases = LCT_SpellAliases or {}
+local SymbiosisData = LCT_SymbiosisData or {}
 LCT_SpellData = nil
 LCT_SpellAliases = nil
+LCT_SymbiosisData = nil
 
 -- state
 lib.guid_to_unitid = lib.guid_to_unitid or {} -- [guid] = unitid
@@ -135,6 +141,9 @@ lib.tracked_players = lib.tracked_players or {} --[[
 	}
 ]]
 lib.registered_units = lib.registered_units or {} -- [unitid] = count
+lib.active_symbiosis = lib.active_symbiosis or {} -- [unitid] = spellid
+lib.symbiosis_bond_by_target = lib.symbiosis_bond_by_target or {} -- [recipient unitid] = Druid unitid
+lib.symbiosis_target_by_druid = lib.symbiosis_target_by_druid or {} -- [Druid unitid] = recipient unitid
 
 local function RemoveGUID(unit)
 	-- find and delete old references to that unit
@@ -300,6 +309,226 @@ end
 local function FindAuraById(auraId, unit, filter)
 	return AuraUtil.FindAura(AuraByIdPredicate, unit, filter, auraId)
 end 
+
+local function GetUnitSpecID(unit)
+	local buttons = GladiusEx and GladiusEx.buttons
+	local button = buttons and buttons[unit]
+	if button and button.specID then
+		return button.specID
+	end
+
+	local testing = GladiusEx and GladiusEx.testing
+	return testing and testing[unit] and testing[unit].specID
+end
+
+local function GetUnitClass(unit)
+	local buttons = GladiusEx and GladiusEx.buttons
+	local button = buttons and buttons[unit]
+	if button and button.class then
+		return button.class
+	end
+
+	local testing = GladiusEx and GladiusEx.testing
+	if testing and testing[unit] and testing[unit].class then
+		return testing[unit].class
+	end
+
+	return select(2, UnitClass(unit))
+end
+
+local function ResolveRegisteredUnit(unit)
+	if not unit then return end
+	if lib:IsUnitRegistered(unit) then
+		return unit
+	end
+
+	local guid = UnitGUID(unit)
+	return guid and lib.guid_to_unitid[guid]
+end
+
+-- C_UnitAuras is used by current MoP Classic clients. UnitBuff is retained as
+-- a guarded fallback for older Classic API layouts.
+local function GetBuffDataByIndex(unit, index)
+	if C_UnitAuras then
+		if C_UnitAuras.GetBuffDataByIndex then
+			return C_UnitAuras.GetBuffDataByIndex(unit, index)
+		elseif C_UnitAuras.GetAuraDataByIndex then
+			return C_UnitAuras.GetAuraDataByIndex(unit, index, "HELPFUL")
+		end
+	end
+
+	if not UnitBuff then return end
+	local aura = { UnitBuff(unit, index, "HELPFUL") }
+	if not aura[1] then return end
+
+	local recipientByAura = SymbiosisData.recipientByAura or {}
+	local spellID = recipientByAura[aura[10]] and aura[10] or aura[11]
+	local sourceUnit = type(aura[7]) == "string" and aura[7] or aura[8]
+	return {
+		spellId = spellID,
+		sourceUnit = type(sourceUnit) == "string" and sourceUnit or nil,
+	}
+end
+
+local function ClearSymbiosisSpell(unit, silent)
+	local spellID = lib.active_symbiosis[unit]
+	if not spellID then return false end
+
+	lib.active_symbiosis[unit] = nil
+	local tracked = lib.tracked_players[unit]
+	if tracked then
+		tracked[spellID] = nil
+	end
+
+	if not silent then
+		lib.callbacks:Fire("LCT_CooldownDetected", unit, spellID)
+	end
+	return true
+end
+
+local function SetSymbiosisSpell(unit, spellID)
+	local spelldata = SpellData[spellID]
+	if type(spelldata) == "number" then
+		spellID = spelldata
+		spelldata = SpellData[spellID]
+	end
+	if type(spelldata) ~= "table" or not spelldata.symbiosis then
+		return false
+	end
+
+	if not lib.tracked_players[unit] then
+		lib.tracked_players[unit] = {}
+	end
+
+	local previous = lib.active_symbiosis[unit]
+	local changed = previous ~= spellID
+	if changed and previous then
+		lib.tracked_players[unit][previous] = nil
+	end
+
+	local spell = lib.tracked_players[unit][spellID]
+	if not spell then
+		spell = {}
+		lib.tracked_players[unit][spellID] = spell
+	end
+	local newlyDetected = not spell.detected
+	spell.detected = true
+	lib.active_symbiosis[unit] = spellID
+
+	if changed or newlyDetected then
+		lib.callbacks:Fire("LCT_CooldownDetected", unit, spellID)
+	end
+	return true
+end
+
+local function ClearSymbiosisBondByTarget(targetUnit)
+	local druidUnit = lib.symbiosis_bond_by_target[targetUnit]
+	lib.symbiosis_bond_by_target[targetUnit] = nil
+
+	if druidUnit and lib.symbiosis_target_by_druid[druidUnit] == targetUnit then
+		lib.symbiosis_target_by_druid[druidUnit] = nil
+		ClearSymbiosisSpell(druidUnit)
+	end
+	ClearSymbiosisSpell(targetUnit)
+end
+
+local function ClearSymbiosisBondByDruid(druidUnit)
+	local targetUnit = lib.symbiosis_target_by_druid[druidUnit]
+	if targetUnit then
+		ClearSymbiosisBondByTarget(targetUnit)
+	else
+		ClearSymbiosisSpell(druidUnit)
+	end
+end
+
+local function ApplySymbiosisBond(sourceUnit, targetUnit, auraID)
+	local recipientInfo = SymbiosisData.recipientByAura and SymbiosisData.recipientByAura[auraID]
+	if not recipientInfo or not targetUnit or not lib:IsUnitRegistered(targetUnit) then
+		return false
+	end
+
+	sourceUnit = ResolveRegisteredUnit(sourceUnit)
+	if sourceUnit then
+		local previousDruid = lib.symbiosis_bond_by_target[targetUnit]
+		if previousDruid and previousDruid ~= sourceUnit then
+			ClearSymbiosisBondByTarget(targetUnit)
+		end
+
+		local previousTarget = lib.symbiosis_target_by_druid[sourceUnit]
+		if previousTarget and previousTarget ~= targetUnit then
+			ClearSymbiosisBondByTarget(previousTarget)
+		end
+
+		lib.symbiosis_bond_by_target[targetUnit] = sourceUnit
+		lib.symbiosis_target_by_druid[sourceUnit] = targetUnit
+	end
+
+	local recipientSpecID = GetUnitSpecID(targetUnit)
+	local recipientSpell = recipientInfo.bySpec and recipientInfo.bySpec[recipientSpecID]
+	if recipientSpell then
+		SetSymbiosisSpell(targetUnit, recipientSpell)
+	elseif recipientSpecID then
+		ClearSymbiosisSpell(targetUnit)
+	end
+
+	if sourceUnit then
+		local druidByClass = SymbiosisData.druidByTargetClass and
+			SymbiosisData.druidByTargetClass[recipientInfo.class]
+		local druidSpecID = GetUnitSpecID(sourceUnit)
+		local druidSpell = druidByClass and druidByClass[druidSpecID]
+		if druidSpell then
+			SetSymbiosisSpell(sourceUnit, druidSpell)
+		elseif druidSpecID then
+			ClearSymbiosisSpell(sourceUnit)
+		end
+	end
+
+	return true
+end
+
+local function ScanSymbiosisTarget(targetUnit, clearMissing)
+	if not lib:IsUnitRegistered(targetUnit) or not UnitGUID(targetUnit) then
+		return false
+	end
+
+	local recipientByAura = SymbiosisData.recipientByAura or {}
+	for index = 1, 50 do
+		local aura = GetBuffDataByIndex(targetUnit, index)
+		if not aura then break end
+
+		if recipientByAura[aura.spellId] then
+			local sourceUnit = ResolveRegisteredUnit(aura.sourceUnit)
+			ApplySymbiosisBond(sourceUnit, targetUnit, aura.spellId)
+			return true
+		end
+	end
+
+	if clearMissing then
+		local activeSpell = lib.active_symbiosis[targetUnit]
+		local activeData = activeSpell and SpellData[activeSpell]
+		if lib.symbiosis_bond_by_target[targetUnit] or
+			(type(activeData) == "table" and activeData.symbiosis and activeData.class ~= "DRUID") then
+			ClearSymbiosisBondByTarget(targetUnit)
+		end
+	end
+	return false
+end
+
+-- Refreshes the recipient directly. For Druids, scan all registered recipients
+-- because the class-specific aura is carried by the linked non-Druid unit.
+function lib:RefreshSymbiosis(unit, clearMissing)
+	if not unit or not lib:IsUnitRegistered(unit) then return end
+
+	if GetUnitClass(unit) == "DRUID" then
+		for targetUnit in pairs(lib.registered_units) do
+			if targetUnit ~= unit and GetUnitClass(targetUnit) ~= "DRUID" then
+				ScanSymbiosisTarget(targetUnit, clearMissing)
+			end
+		end
+	else
+		ScanSymbiosisTarget(unit, clearMissing)
+	end
+end
 
 
 local function AddCharge(unit, spellid)
@@ -485,8 +714,11 @@ local function CooldownEvent(event, unit, spellid)
     -- Only detect the spell if it's actually used (i.e. not if it's just a random proc)
     if used_start or used_end or cooldown_start then
       if not tpu[spellid].detected then
-        -- XXX use DetectSpell() here instead?
-        tpu[spellid].detected = true
+        if spelldata.symbiosis then
+          SetSymbiosisSpell(unit, spellid)
+        else
+          tpu[spellid].detected = true
+        end
       end
     end
 
@@ -637,6 +869,7 @@ local function enable()
   lib.frame:RegisterEvent("PLAYER_ENTERING_WORLD")
   lib.frame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
   lib.frame:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
+  lib.frame:RegisterEvent("UNIT_AURA")
   lib.frame:RegisterEvent("UNIT_NAME_UPDATE")
   lib.frame:RegisterEvent("UNIT_PET")
   lib.frame:RegisterEvent("ARENA_CROWD_CONTROL_SPELL_UPDATE")
@@ -649,9 +882,13 @@ local function enable()
 
   lib.tracked_players = {}
   lib.guid_to_unitid = {}
+  lib.active_symbiosis = {}
+  lib.symbiosis_bond_by_target = {}
+  lib.symbiosis_target_by_druid = {}
 
   for unitid in pairs(lib.registered_units) do
     UpdateGUID(unitid)
+    lib:RefreshSymbiosis(unitid)
   end
 
   if LGIST then
@@ -727,10 +964,11 @@ end
 -- @param unitid The unitid to register.
 function lib:RegisterUnit(unitid)
 	local count = (lib.registered_units[unitid] or 0) + 1
+	lib.registered_units[unitid] = count
 	if count == 1 then
 		UpdateGUID(unitid)
+		lib:RefreshSymbiosis(unitid)
 	end
-	lib.registered_units[unitid] = count
 	return count
 end
 
@@ -743,6 +981,13 @@ function lib:UnregisterUnit(unitid)
 
 	local count = lib.registered_units[unitid] - 1
 	if count == 0 then
+		if lib.symbiosis_target_by_druid[unitid] then
+			ClearSymbiosisBondByDruid(unitid)
+		elseif lib.symbiosis_bond_by_target[unitid] then
+			ClearSymbiosisBondByTarget(unitid)
+		else
+			ClearSymbiosisSpell(unitid)
+		end
 		lib.registered_units[unitid] = nil
 		RemoveGUID(unitid)
 	else
@@ -774,6 +1019,15 @@ end
 
 function lib:DetectSpell(unit, spellid)
 	if not spellid then
+		return
+	end
+	local spelldata = SpellData[spellid]
+	if type(spelldata) == "number" then
+		spellid = spelldata
+		spelldata = SpellData[spellid]
+	end
+	if type(spelldata) == "table" and spelldata.symbiosis then
+		SetSymbiosisSpell(unit, spellid)
 		return
 	end
 	if not lib.tracked_players[unit] then
@@ -822,6 +1076,10 @@ local function CooldownIterator(state, spellid)
 				end
 			end
 
+			if state.universal and spelldata.universal then
+				return spellid, spelldata
+			end
+
 			if state.race and state.race == spelldata.race then
 				-- return racial
 				return spellid, spelldata
@@ -849,9 +1107,26 @@ local function FastCooldownIterator(state, spellid)
 		if spellid then
 			return spellid, spelldata
 		else
+			-- Universal encounter mechanics (for example, the Demonic Gateway
+			-- reuse debuff) apply to every class.
+			state.data_source = universal_spelldata
+			state.class = nil
+			spellid = nil
+		end
+	end
+
+	-- universal
+	if state.universal then
+		if state.data_source then
+			spellid, spelldata = CooldownIterator(state, spellid)
+		end
+
+		if spellid then
+			return spellid, spelldata
+		else
 			-- do race next
 			state.data_source = race_spelldata[state.race]
-			state.class = nil
+			state.universal = nil
 			spellid = nil
 		end
 	end
@@ -912,6 +1187,7 @@ function lib:IterateCooldowns(class, specID, race)
 	state.class = class
 	state.specID = specID
 	state.race = race or ""
+	state.universal = true
 	state.item = true
 	state.pvp = true
 
@@ -936,6 +1212,9 @@ function events:PLAYER_ENTERING_WORLD()
   -- this might be incorrect (only bgs & arenas reset cooldowns), but is important to reset talents when zoning in
 	if isInInstance then
 		ClearTimers()
+		lib.active_symbiosis = {}
+		lib.symbiosis_bond_by_target = {}
+		lib.symbiosis_target_by_druid = {}
 		for unit in pairs(lib.tracked_players) do
 			lib.tracked_players[unit] = nil
 			lib.callbacks:Fire("LCT_CooldownsReset", unit)
@@ -969,14 +1248,44 @@ function events:CombatLogEvent(_, timestamp, event, hideCaster, sourceGUID, sour
 		end
 	end
 
+	local recipientInfo = SymbiosisData.recipientByAura and SymbiosisData.recipientByAura[spellId]
+	if recipientInfo then
+		local targetUnit = lib.guid_to_unitid[destGUID]
+		if targetUnit then
+			if event == "SPELL_AURA_APPLIED" or event == "SPELL_AURA_REFRESH" then
+				ApplySymbiosisBond(lib.guid_to_unitid[sourceGUID], targetUnit, spellId)
+			elseif event == "SPELL_AURA_REMOVED" then
+				ClearSymbiosisBondByTarget(targetUnit)
+			end
+		end
+		return
+	end
+
+	if spellId == SymbiosisData.baseAuraID then
+		if event == "SPELL_AURA_REMOVED" then
+			local druidUnit = lib.guid_to_unitid[destGUID] or lib.guid_to_unitid[sourceGUID]
+			if druidUnit then
+				ClearSymbiosisBondByDruid(druidUnit)
+			end
+		end
+		return
+	end
+
 	-- Check the spell before doing the slower pet-owner fallback.
 	local spelldata = SpellData[spellId]
 	if not spelldata then return end
 
 	-- Pet abilities are cast by the pet GUID but their cooldown belongs to the
 	-- registered owner unit (for example, arenapet1 belongs to arena1).
-	local unit = lib.guid_to_unitid[sourceGUID]
+	-- Some encounter mechanics belong to the aura destination instead of its
+	-- caster; Demonic Gateway's reuse debuff is the important arena example.
 	local resolved_spelldata = type(spelldata) == "number" and SpellData[spelldata] or spelldata
+	local unit
+	if resolved_spelldata and resolved_spelldata.track_on_destination then
+		unit = lib.guid_to_unitid[destGUID]
+	else
+		unit = lib.guid_to_unitid[sourceGUID]
+	end
 	if not unit and resolved_spelldata and resolved_spelldata.pet then
 		unit = FindUnitByPetGUID(sourceGUID)
 	end
@@ -999,6 +1308,13 @@ function events:UNIT_NAME_UPDATE(event, unit)
 	-- Do not let those overwrite the pet GUID -> owner mapping.
 	if lib:IsUnitRegistered(unit) then
 		UpdateGUID(unit)
+		lib:RefreshSymbiosis(unit)
+	end
+end
+
+function events:UNIT_AURA(event, unit)
+	if lib:IsUnitRegistered(unit) then
+		lib:RefreshSymbiosis(unit, true)
 	end
 end
 
@@ -1026,6 +1342,7 @@ function events:ARENA_OPPONENT_UPDATE(event, unit, unitEvent)
   -- becomes visible (and clear stale mappings when it changes).
   if lib:IsUnitRegistered(unit) then
     UpdateGUID(unit)
+    lib:RefreshSymbiosis(unit)
   end
 
   if unitEvent == "seen" then

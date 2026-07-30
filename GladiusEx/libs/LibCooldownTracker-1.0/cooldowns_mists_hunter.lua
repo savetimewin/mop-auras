@@ -132,8 +132,17 @@ LCT_SpellData[53271] = {
 	class = "HUNTER",
 	pet = true,
 	defensive = true,
+	mobility = true,
 	duration = 4,
 	cooldown = 45,
+}
+
+-- Disengage (movement)
+LCT_SpellData[781] = {
+	class = "HUNTER",
+	mobility = true,
+	cooldown = 20,
+	cooldown_variants = { 10 },
 }
 
 -- Alternate combat-log IDs.

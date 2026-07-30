@@ -67,7 +67,7 @@ LCT_SpellData[108285] = {
 	class = "SHAMAN",
 	talent = true,
 	defensive = true,
-	resets = { 108269, 8177, 108270, 8143 },
+	resets = { 108269, 8177, 108270, 8143, 108273 },
 	cooldown = 180,
 }
 
@@ -201,36 +201,47 @@ LCT_SpellData[58875] = {
 	class = "SHAMAN",
 	specID = { 263 },
 	defensive = true,
+	mobility = true,
 	duration = 15,
 	cooldown = 60,
 	cooldown_variants = { 45 },
 }
 
--- Ancestral Swiftness (other)
+-- Windwalk Totem (movement)
+LCT_SpellData[108273] = {
+	class = "SHAMAN",
+	talent = true,
+	mobility = true,
+	duration = 6,
+	cooldown = 60,
+}
+
+-- Spiritwalker's Grace (mobility)
+LCT_SpellData[79206] = {
+	class = "SHAMAN",
+	mobility = true,
+	duration = 15,
+	cooldown = 120,
+}
+
+-- Ancestral Swiftness (misc)
 LCT_SpellData[16188] = {
 	class = "SHAMAN",
 	talent = true,
 	none = true,
+	misc = true,
 	cooldown_starts_on_aura_fade = true,
 	cooldown = 90,
 }
 
--- Mana Tide Totem (other)
+-- Mana Tide Totem (mana)
 LCT_SpellData[16190] = {
 	class = "SHAMAN",
 	specID = { 264 },
-	none = true,
+	mana = true,
+	duration = 16,
 	cooldown = 180,
-}
-
--- Spell 113286 (interrupt)
-LCT_SpellData[113286] = {
-	class = "SHAMAN",
-	talent = true,
-	interrupt = true,
-	cooldown = 60,
 }
 
 -- Alternate combat-log IDs.
 LCT_SpellData[31616] = 30884
-LCT_SpellData[113288] = 113286

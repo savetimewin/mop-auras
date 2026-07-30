@@ -340,7 +340,6 @@ local major_defensive_buffs = {
 	104773, -- Unending Resolve 
 	122291, -- Unending Resolve (Druid) (Symbiosis)
 	114030, -- Vigilance
-	131523, -- Zen Meditation
 	69369, -- Predator's Swiftness 
 	102342, -- Ironbark
 	111397, -- Blood Horror
@@ -384,6 +383,10 @@ local minor_defensive_buffs = {
 	114039, -- Hand of Purity
 	111264, -- Ice Ward
 	15286, -- Vampiric Embrace
+	113613, -- Growl (ROGUE Symbiosis)
+	131523, -- Zen Meditation
+	131523, -- Zen Meditation
+	106922, -- Might of Ursoc
 }
 
 -- size 1.6
@@ -436,6 +439,7 @@ local  minor_offensive_buffs = {
 	116267, -- incanter's absorption
 	120676, -- Stormlash Totem Effect
 	57761, -- Brain Freeze
+	121471, -- Shadow Blades
 	-- 93435, -- Roar of Courage
 	-- 104423, -- Windsong
 	-- 12880, -- Enrage

@@ -170,15 +170,26 @@ LCT_SpellData[86698] = {
 LCT_SpellData[1044] = {
 	class = "PALADIN",
 	defensive = true,
+	mobility = true,
 	duration = 6,
 	opt_charges = 2,
 	cooldown = 25,
 }
 
--- Spell 113075 (defensive)
-LCT_SpellData[113075] = {
+-- Divine Plea (mana)
+LCT_SpellData[54428] = {
+	class = "PALADIN",
+	specID = { 65 },
+	mana = true,
+	duration = 9,
+	cooldown = 120,
+}
+
+-- Speed of Light (movement)
+LCT_SpellData[85499] = {
 	class = "PALADIN",
 	talent = true,
-	defensive = true,
-	cooldown = 60,
+	mobility = true,
+	duration = 8,
+	cooldown = 45,
 }

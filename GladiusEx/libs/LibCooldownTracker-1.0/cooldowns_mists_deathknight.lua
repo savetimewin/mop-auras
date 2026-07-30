@@ -153,12 +153,13 @@ LCT_SpellData[49039] = {
 	cooldown = 120,
 }
 
--- Spell 113072 (defensive)
-LCT_SpellData[113072] = {
+-- Death's Advance (movement)
+LCT_SpellData[96268] = {
 	class = "DEATHKNIGHT",
 	talent = true,
-	defensive = true,
-	cooldown = 180,
+	mobility = true,
+	duration = 6,
+	cooldown = 30,
 }
 
 -- Alternate combat-log IDs.

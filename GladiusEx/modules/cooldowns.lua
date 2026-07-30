@@ -17,6 +17,20 @@ local GetSpellDescription = C_Spell and C_Spell.GetSpellDescription or GetSpellD
 local TESTING_EXTRA_SPELLS = GladiusEx.IS_RETAIL and {336126} or {42292}
 
 local GetDefaultSpells = GladiusEx.Data.DefaultCooldowns
+local CATEGORY_NAMES = {
+    mobility = "Mobility",
+    mana = "Mana",
+    misc = "Misc",
+}
+local CATEGORY_DEFAULT_COLORS = {
+    mobility = {r = 1, g = 0.65, b = 0},
+    mana = {r = 0.2, g = 0.55, b = 1},
+    misc = {r = 0.75, g = 0.75, b = 0.75},
+}
+
+local function GetCategoryName(category)
+    return CATEGORY_NAMES[category] or L["cat:" .. category]
+end
 
 local function MakeGroupDb(settings)
     local defaults = {
@@ -57,9 +71,12 @@ local function MakeGroupDb(settings)
             "stun",
             "knockback",
             "cc",
+            "mobility",
             "offensive",
             "defensive",
             "heal",
+            "mana",
+            "misc",
             "uncat"
         },
         cooldownsCatColors = {
@@ -72,9 +89,12 @@ local function MakeGroupDb(settings)
             ["stun"] = {r = 0, g = 1, b = 1},
             ["knockback"] = {r = 0, g = 1, b = 1},
             ["cc"] = {r = 0, g = 1, b = 1},
+            ["mobility"] = {r = 1, g = 0.65, b = 0},
             ["offensive"] = {r = 1, g = 0, b = 0},
             ["defensive"] = {r = 0, g = 1, b = 0},
             ["heal"] = {r = 0, g = 1, b = 0},
+            ["mana"] = {r = 0.2, g = 0.55, b = 1},
+            ["misc"] = {r = 0.75, g = 0.75, b = 0.75},
             ["uncat"] = {r = 1, g = 1, b = 1}
         },
         cooldownsHideTalentsUntilDetected = true,
@@ -210,9 +230,70 @@ function Cooldowns:GetNumGroups(unit)
     return self.db[unit].num_groups
 end
 
+local function EnsureCooldownCategories(groupdb)
+    if not groupdb then return end
+
+    local priority = groupdb.cooldownsCatPriority
+    if priority then
+        local seen = {}
+        local i = 1
+        while i <= #priority do
+            local category = priority[i]
+            if category == "movement" then
+                category = "mobility"
+                priority[i] = category
+            end
+
+            -- A profile may contain both the old and new keys after importing
+            -- settings. Keep the first position so the user's ordering wins.
+            if category == "mobility" and seen[category] then
+                tremove(priority, i)
+            else
+                seen[category] = true
+                i = i + 1
+            end
+        end
+
+        local insertAt = #priority + 1
+        for index = 1, #priority do
+            if priority[index] == "uncat" then
+                insertAt = index
+                break
+            end
+        end
+
+        local required = {"mobility", "mana", "misc"}
+        for index = 1, #required do
+            local category = required[index]
+            if not seen[category] then
+                tinsert(priority, insertAt, category)
+                insertAt = insertAt + 1
+                seen[category] = true
+            end
+        end
+    end
+
+    local colors = groupdb.cooldownsCatColors
+    if colors then
+        -- Preserve a customized Movement color when upgrading the profile.
+        if not colors.mobility and colors.movement then
+            colors.mobility = colors.movement
+        end
+        for category, color in pairs(CATEGORY_DEFAULT_COLORS) do
+            if not colors[category] then
+                colors[category] = {r = color.r, g = color.g, b = color.b}
+            end
+        end
+    end
+end
+
 function Cooldowns:GetGroupDB(unit, group)
     local k = self.db[unit].group_table[group]
-    return self.db[unit].groups[k]
+    local groupdb = self.db[unit].groups[k]
+
+    EnsureCooldownCategories(groupdb)
+
+    return groupdb
 end
 
 function Cooldowns:GetGroupById(unit, gid)
@@ -319,6 +400,9 @@ function Cooldowns:UNIT_NAME_UPDATE(event, unit)
 end
 
 function Cooldowns:GLADIUS_SPEC_UPDATE(event, unit)
+    if CT.RefreshSymbiosis then
+        CT:RefreshSymbiosis(unit)
+    end
     self:UpdateIcons(unit)
 end
 
@@ -611,11 +695,17 @@ local spell_list = {}
 local unit_sorted_spells = {}
 
 local function ShouldShowCooldown(spelldata, detected, hideOptionalUntilDetected)
+    -- Symbiosis is its own mutually exclusive source. It must be confirmed by
+    -- the linked aura or an observed cast regardless of the talent setting.
+    if spelldata.symbiosis then
+        return detected
+    end
+
     if not hideOptionalUntilDetected then
         return true
     end
 
-    local optional = spelldata.talent or spelldata.item or spelldata.pet
+    local optional = spelldata.talent or spelldata.item or spelldata.pet or spelldata.detected_only
     return not optional or detected or spelldata.pvp_trinket
 end
 
@@ -646,8 +736,9 @@ local function GetCooldownList(unit, group)
         if db.cooldownsSpells[spellid] or (spelldata.replaces and db.cooldownsSpells[spelldata.replaces]) then
             local tracked = CT:GetUnitCooldownInfo(unit, spellid)
             local detected = tracked and tracked.detected
-            -- General class spells are always visible. Talents, items, and pet
-            -- abilities can remain hidden until combat-log detection.
+            -- General class spells are always visible. Symbiosis is always
+            -- detection-gated; talents, items, and pet abilities can optionally
+            -- remain hidden until combat-log detection.
             local shouldShowSpell = ShouldShowCooldown(
                 spelldata,
                 detected,
@@ -2104,7 +2195,7 @@ function Cooldowns:MakeGroupOptions(unit, group)
         local cat = self:GetGroupDB(unit, group).cooldownsCatPriority[i]
         local option = {
             type = "group",
-            name = L["cat:" .. cat],
+            name = GetCategoryName(cat),
             order = function()
                 for i = 1, #(self:GetGroupDB(unit, group).cooldownsCatPriority) do
                     if self:GetGroupDB(unit, group).cooldownsCatPriority[i] == cat then
@@ -2115,7 +2206,7 @@ function Cooldowns:MakeGroupOptions(unit, group)
             args = {
                 header = {
                     type = "description",
-                    name = L["cat:" .. cat],
+                    name = GetCategoryName(cat),
                     order = 1
                 },
                 color = {
@@ -2253,6 +2344,15 @@ function Cooldowns:MakeGroupOptions(unit, group)
             end
             if spelldata.cc then
                 tinsert(cats, L["cat:cc"])
+            end
+            if spelldata.mobility then
+                tinsert(cats, "Mobility")
+            end
+            if spelldata.mana then
+                tinsert(cats, "Mana")
+            end
+            if spelldata.misc then
+                tinsert(cats, "Misc")
             end
             if spelldata.offensive then
                 tinsert(cats, L["cat:offensive"])
@@ -2402,7 +2502,21 @@ function Cooldowns:MakeGroupOptions(unit, group)
                 end,
                 order = spelldata.name:byte(1) * 0xff + spelldata.name:byte(2)
             }
-            if spelldata.class then
+            if spelldata.universal then
+                if not args.arena_mechanics then
+                    args.arena_mechanics = {
+                        type = "group",
+                        name = "Arena Mechanics",
+                        icon = [[Interface\Icons\Spell_Warlock_DemonicPortal_Purple]],
+                        disabled = function()
+                            return not self:IsUnitEnabled(unit)
+                        end,
+                        order = 4,
+                        args = {}
+                    }
+                end
+                args.arena_mechanics.args["spell" .. spellid] = spellconfig
+            elseif spelldata.class then
                 local ico =
                     spelldata.class == "DEATHKNIGHT" and [[Interface\ICONS\Spell_DEATHKNIGHT_classicon]] or
                     [[Interface\ICONS\ClassIcon_]] .. spelldata.class

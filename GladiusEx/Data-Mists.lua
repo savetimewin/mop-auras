@@ -415,7 +415,9 @@ function GladiusEx.Data.DefaultCooldowns()
 			[49016] = true, -- offensive
 			[108201] = true, -- counterCC
 			[49039] = true, -- counterCC
-			[113072] = true, -- defensive
+			[96268] = true, -- movement: Death's Advance
+			[113072] = true, -- Symbiosis: Might of Ursoc (Blood)
+			[113516] = true, -- Symbiosis: Wild Mushroom: Plague (Frost/Unholy)
 			-- DRUID
 			[80964] = true, -- interrupt
 			[78675] = true, -- interrupt
@@ -435,26 +437,48 @@ function GladiusEx.Data.DefaultCooldowns()
 			[106951] = true, -- offensive
 			[112071] = true, -- offensive
 			[102558] = true, -- offensive
-			[29166] = true, -- other
-			[132158] = true, -- other
-			[110570] = true, -- defensive
-			[110575] = true, -- defensive
-			[110617] = true, -- immunity
-			[110696] = true, -- immunity
-			[126458] = true, -- disarm
-			[126449] = true, -- cc
-			[126456] = true, -- defensive
-			[110698] = true, -- cc
-			[110700] = true, -- immunity
-			[122288] = true, -- dispel
-			[110707] = true, -- dispel
-			[110715] = true, -- defensive
-			[110718] = true, -- movement
-			[110788] = true, -- defensive
-			[110791] = true, -- defensive
-			[122291] = true, -- defensive
-			[112970] = true, -- movement
-			[113004] = true, -- cc
+			[1850] = true, -- mobility: Dash
+			[102280] = true, -- mobility: Displacer Beast
+			[102417] = true, -- mobility: Wild Charge
+			[106898] = true, -- mobility: Stampeding Roar
+			[29166] = true, -- mana: Innervate
+			[132158] = true, -- misc: Nature's Swiftness
+			-- Symbiosis (Druid side; only the aura-detected spell is shown)
+			[110570] = true, -- Anti-Magic Shell
+			[122285] = true, -- Bone Shield
+			[110575] = true, -- Icebound Fortitude
+			[110588] = true, -- Misdirection
+			[110597] = true, -- Play Dead
+			[110600] = true, -- Ice Trap
+			[110617] = true, -- Deterrence
+			[110621] = true, -- Mirror Image
+			[110693] = true, -- Frost Nova
+			[110696] = true, -- Ice Block
+			[126458] = true, -- Grapple Weapon
+			[126449] = true, -- Clash
+			[126453] = true, -- Elusive Brew
+			[126456] = true, -- Fortifying Brew
+			[110698] = true, -- Hammer of Justice
+			[110700] = true, -- Divine Shield
+			[110701] = true, -- Consecration
+			[122288] = true, -- Cleanse
+			[110707] = true, -- Mass Dispel
+			[110715] = true, -- Dispersion
+			[110717] = true, -- Fear Ward
+			[110718] = true, -- Leap of Faith
+			[110788] = true, -- Cloak of Shadows
+			[110730] = true, -- Redirect
+			[110791] = true, -- Evasion
+			[110807] = true, -- Feral Spirit
+			[110806] = true, -- Spiritwalker's Grace
+			[122291] = true, -- Unending Resolve
+			[110810] = true, -- Soul Swap
+			[122290] = true, -- Life Tap
+			[112970] = true, -- Demonic Circle: Teleport
+			[122292] = true, -- Intervene
+			[112997] = true, -- Shattering Blow
+			[113002] = true, -- Spell Reflection
+			[113004] = true, -- Intimidating Roar
 			-- HUNTER
 			[147362] = true, -- interrupt
 			[34490] = true, -- interrupt
@@ -471,7 +495,9 @@ function GladiusEx.Data.DefaultCooldowns()
 			[19574] = true, -- offensive
 			[3045] = true, -- offensive
 			[121818] = true, -- offensive
-			[53271] = true, -- freedom
+			[53271] = true, -- mobility: Master's Call
+			[781] = true, -- mobility: Disengage
+			[113073] = true, -- Symbiosis: Dash
 			-- MAGE
 			[2139] = true, -- interrupt
 			[475] = true, -- dispel
@@ -488,7 +514,11 @@ function GladiusEx.Data.DefaultCooldowns()
 			[11129] = true, -- offensive
 			[12472] = true, -- offensive
 			[55342] = true, -- offensive
-			[12043] = true, -- other
+			[108843] = true, -- mobility: Blazing Speed
+			[1953] = true, -- mobility: Blink
+			[12043] = true, -- misc: Presence of Mind
+			[12051] = true, -- mana: Evocation
+			[113074] = true, -- Symbiosis: Healing Touch
 			-- MONK
 			[137562] = true, -- pvptrinket
 			[116705] = true, -- interrupt
@@ -500,16 +530,23 @@ function GladiusEx.Data.DefaultCooldowns()
 			[122278] = true, -- defensive
 			[122783] = true, -- defensive
 			[115203] = true, -- defensive
+			[122465] = true, -- immunity: Dematerialize (Mistweaver)
 			[122470] = true, -- defensive
 			[115176] = true, -- defensive
 			[115213] = true, -- externalDefensive
 			[116849] = true, -- externalDefensive
 			[115310] = true, -- raidDefensive
+			[113656] = true, -- offensive: Fists of Fury (Windwalker)
+			[115288] = true, -- offensive: Energizing Brew (Windwalker)
 			[123995] = true, -- offensive
-			[116841] = true, -- freedom
-			[119996] = true, -- movement
-			[113306] = true, -- defensive
-			[127361] = true, -- cc
+			[116841] = true, -- mobility: Tiger's Lust
+			[115008] = true, -- mobility: Chi Torpedo
+			[101545] = true, -- mobility: Flying Serpent Kick (Windwalker)
+			[109132] = true, -- mobility: Roll
+			[122057] = true, -- mobility/cc: Clash (Brewmaster)
+			[119996] = true, -- mobility: Transcendence: Transfer
+			[113306] = true, -- Symbiosis: Survival Instincts (Brewmaster)
+			[127361] = true, -- Symbiosis: Bear Hug (Windwalker)
 			-- PALADIN
 			[96231] = true, -- interrupt
 			[4987] = true, -- dispel
@@ -530,8 +567,10 @@ function GladiusEx.Data.DefaultCooldowns()
 			[31842] = true, -- offensive
 			[114157] = true, -- offensive
 			[86698] = true, -- offensive
-			[1044] = true, -- freedom
-			[113075] = true, -- defensive
+			[1044] = true, -- mobility: Hand of Freedom
+			[54428] = true, -- mana: Divine Plea (Holy)
+			[85499] = true, -- mobility: Speed of Light
+			[113075] = true, -- Symbiosis: Barkskin (Protection)
 			-- PRIEST
 			[15487] = true, -- interrupt
 			[32375] = true, -- dispel
@@ -550,14 +589,18 @@ function GladiusEx.Data.DefaultCooldowns()
 			[62618] = true, -- raidDefensive
 			[15286] = true, -- raidDefensive
 			[10060] = true, -- offensive
-			[34433] = true, -- offensive
+			[34433] = true, -- offensive/mana: Shadowfiend
+			[123040] = true, -- offensive/mana: Mindbender
 			[6346] = true, -- counterCC
 			[89485] = true, -- counterCC
 			[32379] = true, -- counterCC
 			[129176] = true, -- counterCC
-			[73325] = true, -- movement
-			[64901] = true, -- other
-			[113277] = true, -- raidDefensive
+			[121536] = true, -- mobility: Angelic Feather
+			[114239] = true, -- mobility: Phantasm
+			[73325] = true, -- mobility: Leap of Faith
+			[64901] = true, -- mana: Hymn of Hope
+			[112833] = true, -- misc: Spectral Guise
+			[113277] = true, -- Symbiosis: Tranquility (Shadow)
 			-- ROGUE
 			[1766] = true, -- interrupt
 			[2094] = true, -- cc
@@ -575,6 +618,9 @@ function GladiusEx.Data.DefaultCooldowns()
 			[121471] = true, -- offensive
 			[51713] = true, -- offensive
 			[79140] = true, -- offensive
+			[36554] = true, -- mobility: Shadowstep
+			[2983] = true, -- mobility: Sprint
+			[113613] = true, -- Symbiosis: Growl
 			-- SHAMAN
 			[57994] = true, -- interrupt
 			[51886] = true, -- dispel
@@ -598,15 +644,19 @@ function GladiusEx.Data.DefaultCooldowns()
 			[120668] = true, -- offensive
 			[8177] = true, -- counterCC
 			[8143] = true, -- counterCC
-			[58875] = true, -- freedom
-			[16188] = true, -- other
-			[16190] = true, -- other
-			[113286] = true, -- interrupt
+			[58875] = true, -- mobility: Spirit Walk
+			[108273] = true, -- mobility: Windwalk Totem
+			[79206] = true, -- mobility: Spiritwalker's Grace
+			[16188] = true, -- misc: Ancestral Swiftness
+			[16190] = true, -- mana: Mana Tide Totem
+			[113286] = true, -- Symbiosis: Solar Beam (Elemental/Enhancement)
+			[113289] = true, -- Symbiosis: Prowl (Restoration)
 			-- WARLOCK
-			[108482] = true, -- pvptrinket
+			[108482] = true, -- defensive/mobility: Unbound Will
 			[108501] = true, -- interrupt
 			[19647] = true, -- interrupt
 			[19505] = true, -- dispel
+			[89766] = true, -- Axe Toss (Felguard/Wrathguard)
 			[6789] = true, -- cc
 			[5484] = true, -- aoeCC
 			[30283] = true, -- aoeCC
@@ -617,7 +667,9 @@ function GladiusEx.Data.DefaultCooldowns()
 			[113858] = true, -- offensive
 			[113861] = true, -- offensive
 			[113860] = true, -- offensive
-			[48020] = true, -- movement
+			[48020] = true, -- mobility: Demonic Circle: Teleport
+			[113942] = true, -- mobility: Demonic Gateway reuse debuff
+			[113295] = true, -- Symbiosis: Rejuvenation
 			-- WARRIOR
 			[102060] = true, -- interrupt
 			[6552] = true, -- interrupt
@@ -633,7 +685,7 @@ function GladiusEx.Data.DefaultCooldowns()
 			[114030] = true, -- externalDefensive
 			[97462] = true, -- raidDefensive
 			[55694] = true, -- heal
-			[107574] = true, -- offensive
+			[107574] = true, -- offensive/mobility: Avatar
 			[86346] = true, -- offensive
 			[1719] = true, -- offensive
 			[114207] = true, -- offensive
@@ -642,8 +694,11 @@ function GladiusEx.Data.DefaultCooldowns()
 			[114028] = true, -- counterCC
 			[114029] = true, -- counterCC
 			[23920] = true, -- counterCC
-			[64382] = true, -- other
-			[122286] = true, -- defensive
+			[1250619] = true, -- mobility: Charge
+			[6544] = true, -- mobility: Heroic Leap
+			[64382] = true, -- misc: Shattering Throw
+			[122294] = true, -- Symbiosis: Stampeding Shout (Arms/Fury)
+			[122286] = true, -- Symbiosis: Savage Defense (Protection)
 		},
 		{
 			-- Existing PvP trinket/racial group (unchanged).
@@ -797,11 +852,6 @@ end
 function GladiusEx.Data.GetNumArenaOpponentSpecs()
     return GetNumArenaOpponentSpecs()
 end
-
-
-
-
-
 
 
 

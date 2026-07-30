@@ -151,8 +151,20 @@ LCT_SpellData[10060] = {
 LCT_SpellData[34433] = {
 	class = "PRIEST",
 	offensive = true,
+	mana = true,
 	duration = 12,
 	cooldown = 180,
+}
+
+-- Mindbender (talent replacement for Shadowfiend)
+LCT_SpellData[123040] = {
+	class = "PRIEST",
+	talent = true,
+	offensive = true,
+	mana = true,
+	duration = 15,
+	replaces = 34433,
+	cooldown = 60,
 }
 
 -- Fear Ward (counterCC)
@@ -188,26 +200,47 @@ LCT_SpellData[129176] = {
 	cooldown = 8,
 }
 
+-- Angelic Feather (movement)
+LCT_SpellData[121536] = {
+	class = "PRIEST",
+	talent = true,
+	mobility = true,
+	charges = 3,
+	cooldown = 10,
+}
+
+-- Phantasm (Fade root/snare break)
+LCT_SpellData[114239] = {
+	class = "PRIEST",
+	talent = true,
+	mobility = true,
+	duration = 5,
+	cooldown = 30,
+}
+
 -- Leap of Faith (movement)
 LCT_SpellData[73325] = {
 	class = "PRIEST",
 	defensive = true,
+	mobility = true,
 	cooldown = 90,
 }
 
--- Spell 64901 (other)
+-- Hymn of Hope (mana)
 LCT_SpellData[64901] = {
 	class = "PRIEST",
-	none = true,
+	mana = true,
+	duration = 8,
 	cooldown = 360,
 }
 
--- Spell 113277 (raidDefensive)
-LCT_SpellData[113277] = {
+-- Spectral Guise (misc)
+LCT_SpellData[112833] = {
 	class = "PRIEST",
 	talent = true,
-	defensive = true,
-	cooldown = 480,
+	misc = true,
+	duration = 6,
+	cooldown = 30,
 }
 
 -- Alternate combat-log IDs.
