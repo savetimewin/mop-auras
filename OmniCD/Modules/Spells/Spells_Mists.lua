@@ -489,8 +489,7 @@ E.spell_db = {
 		{ spellID = 20594,	duration = 120,	type = "racial",	race = 3	},
 		{ spellID = 20549,	duration = 120,	type = "racial",	race = 6	},
 		{ spellID = 7744,	duration = 120,	type = "racial",	race = 5	},
-		{ spellID = 59752,	duration = 120,	type = "racial",	race = 1	},
-		{ spellID = 115451,	duration = 120,	type = "pvptrinket",	},
+		{ spellID = 59752,	duration = 120,	type = "pvptrinket",	race = 1	},
 	},
 	["TRINKET"] = {
 		{ spellID = 113942,	duration = 60,	type = "consumable",	item = 0,	icon = 607512	},
