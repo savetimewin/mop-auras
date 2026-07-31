@@ -53,6 +53,7 @@ AddCooldowns(addonTable.UNKNOWN_CLASS, {
 	{ 26297, 180, "offensive" },
 	{ 68992, 120, "movement" },
 	{ 28880, 180, "heal" },
+	{ 113942, 60, "movement", { universal = true, detectedOnly = true, trackOnDestination = true, defaultDisabled = true } }, -- Demonic Gateway reuse debuff
 });
 
 AddCooldowns("DEATHKNIGHT", {
@@ -74,6 +75,7 @@ AddCooldowns("DEATHKNIGHT", {
 	{ 49016, 180, "offensive", { specs = { 252 } } }, -- Unholy Frenzy
 	{ 108201, 120, "counterCC", { talent = true } }, -- Desecrated Ground
 	{ 49039, 120, "counterCC", { talent = true } }, -- Lichborne
+	{ 96268, 30, "movement", { talent = true, defaultDisabled = true } }, -- Death's Advance
 	{ 113072, 180, "defensive", { talent = true } }, -- Spell 113072
 });
 
@@ -95,9 +97,16 @@ AddCooldowns("DRUID", {
 	{ 50334, 180, "offensive", { specs = { 104 } } }, -- Berserk (Guardian)
 	{ 106951, 180, "offensive", { specs = { 103 } } }, -- Berserk (Feral)
 	{ 112071, 180, "offensive", { specs = { 102 } } }, -- Celestial Alignment
-	{ 102558, 180, "offensive", { talent = true } }, -- Incarnation
+	{ 102560, 180, "offensive", { specs = { 102 }, talent = true, defaultDisabled = true } }, -- Incarnation: Chosen of Elune
+	{ 102543, 180, "offensive", { specs = { 103 }, talent = true, defaultDisabled = true } }, -- Incarnation: King of the Jungle
+	{ 102558, 180, "offensive", { specs = { 104 }, talent = true } }, -- Incarnation: Son of Ursoc
+	{ 33891, 180, "defensive", { specs = { 105 }, talent = true, defaultDisabled = true } }, -- Incarnation: Tree of Life
 	{ 29166, 180, "other" }, -- Innervate
 	{ 132158, 60, "other", { specs = { 102, 103, 105 }, startOnAuraRemoved = true } }, -- Nature's Swiftness
+	{ 1850, 180, "movement", { defaultDisabled = true } }, -- Dash
+	{ 102280, 30, "movement", { talent = true, defaultDisabled = true } }, -- Displacer Beast
+	{ 102417, 15, "movement", { talent = true, defaultDisabled = true } }, -- Wild Charge
+	{ 106898, 120, "movement", { defaultDisabled = true } }, -- Stampeding Roar
 	{ 110570, 45, "defensive", { talent = true } }, -- Spell 110570
 	{ 110575, 180, "defensive", { talent = true } }, -- Spell 110575
 	{ 110617, 120, "immunity", { talent = true } }, -- Spell 110617
@@ -135,6 +144,7 @@ AddCooldowns("HUNTER", {
 	{ 3045, 180, "offensive" }, -- Rapid Fire
 	{ 121818, 300, "offensive" }, -- Stampede
 	{ 53271, 45, "freedom", { pet = true } }, -- Master's Call
+	{ 781, 20, "movement", { defaultDisabled = true } }, -- Disengage
 });
 
 AddCooldowns("MAGE", {
@@ -154,6 +164,9 @@ AddCooldowns("MAGE", {
 	{ 12472, 180, "offensive", { specs = { 64 } } }, -- Icy Veins
 	{ 55342, 180, "offensive" }, -- Mirror Image
 	{ 12043, 90, "other", { talent = true, startOnAuraRemoved = true } }, -- Presence of Mind
+	{ 12051, 120, "other", { defaultDisabled = true } }, -- Evocation
+	{ 108843, 25, "movement", { talent = true, defaultDisabled = true } }, -- Blazing Speed
+	{ 1953, 15, "movement", { optionalCharges = 2, defaultDisabled = true } }, -- Blink
 });
 
 AddCooldowns("MONK", {
@@ -167,13 +180,20 @@ AddCooldowns("MONK", {
 	{ 122278, 90, "defensive", { talent = true } }, -- Dampen Harm
 	{ 122783, 90, "defensive", { talent = true } }, -- Diffuse Magic
 	{ 115203, 180, "defensive" }, -- Fortifying Brew
+	{ 122465, 10, "immunity", { specs = { 270 }, trackOnDestination = true, defaultDisabled = true } }, -- Dematerialize
 	{ 122470, 90, "defensive", { specs = { 269 } } }, -- Touch of Karma
 	{ 115176, 180, "defensive" }, -- Zen Meditation
 	{ 115213, 180, "externalDefensive", { specs = { 268 } } }, -- Avert Harm
 	{ 116849, 120, "externalDefensive", { specs = { 270 } } }, -- Life Cocoon
 	{ 115310, 180, "raidDefensive", { specs = { 270 } } }, -- Revival
-	{ 123995, 180, "offensive", { talent = true } }, -- Spell 123995
+	{ 113656, 25, "offensive", { specs = { 269 }, defaultDisabled = true } }, -- Fists of Fury
+	{ 115288, 60, "offensive", { specs = { 269 }, defaultDisabled = true } }, -- Energizing Brew
+	{ 123904, 180, "offensive", { talent = true, defaultDisabled = true } }, -- Invoke Xuen, the White Tiger
 	{ 116841, 30, "freedom", { talent = true } }, -- Tiger's Lust
+	{ 115008, 20, "movement", { talent = true, charges = 2, defaultDisabled = true } }, -- Chi Torpedo
+	{ 101545, 25, "movement", { specs = { 269 }, defaultDisabled = true } }, -- Flying Serpent Kick
+	{ 109132, 20, "movement", { charges = 2, defaultDisabled = true } }, -- Roll
+	{ 122057, 35, "cc", { specs = { 268 }, defaultDisabled = true } }, -- Clash
 	{ 119996, 25, "movement" }, -- Transcendence: Transfer
 	{ 113306, 180, "defensive", { talent = true } }, -- Spell 113306
 	{ 127361, 60, "cc", { talent = true } }, -- Spell 127361
@@ -200,6 +220,8 @@ AddCooldowns("PALADIN", {
 	{ 114157, 60, "offensive", { talent = true } }, -- Execution Sentence
 	{ 86698, 180, "offensive", { specs = { 70 } } }, -- Guardian of Ancient Kings (Ret)
 	{ 1044, 25, "freedom", { optionalCharges = 2 } }, -- Hand of Freedom
+	{ 54428, 120, "other", { specs = { 65 }, defaultDisabled = true } }, -- Divine Plea
+	{ 85499, 45, "movement", { talent = true, defaultDisabled = true } }, -- Speed of Light
 	{ 113075, 60, "defensive", { talent = true } }, -- Spell 113075
 });
 
@@ -222,11 +244,15 @@ AddCooldowns("PRIEST", {
 	{ 15286, 180, "raidDefensive", { specs = { 258 } } }, -- Spell 15286
 	{ 10060, 120, "offensive", { talent = true } }, -- Power Infusion
 	{ 34433, 180, "offensive" }, -- Shadowfiend
+	{ 123040, 60, "offensive", { talent = true, defaultDisabled = true } }, -- Mindbender
 	{ 6346, 180, "counterCC" }, -- Fear Ward
 	{ 89485, 45, "counterCC", { specs = { 256 }, startOnAuraRemoved = true } }, -- Inner Focus
 	{ 32379, 8, "counterCC", { specs = { 256, 257 } } }, -- Spell 32379
 	{ 129176, 8, "counterCC", { specs = { 258 } } }, -- Spell 129176
+	{ 121536, 10, "movement", { talent = true, charges = 3, defaultDisabled = true } }, -- Angelic Feather
+	{ 114239, 30, "movement", { talent = true, defaultDisabled = true } }, -- Phantasm
 	{ 73325, 90, "movement" }, -- Leap of Faith
+	{ 112833, 30, "other", { talent = true, defaultDisabled = true } }, -- Spectral Guise
 	{ 64901, 360, "other" }, -- Spell 64901
 	{ 113277, 480, "raidDefensive", { talent = true } }, -- Spell 113277
 });
@@ -248,6 +274,8 @@ AddCooldowns("ROGUE", {
 	{ 121471, 180, "offensive" }, -- Shadow Blades
 	{ 51713, 60, "offensive", { specs = { 261 } } }, -- Shadow Dance
 	{ 79140, 120, "offensive", { specs = { 259 } } }, -- Vendetta
+	{ 36554, 20, "movement", { talent = true, defaultDisabled = true } }, -- Shadowstep
+	{ 2983, 60, "movement", { defaultDisabled = true } }, -- Sprint
 });
 
 AddCooldowns("SHAMAN", {
@@ -274,6 +302,8 @@ AddCooldowns("SHAMAN", {
 	{ 8177, 25, "counterCC" }, -- Grounding Totem
 	{ 8143, 60, "counterCC" }, -- Tremor Totem
 	{ 58875, 60, "freedom", { specs = { 263 } } }, -- Spirit Walk
+	{ 108273, 60, "movement", { talent = true, defaultDisabled = true } }, -- Windwalk Totem
+	{ 79206, 120, "movement", { defaultDisabled = true } }, -- Spiritwalker's Grace
 	{ 16188, 90, "other", { talent = true, startOnAuraRemoved = true } }, -- Ancestral Swiftness
 	{ 16190, 180, "other", { specs = { 264 } } }, -- Mana Tide Totem
 	{ 113286, 60, "interrupt", { talent = true } }, -- Spell 113286
@@ -284,6 +314,7 @@ AddCooldowns("WARLOCK", {
 	{ 108501, 120, "interrupt", { talent = true } }, -- Grimoire of Service
 	{ 19647, 24, "interrupt", { pet = true } }, -- Spell Lock
 	{ 19505, 15, "dispel", { pet = true } }, -- Devour Magic
+	{ 89766, 30, "cc", { specs = { 266 }, pet = true, defaultDisabled = true } }, -- Axe Toss
 	{ 6789, 45, "cc", { talent = true } }, -- Mortal Coil
 	{ 5484, 40, "aoeCC" }, -- Howl of Terror
 	{ 30283, 30, "aoeCC", { talent = true } }, -- Shadowfury
@@ -321,30 +352,35 @@ AddCooldowns("WARRIOR", {
 	{ 114028, 60, "counterCC", { talent = true } }, -- Mass Spell Reflection
 	{ 114029, 30, "counterCC", { talent = true } }, -- Safeguard
 	{ 23920, 25, "counterCC" }, -- Spell Reflection
+	{ 1250619, 20, "movement", { optionalCharges = 2, defaultDisabled = true } }, -- Charge
+	{ 6544, 45, "movement", { defaultDisabled = true } }, -- Heroic Leap
 	{ 64382, 300, "other" }, -- Shattering Throw
 	{ 122286, 60, "defensive", { talent = true } }, -- Spell 122286
 });
 
 addonTable.CooldownAliases = {
+	[100] = 1250619,
 	[724] = 126135,
 	[6358] = 19505,
 	[6360] = 19647,
 	[13809] = 1499,
+	[16979] = 102417,
 	[17767] = 19505,
 	[31616] = 30884,
 	[32747] = 15487,
 	[45182] = 31230,
+	[49376] = 102417,
 	[60192] = 1499,
 	[80965] = 80964,
 	[82941] = 1499,
 	[87024] = 86949,
 	[89751] = 19647,
-	[89766] = 19505,
 	[89808] = 19505,
 	[93985] = 80964,
 	[97547] = 78675,
-	[102543] = 102558,
-	[102560] = 102558,
+	[102383] = 102417,
+	[102401] = 102417,
+	[102416] = 102417,
 	[111859] = 108501,
 	[111895] = 108501,
 	[111896] = 108501,
@@ -367,7 +403,9 @@ addonTable.CooldownAliases = {
 	[119913] = 19647,
 	[119914] = 19647,
 	[119915] = 19647,
+	[123995] = 123904,
 	[123981] = 114556,
+	[132578] = 123904,
 	[132409] = 19647,
 	[132410] = 19647,
 	[132411] = 19647,
@@ -398,7 +436,6 @@ addonTable.CooldownAliasMeta = {
 	[19505] = { spellID = 19505, cooldown = 15, texture = 136075 },
 	[19647] = { spellID = 19647, cooldown = 24, texture = 136174 },
 	[89751] = { spellID = 19647, cooldown = 45, texture = 236303 },
-	[89766] = { spellID = 19505, cooldown = 30, texture = 236316 },
 	[89808] = { spellID = 19505, cooldown = 10, texture = 135791 },
 	[111859] = { spellID = 108501, cooldown = 120, texture = 136218 },
 	[111895] = { spellID = 108501, cooldown = 120, texture = 136221 },
@@ -431,6 +468,7 @@ addonTable.CooldownAliasMeta = {
 addonTable.CooldownVariants = {
 	[498] = { 30 },
 	[642] = { 150 },
+	[781] = { 10 },
 	[1499] = { 28, 22 },
 	[2894] = { 150 },
 	[6346] = { 120 },
@@ -454,7 +492,10 @@ addonTable.CooldownVariants = {
 	[104773] = { 120 },
 	[106922] = { 120 },
 	[108978] = { 90 },
+	[109132] = { 15 },
+	[115008] = { 15 },
 	[119996] = { 20 },
+	[1250619] = { 12 },
 };
 
 addonTable.HUNTER_TRAP_SPELLS = { [1499] = true, [60192] = true, [82941] = true };
@@ -500,26 +541,36 @@ addonTable.SpecHints = {
 	[89485] = 256,
 	[98008] = 264,
 	[102342] = 105,
+	[102543] = 103,
+	[102560] = 102,
 	[106951] = 103,
 	[112071] = 102,
+	[113656] = 269,
 	[113858] = 267,
 	[113860] = 265,
 	[113861] = 266,
 	[115213] = 268,
+	[115288] = 269,
 	[115310] = 270,
 	[116849] = 270,
 	[122470] = 269,
+	[122057] = 268,
+	[122465] = 270,
 	[126135] = 257,
 	[129176] = 258,
 	[724] = 257,
 	[32747] = 258,
 	[97547] = 102,
+	[33891] = 105,
+	[54428] = 65,
+	[89766] = 266,
+	[101545] = 269,
 };
 
 addonTable.CooldownResets = {
 	[11958] = { 45438 },
-	[14185] = { 1856, 5277, 51722 },
-	[108285] = { 108269, 8177, 108270, 8143 },
+	[14185] = { 1856, 5277, 51722, 2983 },
+	[108285] = { 108269, 8177, 108270, 8143, 108273 },
 };
 
 -- No cast-event reduction is used for Glyph of Counterspell: that glyph increases the base CD.

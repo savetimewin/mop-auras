@@ -35,7 +35,15 @@ local migrations = {
         addonTable.db.SpellCDs = addonTable.deepcopy(tempTable);
         if (db.TimerTextSize == nil) then
 			db.TimerTextSize = math_ceil(db.IconSize - db.IconSize/2);
-		end
+        end
+    end,
+    [7] = function()
+        local db = addonTable.db;
+        local oldXuen = db.SpellCDs[123995];
+        if (oldXuen ~= nil and db.SpellCDs[123904] == nil) then
+            db.SpellCDs[123904] = addonTable.deepcopy(oldXuen);
+        end
+        db.SpellCDs[123995] = nil;
     end,
 };
 

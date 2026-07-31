@@ -83,9 +83,10 @@ local ShowGUI, InitializeGUI, GUICategory_General, GUICategory_Other, OnGUICateg
 -------------------------------------------------------------------------------------------------
 do
 
-	function GetDefaultDBEntryForSpell()
+	function GetDefaultDBEntryForSpell(spellID)
+		local meta = spellID and CooldownMeta[spellID];
 		return {
-			["enabled"] = true,
+			["enabled"] = not (meta and meta.defaultDisabled),
 			["glow"] = nil,
 		};
 	end
@@ -196,7 +197,7 @@ do
 				if (SpellNameByID[spellId] ~= nil) then
 					AllCooldowns[spellId] = addonTable.ResolveBaseCooldown(definition, InstanceType, nil);
 					if (db.SpellCDs[spellId] == nil) then
-						db.SpellCDs[spellId] = GetDefaultDBEntryForSpell();
+						db.SpellCDs[spellId] = GetDefaultDBEntryForSpell(spellId);
 						addonTable.Print(string_format(L["New spell has been added: %s"].." (%s)", GetSpellLink(spellId) or SpellNameByID[spellId], class));
 					end
 				end
@@ -866,10 +867,10 @@ do
 		_charactersDB = addonTable.deepcopy(SpellsPerPlayerGUID);
 		_spellCDs = addonTable.deepcopy(db.SpellCDs);
 		for spellID in pairs(_spellIDs) do
-			db.SpellCDs[spellID] = GetDefaultDBEntryForSpell();
+			db.SpellCDs[spellID] = GetDefaultDBEntryForSpell(spellID);
 			db.SpellCDs[spellID].enabled = true;
 		end
-		db.SpellCDs[SPELL_PVPTRINKET] = GetDefaultDBEntryForSpell();
+		db.SpellCDs[SPELL_PVPTRINKET] = GetDefaultDBEntryForSpell(SPELL_PVPTRINKET);
 		db.SpellCDs[SPELL_PVPTRINKET].enabled = true;
 		db.SpellCDs[SPELL_PVPTRINKET].glow = GLOW_TIME_INFINITE;
 		if (not TestFrame) then
@@ -2239,7 +2240,7 @@ do
 				for spellID in pairs(cds) do
 					if (SpellNameByID[spellID] ~= nil) then
 						if (selectedClass == addonTable.ALL_CLASSES or selectedClass == class) then
-							local spellInfo = db.SpellCDs[spellID] or GetDefaultDBEntryForSpell();
+							local spellInfo = db.SpellCDs[spellID] or GetDefaultDBEntryForSpell(spellID);
 							table_insert(t, {
 								icon = SpellTextureByID[spellID],
 								text = SpellNameByID[spellID],
@@ -2697,7 +2698,7 @@ do
 
 	EventFrame.COMBAT_LOG_EVENT_UNFILTERED = function()
 		local cTime = GetTime();
-		local _, eventType, _, srcGUID, _, srcFlags, _, destGUID, _, _, _, rawSpellID = CombatLogGetCurrentEventInfo();
+		local _, eventType, _, srcGUID, _, srcFlags, _, destGUID, _, destFlags, _, rawSpellID = CombatLogGetCurrentEventInfo();
 
 		if (damageEvents[eventType] and destGUID and DamageTakenReductions[5484]) then
 			ApplyReduction(destGUID, { 5484 }, DamageTakenReductions[5484], cTime, true);
@@ -2709,6 +2710,10 @@ do
 		local aliasMeta = rawSpellID and CooldownAliasMeta[rawSpellID];
 		local spellID = aliasMeta and aliasMeta.spellID or (rawSpellID and (CooldownAliases[rawSpellID] or rawSpellID));
 		local meta = spellID and CooldownMeta[spellID];
+		if (meta and meta.trackOnDestination and destGUID) then
+			srcGUID = destGUID;
+			srcFlags = destFlags;
+		end
 		srcGUID = ResolvePetOwnerGUID(srcGUID, meta);
 		local specID = ResolveArenaSpec(srcGUID) or
 			(rawSpellID and (SpecHints[rawSpellID] or SpecHints[spellID]));
