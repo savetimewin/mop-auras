@@ -486,13 +486,12 @@ local mobility_buffs = {
 	124488, -- Zen Focus
 	96267, -- Inner Focus
 	79206, -- spiritwalker's grace
-	114239, -- Phantasm
+	114239, -- Phantasm "Check spell ID" disabled.
 	1044, -- Hand of Freedom
 	54216, -- Master's Call (Magic, Dispellable)
 	62305, -- Master's Call -- no check id because there are multiple ids which this might not be the correct one
 	116841, -- Tiger's Lust
 	118922, -- Posthaste
-	108843, -- Blazing Speed
 	73325, -- Leap of Faith
 	121557, -- Angelic Feather
 	36554, -- Shadowstep
@@ -508,12 +507,14 @@ local mobility_buffs = {
 
 -- size 1.5
 local speed_buffs = {
+	108843, -- Blazing Speed
 	2983, -- Sprint
 	1850, -- Dash
 	54861, -- Nitro Boosts
 	65081, -- Body and Soul
 	133278,  -- warrior heroic leap PVP set bonus speed buff
 	85499, -- Speed of Light
+	87173, -- Long Arm of the Law (A successful Judgment increases your movement speed by 45% for 3 sec.)
 }
 
 -- size 1.5
@@ -570,9 +571,9 @@ local stances_forms = {
 
 -- size 1.5
 local constraint_debuffs = {
-	41425, -- Hypothermia
+	41425, -- Hypothermia 1.8
 	87023, -- Cauterize
-	25771, -- Forbearance
+	25771, -- Forbearance 1.8
 	770, -- Faerie Fire, No Check Spell ID, just the debuff name
 	31615, -- Hunter's Mark, No Check Spell ID, just the debuff name
 	1543, -- Flare -- don't check id, not sure exact debuff id
