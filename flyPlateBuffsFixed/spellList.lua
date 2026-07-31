@@ -439,8 +439,8 @@ local major_offensive_buffs = {
 local  minor_offensive_buffs = {
 	114206, -- Skull Banner -- 20% Crit Damage
 	116267, -- incanter's absorption
-	120676, -- Stormlash Totem Effect
-	57761, -- Brain Freeze
+	-- 120676, -- Stormlash Totem Effect
+	-- 57761, -- Brain Freeze
 	121471, -- Shadow Blades
 	19574, -- Bestial Wrath
 	-- 93435, -- Roar of Courage
