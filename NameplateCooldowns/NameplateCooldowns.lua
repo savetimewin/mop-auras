@@ -3,7 +3,7 @@
 -- luacheck: globals GetSpellLink SLASH_NAMEPLATECOOLDOWNS1 SlashCmdList UNKNOWN IsInGroup LE_PARTY_CATEGORY_INSTANCE IsInRaid C_ChatInfo CreateFrame
 -- luacheck: globals unpack InCombatLockdown ColorPickerFrame BackdropTemplateMixin UIDropDownMenu_SetWidth UIDropDownMenu_AddButton GameFontNormal
 -- luacheck: globals InterfaceOptionsFrame_OpenToCategory GetSpellInfo GameFontHighlightSmall hooksecurefunc ALL GameTooltip FillLocalizedClassList
--- luacheck: globals OTHER PlaySound SOUNDKIT COMBATLOG_OBJECT_REACTION_HOSTILE CombatLogGetCurrentEventInfo IsInInstance strsplit UnitName GetRealmName
+-- luacheck: globals OTHER PlaySound SOUNDKIT COMBATLOG_OBJECT_REACTION_HOSTILE COMBATLOG_OBJECT_REACTION_FRIENDLY CombatLogGetCurrentEventInfo IsInInstance strsplit UnitName GetRealmName
 -- luacheck: globals UnitReaction UnitAura GetArenaOpponentSpec
 
 local _, addonTable = ...;
@@ -61,6 +61,7 @@ local AllSpellIDsAndIconsByName = { };
 local ElapsedTimer = 0;
 local Nameplates = {};
 local NameplatesVisible = {};
+local FriendlyNameplates = {};
 local InstanceType = "none";
 local AllCooldowns = { };
 local GUIFrame, EventFrame, TestFrame, db, aceDB, ProfileOptionsFrame, LocalPlayerGUID;
@@ -757,9 +758,10 @@ do
 	end
 
 	function UpdateOnlyOneNameplate(frame, unitGUID)
-		if (unitGUID == LocalPlayerGUID) then return; end
 		local counter = 1;
-		if (GlobalFilterNameplate(unitGUID)) then
+		local canShowForUnit = unitGUID ~= LocalPlayerGUID
+			and (db.ShowCDOnAllies == true or not FriendlyNameplates[frame]);
+		if (canShowForUnit and GlobalFilterNameplate(unitGUID)) then
 			if (SpellsPerPlayerGUID[unitGUID]) then
 				local currentTime = GetTime();
 				local sortedCDs = Nameplate_SortAuras(SpellsPerPlayerGUID[unitGUID]);
@@ -1955,12 +1957,13 @@ do
 			checkboxShowCDOnAllies:SetText(L["options:general:show-cd-on-allies"]);
 			checkboxShowCDOnAllies:SetOnClickHandler(function(this)
 				db.ShowCDOnAllies = this:GetChecked();
+				ReallocateAllIcons(true);
 			end);
 			checkboxShowCDOnAllies:SetParent(GUIFrame.outline);
 			checkboxShowCDOnAllies:SetPoint("TOPLEFT", checkBoxIgnoreNameplateScale, "BOTTOMLEFT", 0, 0);
 			checkboxShowCDOnAllies:SetChecked(db.ShowCDOnAllies);
 			table.insert(GUIFrame.Categories[index], checkboxShowCDOnAllies);
-			table_insert(GUIFrame.OnDBChangedHandlers, function() checkboxShowCDOnAllies:SetChecked(db.ShowCDOnAllies); end);
+			table_insert(GUIFrame.OnDBChangedHandlers, function() checkboxShowCDOnAllies:SetChecked(db.ShowCDOnAllies); ReallocateAllIcons(true); end);
 		end
 
 		-- checkboxShowInactiveCD
@@ -2574,6 +2577,7 @@ end
 do
 
 	local COMBATLOG_OBJECT_REACTION_HOSTILE = COMBATLOG_OBJECT_REACTION_HOSTILE;
+	local COMBATLOG_OBJECT_REACTION_FRIENDLY = COMBATLOG_OBJECT_REACTION_FRIENDLY;
 	local CombatLogGetCurrentEventInfo = CombatLogGetCurrentEventInfo;
 
 	EventFrame = CreateFrame("Frame");
@@ -2722,10 +2726,11 @@ do
 		end
 
 		local isHostile = bit_band(srcFlags or 0, COMBATLOG_OBJECT_REACTION_HOSTILE) ~= 0;
+		local isFriendly = bit_band(srcFlags or 0, COMBATLOG_OBJECT_REACTION_FRIENDLY) ~= 0;
 		local isTrackedSource = srcGUID == LocalPlayerGUID
 			or isHostile
-			or (db.ShowCDOnAllies == true and srcGUID ~= LocalPlayerGUID)
-			or (srcGUID ~= nil and srcGUID ~= "" and srcGUID ~= LocalPlayerGUID and spellID ~= nil and (eventType == "SPELL_CAST_SUCCESS" or eventType == "SPELL_AURA_APPLIED" or eventType == "SPELL_MISSED" or eventType == "SPELL_SUMMON"));
+			or (db.ShowCDOnAllies == true and isFriendly and srcGUID ~= LocalPlayerGUID)
+			or (not isFriendly and srcGUID ~= nil and srcGUID ~= "" and srcGUID ~= LocalPlayerGUID and spellID ~= nil and (eventType == "SPELL_CAST_SUCCESS" or eventType == "SPELL_AURA_APPLIED" or eventType == "SPELL_MISSED" or eventType == "SPELL_SUMMON"));
 		if (isTrackedSource) then
 			local entry = db.SpellCDs[spellID];
 			local cooldown = aliasMeta and aliasMeta.cooldown or (spellID and GetCooldownForSource(srcGUID, spellID));
@@ -2833,6 +2838,7 @@ do
 		local nameplate = C_NamePlate_GetNamePlateForUnit(unitID);
 		local unitGUID = UnitGUID(unitID);
 		NameplatesVisible[nameplate] = unitGUID;
+		FriendlyNameplates[nameplate] = (UnitReaction("player", unitID) or 0) > 4;
 		if (not Nameplates[nameplate]) then
 			nameplate.NCIcons = {};
 			nameplate.NCIconsCount = 0;	-- // it's faster than #nameplate.NCIcons
@@ -2847,6 +2853,7 @@ do
 	EventFrame.NAME_PLATE_UNIT_REMOVED = function(unitID)
 		local nameplate = C_NamePlate_GetNamePlateForUnit(unitID);
 		NameplatesVisible[nameplate] = nil;
+		FriendlyNameplates[nameplate] = nil;
 		if (nameplate.NCFrame ~= nil) then
 			nameplate.NCFrame:Hide();
 		end

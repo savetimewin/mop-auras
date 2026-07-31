@@ -34,7 +34,7 @@ LCT_SpellData[51514] = {
 	cooldown_variants = { 35 },
 }
 
--- Call of the Elements (aoeCC)
+-- Capacitor Totem (aoeCC)
 LCT_SpellData[108269] = {
 	class = "SHAMAN",
 	cc = true,
@@ -67,7 +67,7 @@ LCT_SpellData[108285] = {
 	class = "SHAMAN",
 	talent = true,
 	defensive = true,
-	resets = { 108269, 8177, 108270, 8143, 108273 },
+	resets = { 108269, 2484, 51485, 8177, 5394, 108270, 8143, 108273 },
 	cooldown = 180,
 }
 

@@ -283,7 +283,7 @@ AddCooldowns("SHAMAN", {
 	{ 51886, 8, "dispel", { specs = { 262, 263 }, startOnDispel = true } }, -- Cleanse Spirit
 	{ 77130, 8, "dispel", { specs = { 264 }, startOnDispel = true } }, -- Purify Spirit
 	{ 51514, 45, "cc" }, -- Hex
-	{ 108269, 45, "aoeCC" }, -- Call of the Elements
+	{ 108269, 45, "aoeCC" }, -- Capacitor Totem
 	{ 51490, 45, "aoeCC", { specs = { 262 } } }, -- Thunderstorm
 	{ 108271, 90, "defensive", { talent = true } }, -- Astral Shift
 	{ 108285, 180, "defensive", { talent = true } }, -- Call of the Elements
@@ -570,7 +570,7 @@ addonTable.SpecHints = {
 addonTable.CooldownResets = {
 	[11958] = { 45438 },
 	[14185] = { 1856, 5277, 51722, 2983 },
-	[108285] = { 108269, 8177, 108270, 8143, 108273 },
+	[108285] = { 108269, 2484, 51485, 8177, 5394, 108270, 8143, 108273 },
 };
 
 -- No cast-event reduction is used for Glyph of Counterspell: that glyph increases the base CD.

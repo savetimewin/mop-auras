@@ -390,6 +390,7 @@ E.spell_db = {
 		{ spellID = 108501,	duration = 120,	type = "interrupt",	spec = true	},
 		{ spellID = 19647,	duration = 24,	type = "interrupt",	},
 		{ spellID = 19505,	duration = 15,	type = "dispel",	},
+		{ spellID = 89766,	duration = 30,	type = "cc",	spec = {266}	},
 		{ spellID = 6789,	duration = 45,	type = "cc",	spec = true	},
 		{ spellID = 5484,	duration = 40,	type = "aoeCC",	},
 		{ spellID = 30283,	duration = 30,	type = "aoeCC",	spec = true	},
