@@ -2381,21 +2381,43 @@ function Cooldowns:MakeGroupOptions(unit, group)
     local spellNameOrder = {}
     local sortedSpellIds = {}
 
-    local function GetSelectedClassSpellCount(class)
+    local function GetSpellOptionsGroup(spelldata)
+        if spelldata.universal then
+            return "arena_mechanics"
+        elseif spelldata.class then
+            return "class", spelldata.class
+        elseif spelldata.race then
+            return "race", spelldata.race
+        elseif spelldata.item then
+            return "items"
+        elseif spelldata.pvp_trinket then
+            return "pvp_trinket"
+        end
+    end
+
+    local function GetSelectedSpellCount(groupType, groupValue)
         local count = 0
         local cooldownsSpells = self:GetGroupDB(unit, group).cooldownsSpells
         for spellid, spelldata in pairs(cooldownsData) do
             if
                 type(spelldata) == "table" and
-                    spelldata.class == class and
                     (not spelldata.cooldown or spelldata.cooldown < 600) and
                     not spelldata.hidden and
                     cooldownsSpells[spellid]
              then
-                count = count + 1
+                local spellGroupType, spellGroupValue = GetSpellOptionsGroup(spelldata)
+                if spellGroupType == groupType and spellGroupValue == groupValue then
+                    count = count + 1
+                end
             end
         end
         return count
+    end
+
+    local function GetCountedGroupName(name, groupType, groupValue)
+        return function()
+            return string.format("%s |cff9f9f9f[%i]|r", name, GetSelectedSpellCount(groupType, groupValue))
+        end
     end
 
     for spellid, spelldata in pairs(cooldownsData) do
@@ -2578,7 +2600,7 @@ function Cooldowns:MakeGroupOptions(unit, group)
                 if not args.arena_mechanics then
                     args.arena_mechanics = {
                         type = "group",
-                        name = "Arena Mechanics",
+                        name = GetCountedGroupName("Arena Mechanics", "arena_mechanics"),
                         icon = [[Interface\Icons\Spell_Warlock_DemonicPortal_Purple]],
                         disabled = function()
                             return not self:IsUnitEnabled(unit)
@@ -2596,13 +2618,7 @@ function Cooldowns:MakeGroupOptions(unit, group)
                 if not args[class] then
                     args[class] = {
                         type = "group",
-                        name = function()
-                            return string.format(
-                                "%s |cff9f9f9f[%i]|r",
-                                LOCALIZED_CLASS_NAMES_MALE[class],
-                                GetSelectedClassSpellCount(class)
-                            )
-                        end,
+                        name = GetCountedGroupName(LOCALIZED_CLASS_NAMES_MALE[class], "class", class),
                         icon = ico,
                         disabled = function()
                             return not self:IsUnitEnabled(unit)
@@ -2664,13 +2680,14 @@ function Cooldowns:MakeGroupOptions(unit, group)
                 end
             elseif spelldata.race then
                 -- racial
-                if not args[spelldata.race] then
-                    args[spelldata.race] = {
+                local race = spelldata.race
+                if not args[race] then
+                    args[race] = {
                         type = "group",
-                        name = spelldata.race,
+                        name = GetCountedGroupName(race, "race", race),
                         icon = function()
                             return [[Interface\CHARACTERFRAME\TEMPORARYPORTRAIT]] ..
-                                (random(0, 1) == 0 and "-FEMALE-" or "-MALE-") .. spelldata.race
+                                (random(0, 1) == 0 and "-FEMALE-" or "-MALE-") .. race
                         end,
                         disabled = function()
                             return not self:IsUnitEnabled(unit)
@@ -2679,13 +2696,13 @@ function Cooldowns:MakeGroupOptions(unit, group)
                         args = {}
                     }
                 end
-                args[spelldata.race].args["spell" .. spellid] = spellconfig
+                args[race].args["spell" .. spellid] = spellconfig
             elseif spelldata.item then
                 -- item
                 if not args.items then
                     args.items = {
                         type = "group",
-                        name = L["Items"],
+                        name = GetCountedGroupName(L["Items"], "items"),
                         icon = [[Interface\Icons\Trade_Engineering]],
                         disabled = function()
                             return not self:IsUnitEnabled(unit)
@@ -2700,7 +2717,7 @@ function Cooldowns:MakeGroupOptions(unit, group)
                 if not args.pvp_trinket then
                     args.pvp_trinket = {
                         type = "group",
-                        name = "PVP Trinket",
+                        name = GetCountedGroupName("PVP Trinket", "pvp_trinket"),
                         disabled = function()
                             return not self:IsUnitEnabled(unit)
                         end,

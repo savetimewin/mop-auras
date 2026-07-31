@@ -442,6 +442,7 @@ local  minor_offensive_buffs = {
 	120676, -- Stormlash Totem Effect
 	57761, -- Brain Freeze
 	121471, -- Shadow Blades
+	19574, -- Bestial Wrath
 	-- 93435, -- Roar of Courage
 	-- 104423, -- Windsong
 	-- 12880, -- Enrage
