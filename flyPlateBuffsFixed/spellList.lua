@@ -449,7 +449,7 @@ local  minor_offensive_buffs = {
 	-- 120032, -- Dancing Steel
 	-- 125489, -- Swordguard Embroidery
 	-- 104993, -- Jade Spirit
-	-- 126734, -- Synapse Springs
+	126734, -- Synapse Springs
 	-- 115989, -- Unholy Blight
 	-- 128432, -- Cackling Howl
 	-- 108508, -- Mannoroth's Fury
