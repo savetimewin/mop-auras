@@ -57,6 +57,7 @@ LCT_SpellData[20577] = {
 -- Will of the Forsaken (Undead)
 LCT_SpellData[7744] = {
 	race = "Scourge",
+	display_priority = 4,
 	sets_cooldown = { spellid = 42292, cooldown = 30 }, -- PvP trinket
 	cooldown = 180,
 }
