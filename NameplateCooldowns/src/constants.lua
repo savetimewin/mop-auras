@@ -13,6 +13,7 @@ addonTable.SORT_MODE_TRINKET_INTERRUPT_OTHER = "trinket-interrupt-other";
 addonTable.SORT_MODE_INTERRUPT_TRINKET_OTHER = "interrupt-trinket-other";
 addonTable.SORT_MODE_TRINKET_OTHER = "trinket-other";
 addonTable.SORT_MODE_INTERRUPT_OTHER = "interrupt-other";
+addonTable.SORT_MODE_CATEGORY_ORDER = "category-order";
 
 addonTable.GLOW_TIME_INFINITE = 4*1000*1000*1000;
 

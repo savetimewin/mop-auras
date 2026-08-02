@@ -45,6 +45,9 @@ local migrations = {
         end
         db.SpellCDs[123995] = nil;
     end,
+    [8] = function()
+        addonTable.db.IconSortMode = addonTable.SORT_MODE_CATEGORY_ORDER;
+    end,
 };
 
 function addonTable.MigrateDB()

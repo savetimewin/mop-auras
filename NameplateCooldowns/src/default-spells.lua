@@ -12,6 +12,44 @@ addonTable.CDs = {};
 addonTable.CooldownByID = {};
 addonTable.CooldownMeta = {};
 
+addonTable.CooldownCategories = {
+	PVP_TRINKET = "pvpTrinket",
+	REMOVE_CC = "removeCC",
+	CONTROL = "control",
+	DEFENSIVE = "defensive",
+	OFFENSIVE = "offensive",
+	UTILITY = "utility",
+};
+
+local Categories = addonTable.CooldownCategories;
+addonTable.CooldownCategoryPriority = {
+	[Categories.PVP_TRINKET] = 1,
+	[Categories.REMOVE_CC] = 2,
+	[Categories.CONTROL] = 3,
+	[Categories.DEFENSIVE] = 4,
+	[Categories.OFFENSIVE] = 5,
+	[Categories.UTILITY] = 6,
+};
+
+local KindToCategory = {
+	pvpTrinket = Categories.PVP_TRINKET,
+	dispel = Categories.REMOVE_CC,
+	freedom = Categories.REMOVE_CC,
+	counterCC = Categories.REMOVE_CC,
+	interrupt = Categories.CONTROL,
+	cc = Categories.CONTROL,
+	aoeCC = Categories.CONTROL,
+	disarm = Categories.CONTROL,
+	defensive = Categories.DEFENSIVE,
+	externalDefensive = Categories.DEFENSIVE,
+	raidDefensive = Categories.DEFENSIVE,
+	immunity = Categories.DEFENSIVE,
+	heal = Categories.DEFENSIVE,
+	offensive = Categories.OFFENSIVE,
+	movement = Categories.UTILITY,
+	other = Categories.UTILITY,
+};
+
 local function AddCooldowns(class, rows)
 	local classCooldowns = {};
 	addonTable.CDs[class] = classCooldowns;
@@ -23,6 +61,7 @@ local function AddCooldowns(class, rows)
 		addonTable.CooldownByID[spellID] = duration;
 		meta.class = class;
 		meta.kind = kind;
+		meta.category = meta.category or KindToCategory[kind] or Categories.UTILITY;
 		meta.duration = duration;
 		addonTable.CooldownMeta[spellID] = meta;
 	end
@@ -42,13 +81,13 @@ end
 AddCooldowns(addonTable.UNKNOWN_CLASS, {
 	{ 42292, 120, "pvpTrinket" },
 	{ 59752, 120, "pvpTrinket" },
-	{ 7744, 120, "pvpTrinket" },
+	{ 7744, 120, "counterCC" },
 	{ 20589, 90, "freedom" },
 	{ 58984, 120, "defensive" },
 	{ 20594, 120, "defensive" },
 	{ 20549, 120, "cc" },
 	{ 107079, 120, "cc" },
-	{ 28730, 120, "offensive" },
+	{ 28730, 120, "offensive", { category = Categories.CONTROL } },
 	{ 20572, 120, "offensive" },
 	{ 26297, 180, "offensive" },
 	{ 68992, 120, "movement" },
@@ -102,7 +141,7 @@ AddCooldowns("DRUID", {
 	{ 102558, 180, "offensive", { specs = { 104 }, talent = true } }, -- Incarnation: Son of Ursoc
 	{ 33891, 180, "defensive", { specs = { 105 }, talent = true, defaultDisabled = true } }, -- Incarnation: Tree of Life
 	{ 29166, 180, "other" }, -- Innervate
-	{ 132158, 60, "other", { specs = { 102, 103, 105 }, startOnAuraRemoved = true } }, -- Nature's Swiftness
+	{ 132158, 60, "other", { specs = { 102, 103, 105 }, startOnAuraRemoved = true, category = Categories.CONTROL } }, -- Nature's Swiftness
 	{ 1850, 180, "movement", { defaultDisabled = true } }, -- Dash
 	{ 102280, 30, "movement", { talent = true, defaultDisabled = true } }, -- Displacer Beast
 	{ 102417, 15, "movement", { talent = true, defaultDisabled = true } }, -- Wild Charge
@@ -163,14 +202,14 @@ AddCooldowns("MAGE", {
 	{ 11129, 45, "offensive", { specs = { 63 } } }, -- Combustion
 	{ 12472, 180, "offensive", { specs = { 64 } } }, -- Icy Veins
 	{ 55342, 180, "offensive" }, -- Mirror Image
-	{ 12043, 90, "other", { talent = true, startOnAuraRemoved = true } }, -- Presence of Mind
+	{ 12043, 90, "other", { talent = true, startOnAuraRemoved = true, category = Categories.CONTROL } }, -- Presence of Mind
 	{ 12051, 120, "other", { defaultDisabled = true } }, -- Evocation
 	{ 108843, 25, "movement", { talent = true, defaultDisabled = true } }, -- Blazing Speed
 	{ 1953, 15, "movement", { optionalCharges = 2, defaultDisabled = true } }, -- Blink
 });
 
 AddCooldowns("MONK", {
-	{ 137562, 120, "pvptrinket" }, -- Nimble Brew
+	{ 137562, 120, "counterCC" }, -- Nimble Brew
 	{ 116705, 15, "interrupt" }, -- Spear Hand Strike
 	{ 115450, 8, "dispel", { startOnDispel = true } }, -- Detox
 	{ 115078, 15, "cc" }, -- Paralysis
@@ -182,10 +221,10 @@ AddCooldowns("MONK", {
 	{ 115203, 180, "defensive" }, -- Fortifying Brew
 	{ 122465, 10, "immunity", { specs = { 270 }, trackOnDestination = true, defaultDisabled = true } }, -- Dematerialize
 	{ 122470, 90, "defensive", { specs = { 269 } } }, -- Touch of Karma
-	{ 115176, 180, "defensive" }, -- Zen Meditation
+	{ 115176, 180, "defensive", { category = Categories.OFFENSIVE } }, -- Zen Meditation
 	{ 115213, 180, "externalDefensive", { specs = { 268 } } }, -- Avert Harm
 	{ 116849, 120, "externalDefensive", { specs = { 270 } } }, -- Life Cocoon
-	{ 115310, 180, "raidDefensive", { specs = { 270 } } }, -- Revival
+	{ 115310, 180, "raidDefensive", { specs = { 270 }, category = Categories.REMOVE_CC } }, -- Revival
 	{ 113656, 25, "offensive", { specs = { 269 }, defaultDisabled = true } }, -- Fists of Fury
 	{ 115288, 60, "offensive", { specs = { 269 }, defaultDisabled = true } }, -- Energizing Brew
 	{ 123904, 180, "offensive", { talent = true, defaultDisabled = true } }, -- Invoke Xuen, the White Tiger
@@ -213,7 +252,7 @@ AddCooldowns("PALADIN", {
 	{ 1022, 300, "externalDefensive", { optionalCharges = 2 } }, -- Hand of Protection
 	{ 114039, 30, "externalDefensive", { talent = true } }, -- Hand of Purity
 	{ 6940, 120, "externalDefensive", { optionalCharges = 2 } }, -- Hand of Sacrifice
-	{ 31821, 180, "raidDefensive" }, -- Devotion Aura
+	{ 31821, 180, "raidDefensive", { category = Categories.UTILITY } }, -- Devotion Aura
 	{ 86669, 180, "heal", { specs = { 65 } } }, -- Guardian of Ancient Kings (Holy)
 	{ 31884, 180, "offensive" }, -- Avenging Wrath
 	{ 31842, 180, "offensive", { specs = { 65 } } }, -- Divine Favor
@@ -243,16 +282,16 @@ AddCooldowns("PRIEST", {
 	{ 62618, 180, "raidDefensive", { specs = { 256 } } }, -- Power Word: Barrier
 	{ 15286, 180, "raidDefensive", { specs = { 258 } } }, -- Spell 15286
 	{ 10060, 120, "offensive", { talent = true } }, -- Power Infusion
-	{ 34433, 180, "offensive" }, -- Shadowfiend
-	{ 123040, 60, "offensive", { talent = true, defaultDisabled = true } }, -- Mindbender
-	{ 6346, 180, "counterCC" }, -- Fear Ward
-	{ 89485, 45, "counterCC", { specs = { 256 }, startOnAuraRemoved = true } }, -- Inner Focus
+	{ 34433, 180, "offensive", { category = Categories.UTILITY } }, -- Shadowfiend
+	{ 123040, 60, "offensive", { talent = true, defaultDisabled = true, category = Categories.UTILITY } }, -- Mindbender
+	{ 6346, 180, "counterCC", { category = Categories.CONTROL } }, -- Fear Ward
+	{ 89485, 45, "counterCC", { specs = { 256 }, startOnAuraRemoved = true, category = Categories.DEFENSIVE } }, -- Inner Focus
 	{ 32379, 8, "counterCC", { specs = { 256, 257 } } }, -- Spell 32379
 	{ 129176, 8, "counterCC", { specs = { 258 } } }, -- Spell 129176
 	{ 121536, 10, "movement", { talent = true, charges = 3, defaultDisabled = true } }, -- Angelic Feather
 	{ 114239, 30, "movement", { talent = true, defaultDisabled = true } }, -- Phantasm
 	{ 73325, 90, "movement" }, -- Leap of Faith
-	{ 112833, 30, "other", { talent = true, defaultDisabled = true } }, -- Spectral Guise
+	{ 112833, 30, "other", { talent = true, defaultDisabled = true, category = Categories.OFFENSIVE } }, -- Spectral Guise
 	{ 64901, 360, "other" }, -- Spell 64901
 	{ 113277, 480, "raidDefensive", { talent = true } }, -- Spell 113277
 });
@@ -286,7 +325,7 @@ AddCooldowns("SHAMAN", {
 	{ 108269, 45, "aoeCC" }, -- Capacitor Totem
 	{ 51490, 45, "aoeCC", { specs = { 262 } } }, -- Thunderstorm
 	{ 108271, 90, "defensive", { talent = true } }, -- Astral Shift
-	{ 108285, 180, "defensive", { talent = true } }, -- Call of the Elements
+	{ 108285, 180, "defensive", { talent = true, category = Categories.UTILITY } }, -- Call of the Elements
 	{ 2062, 300, "defensive" }, -- Earth Elemental Totem
 	{ 30884, 30, "defensive", { talent = true } }, -- Nature's Guardian
 	{ 30823, 60, "defensive", { specs = { 262, 263 } } }, -- Shamanistic Rage
@@ -299,18 +338,18 @@ AddCooldowns("SHAMAN", {
 	{ 51533, 120, "offensive", { talent = true } }, -- Feral Spirit
 	{ 2894, 300, "offensive" }, -- Fire Elemental Totem
 	{ 120668, 300, "offensive" }, -- Spell 120668
-	{ 8177, 25, "counterCC" }, -- Grounding Totem
+	{ 8177, 25, "counterCC", { category = Categories.CONTROL } }, -- Grounding Totem
 	{ 8143, 60, "counterCC" }, -- Tremor Totem
 	{ 58875, 60, "freedom", { specs = { 263 } } }, -- Spirit Walk
 	{ 108273, 60, "movement", { talent = true, defaultDisabled = true } }, -- Windwalk Totem
 	{ 79206, 120, "movement", { defaultDisabled = true } }, -- Spiritwalker's Grace
-	{ 16188, 90, "other", { talent = true, startOnAuraRemoved = true } }, -- Ancestral Swiftness
+	{ 16188, 90, "other", { talent = true, startOnAuraRemoved = true, category = Categories.CONTROL } }, -- Ancestral Swiftness
 	{ 16190, 180, "other", { specs = { 264 } } }, -- Mana Tide Totem
 	{ 113286, 60, "interrupt", { talent = true } }, -- Spell 113286
 });
 
 AddCooldowns("WARLOCK", {
-	{ 108482, 60, "pvptrinket", { talent = true } }, -- Unbound Will
+	{ 108482, 60, "counterCC", { talent = true } }, -- Unbound Will
 	{ 108501, 120, "interrupt", { talent = true } }, -- Grimoire of Service
 	{ 19647, 24, "interrupt", { pet = true } }, -- Spell Lock
 	{ 19505, 15, "dispel", { pet = true } }, -- Devour Magic
@@ -348,10 +387,10 @@ AddCooldowns("WARRIOR", {
 	{ 1719, 180, "offensive" }, -- Recklessness
 	{ 114207, 180, "offensive" }, -- Skull Banner
 	{ 18499, 30, "counterCC" }, -- Berserker Rage
-	{ 3411, 30, "counterCC" }, -- Intervene
-	{ 114028, 60, "counterCC", { talent = true } }, -- Mass Spell Reflection
+	{ 3411, 30, "counterCC", { category = Categories.UTILITY } }, -- Intervene
+	{ 114028, 60, "counterCC", { talent = true, category = Categories.CONTROL } }, -- Mass Spell Reflection
 	{ 114029, 30, "counterCC", { talent = true } }, -- Safeguard
-	{ 23920, 25, "counterCC" }, -- Spell Reflection
+	{ 23920, 25, "counterCC", { category = Categories.CONTROL } }, -- Spell Reflection
 	{ 1250619, 20, "movement", { optionalCharges = 2, defaultDisabled = true } }, -- Charge
 	{ 6544, 45, "movement", { defaultDisabled = true } }, -- Heroic Leap
 	{ 64382, 300, "other" }, -- Shattering Throw

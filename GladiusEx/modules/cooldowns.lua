@@ -621,6 +621,7 @@ local function CooldownFrame_OnUpdate(frame)
 end
 
 local unit_sortscore = {}
+local SPELL_DISPLAY_PRIORITY_STEP = 2 ^ 31
 function Cooldowns:SpellSortingChanged()
     -- remove cached sorting info from spells
     unit_sortscore = {}
@@ -677,6 +678,12 @@ local function GetSpellSortScore(unit, group, spellid)
     if score == 0 then
         score = uncat_score
     end
+
+    -- A spell-specific display priority overrides category sorting while still
+    -- preserving the configured category order for every unprioritized spell.
+    -- The category score is always below 2^31, so each priority step is an
+    -- unambiguous tier above the normal score.
+    score = score + (spelldata.display_priority or 0) * SPELL_DISPLAY_PRIORITY_STEP
 
     -- use the decimal part to sort by name. will probably fail in some locales.
     local len = min(4, spelldata.name:len())

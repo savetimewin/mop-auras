@@ -6,6 +6,7 @@ LCT_SpellData[137562] = {
 	class = "MONK",
 	defensive = true,
 	mobility = true,
+	display_priority = 3,
 	duration = 6,
 	cooldown = 120,
 }
@@ -22,6 +23,7 @@ LCT_SpellData[116705] = {
 LCT_SpellData[115450] = {
 	class = "MONK",
 	dispel = true,
+	display_priority = 1,
 	cooldown_starts_on_dispel = true,
 	cooldown = 8,
 }
@@ -134,6 +136,7 @@ LCT_SpellData[115310] = {
 	specID = { 270 },
 	defensive = true,
 	mass_dispel = true,
+	display_priority = 2,
 	cooldown = 180,
 }
 

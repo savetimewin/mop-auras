@@ -37,7 +37,7 @@ end
 
 -- Consts
 local SPELL_PVPADAPTATION, SPELL_PVPTRINKET, ICON_GROW_DIRECTION_RIGHT, ICON_GROW_DIRECTION_LEFT, ICON_GROW_DIRECTION_UP, ICON_GROW_DIRECTION_DOWN, SORT_MODE_NONE;
-local SORT_MODE_TRINKET_INTERRUPT_OTHER, SORT_MODE_INTERRUPT_TRINKET_OTHER, SORT_MODE_TRINKET_OTHER, SORT_MODE_INTERRUPT_OTHER, GLOW_TIME_INFINITE, INSTANCE_TYPE_UNKNOWN;
+local SORT_MODE_TRINKET_INTERRUPT_OTHER, SORT_MODE_INTERRUPT_TRINKET_OTHER, SORT_MODE_TRINKET_OTHER, SORT_MODE_INTERRUPT_OTHER, SORT_MODE_CATEGORY_ORDER, GLOW_TIME_INFINITE, INSTANCE_TYPE_UNKNOWN;
 local HUNTER_FEIGN_DEATH;
 do
 	SPELL_PVPADAPTATION, SPELL_PVPTRINKET = addonTable.SPELL_PVPADAPTATION, addonTable.SPELL_PVPTRINKET;
@@ -45,6 +45,7 @@ do
 		addonTable.ICON_GROW_DIRECTION_RIGHT, addonTable.ICON_GROW_DIRECTION_LEFT, addonTable.ICON_GROW_DIRECTION_UP, addonTable.ICON_GROW_DIRECTION_DOWN;
 	SORT_MODE_NONE, SORT_MODE_TRINKET_INTERRUPT_OTHER, SORT_MODE_INTERRUPT_TRINKET_OTHER, SORT_MODE_TRINKET_OTHER, SORT_MODE_INTERRUPT_OTHER =
 		addonTable.SORT_MODE_NONE, addonTable.SORT_MODE_TRINKET_INTERRUPT_OTHER, addonTable.SORT_MODE_INTERRUPT_TRINKET_OTHER, addonTable.SORT_MODE_TRINKET_OTHER, addonTable.SORT_MODE_INTERRUPT_OTHER;
+	SORT_MODE_CATEGORY_ORDER = addonTable.SORT_MODE_CATEGORY_ORDER;
 	GLOW_TIME_INFINITE = addonTable.GLOW_TIME_INFINITE;
 	INSTANCE_TYPE_UNKNOWN = addonTable.INSTANCE_TYPE_UNKNOWN;
 	HUNTER_FEIGN_DEATH = addonTable.HUNTER_FEIGN_DEATH;
@@ -149,7 +150,7 @@ do
 				BorderInterruptsColor = {1, 0.35, 0},
 				BorderTrinketsColor = {1, 0.843, 0},
 				Font = "NC_TeenBold",
-				IconSortMode = SORT_MODE_NONE,
+				IconSortMode = SORT_MODE_CATEGORY_ORDER,
 				AddonEnabled = true,
 				ShowCooldownsOnCurrentTargetOnly = false,
 				EnabledZoneTypes = {
@@ -587,6 +588,15 @@ do
 
 	local CDSortFunctions = {
 		[SORT_MODE_NONE] = function() end,
+		[SORT_MODE_CATEGORY_ORDER] = function(item1, item2)
+			local meta1, meta2 = CooldownMeta[item1.spellID], CooldownMeta[item2.spellID];
+			local priority1 = addonTable.CooldownCategoryPriority[meta1 and meta1.category] or 6;
+			local priority2 = addonTable.CooldownCategoryPriority[meta2 and meta2.category] or 6;
+			if (priority1 ~= priority2) then
+				return priority1 < priority2;
+			end
+			return item1.spellID < item2.spellID;
+		end,
 		[SORT_MODE_TRINKET_INTERRUPT_OTHER] = function(item1, item2)
 			if (Trinkets[item1.spellID]) then
 				if (Trinkets[item2.spellID]) then
@@ -664,7 +674,7 @@ do
 				t[#t+1] = spellInfo;
 			end
 		end
-		table_sort(t, CDSortFunctions[db.IconSortMode]);
+		table_sort(t, CDSortFunctions[db.IconSortMode] or CDSortFunctions[SORT_MODE_CATEGORY_ORDER]);
 		return t;
 	end
 
@@ -843,9 +853,11 @@ do
 	local _charactersDB;
 	local _spellCDs;
 	local _spellIDs = {
-		[2139] 		= 24,
-		[633] 	= 45,
-		[100] 		= -17,
+		[137562] = 110, -- RemoveCC: Nimble Brew
+		[2139] = 100, -- CC: Counterspell
+		[48707] = 90, -- Defensive: Anti-Magic Shell
+		[51271] = 80, -- Offensive: Pillar of Frost
+		[1953] = 70, -- Utility: Blink
 	};
 
 	local function refreshCDs()
@@ -1851,6 +1863,7 @@ do
 		local dropdownIconSortMode;
 		do
 			local sortModes = {
+				[SORT_MODE_CATEGORY_ORDER] = "PvP trinket, RemoveCC, CC, defensives, offensives, utility",
 				[SORT_MODE_NONE] = "none",
 				[SORT_MODE_TRINKET_INTERRUPT_OTHER] = "trinkets, then interrupts, then other spells",
 				[SORT_MODE_INTERRUPT_TRINKET_OTHER] = "interrupts, then trinkets, then other spells",
@@ -1870,6 +1883,7 @@ do
 					info.func = function(self)
 						db.IconSortMode = self.value;
 						_G[dropdownIconSortMode:GetName().."Text"]:SetText(self:GetText());
+						ReallocateAllIcons(true);
 					end
 					info.checked = (db.IconSortMode == info.value);
 					UIDropDownMenu_AddButton(info);
