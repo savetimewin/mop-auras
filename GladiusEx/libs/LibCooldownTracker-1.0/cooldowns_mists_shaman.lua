@@ -192,6 +192,7 @@ LCT_SpellData[8177] = {
 LCT_SpellData[8143] = {
 	class = "SHAMAN",
 	defensive = true,
+	display_priority = 1,
 	duration = 10,
 	cooldown = 60,
 }
