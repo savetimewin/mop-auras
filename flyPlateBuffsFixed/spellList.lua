@@ -275,6 +275,7 @@ local war_personal_nostack_debuffs = {
 	146739, -- Corruption 1.3
 	30108, -- Unstable Affliction Dot
 	109466, -- Curse of Enfeeblement
+	44457, -- Living Bomb 1.5
 }
 
 -- default size is 1.3
@@ -289,7 +290,6 @@ local war_personal_stackable_debuffs = {
 	115798, -- Weakened Blows 1.4 -- target with this debuff does 10% less physical damage
 	113746, -- Sunder Armor 1.3 -- 4% less armor per stack
 	73975, -- necrotic strike
-	44457, -- Living Bomb 1.5
 }
 
 -- size 1.8

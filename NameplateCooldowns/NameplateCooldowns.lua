@@ -63,6 +63,7 @@ local ElapsedTimer = 0;
 local Nameplates = {};
 local NameplatesVisible = {};
 local FriendlyNameplates = {};
+local PetOwnerGUIDs = {};
 local InstanceType = "none";
 local AllCooldowns = { };
 local GUIFrame, EventFrame, TestFrame, db, aceDB, ProfileOptionsFrame, LocalPlayerGUID;
@@ -570,9 +571,8 @@ do
 
 	function UpdateNameplatesForSource(srcGUID)
 		for frame, unitGUID in pairs(NameplatesVisible) do
-			if (unitGUID == srcGUID) then
+			if (unitGUID == srcGUID or PetOwnerGUIDs[unitGUID] == srcGUID) then
 				UpdateOnlyOneNameplate(frame, unitGUID);
-				break
 			end
 		end
 
@@ -2676,30 +2676,54 @@ do
 		end
 	end
 
-	local function ResolvePetOwnerGUID(srcGUID, meta)
+	local function ResolvePetGUIDs(srcGUID, meta)
 		if (not srcGUID or not meta or not meta.pet) then
-			return srcGUID;
+			return srcGUID, nil;
 		end
 
 		if (UnitGUID("pet") == srcGUID) then
-			return LocalPlayerGUID or srcGUID;
+			return LocalPlayerGUID or srcGUID, srcGUID;
+		elseif (LocalPlayerGUID == srcGUID) then
+			return srcGUID, UnitGUID("pet");
 		end
 		for i = 1, 5 do
 			if (UnitGUID("arenapet" .. i) == srcGUID) then
-				return UnitGUID("arena" .. i) or srcGUID;
+				return UnitGUID("arena" .. i) or srcGUID, srcGUID;
+			elseif (UnitGUID("arena" .. i) == srcGUID) then
+				return srcGUID, UnitGUID("arenapet" .. i);
 			end
 		end
 		for i = 1, 4 do
 			if (UnitGUID("partypet" .. i) == srcGUID) then
-				return UnitGUID("party" .. i) or srcGUID;
+				return UnitGUID("party" .. i) or srcGUID, srcGUID;
+			elseif (UnitGUID("party" .. i) == srcGUID) then
+				return srcGUID, UnitGUID("partypet" .. i);
 			end
 		end
 		for i = 1, 40 do
 			if (UnitGUID("raidpet" .. i) == srcGUID) then
-				return UnitGUID("raid" .. i) or srcGUID;
+				return UnitGUID("raid" .. i) or srcGUID, srcGUID;
+			elseif (UnitGUID("raid" .. i) == srcGUID) then
+				return srcGUID, UnitGUID("raidpet" .. i);
 			end
 		end
-		return srcGUID;
+		return srcGUID, nil;
+	end
+
+	local function MirrorCooldownOnPet(ownerGUID, petGUID, spellID)
+		if (not ownerGUID or not petGUID or ownerGUID == petGUID) then
+			return;
+		end
+		local ownerSpells = SpellsPerPlayerGUID[ownerGUID];
+		if (not ownerSpells or not ownerSpells[spellID]) then
+			return;
+		end
+		if (not SpellsPerPlayerGUID[petGUID]) then
+			SpellsPerPlayerGUID[petGUID] = {};
+		end
+		PetOwnerGUIDs[petGUID] = ownerGUID;
+		-- Share one state object so cooldown corrections stay identical on both plates.
+		SpellsPerPlayerGUID[petGUID][spellID] = ownerSpells[spellID];
 	end
 
 	local function ResolveArenaSpec(srcGUID)
@@ -2732,7 +2756,11 @@ do
 			srcGUID = destGUID;
 			srcFlags = destFlags;
 		end
-		srcGUID = ResolvePetOwnerGUID(srcGUID, meta);
+		local petGUID;
+		srcGUID, petGUID = ResolvePetGUIDs(srcGUID, meta);
+		if (petGUID and petGUID ~= srcGUID) then
+			PetOwnerGUIDs[petGUID] = srcGUID;
+		end
 		local specID = ResolveArenaSpec(srcGUID) or
 			(rawSpellID and (SpecHints[rawSpellID] or SpecHints[spellID]));
 		if (specID and srcGUID) then
@@ -2767,6 +2795,7 @@ do
 				end
 				if (shouldStart and RegisterCooldownForSource(srcGUID, spellID, cooldown, texture, cTime, false, suppressLearning)) then
 					RegisterSharedCooldowns(srcGUID, spellID, cTime);
+					MirrorCooldownOnPet(srcGUID, petGUID, spellID);
 					UpdateNameplatesForSource(srcGUID);
 				end
 			end
@@ -2836,6 +2865,7 @@ do
 			OnStartup();
 		end
 		wipe(SpellsPerPlayerGUID);
+		wipe(PetOwnerGUIDs);
 		wipe(DetectedSpecs);
 		wipe(LearnedCooldowns);
 		local inInstance, instanceType = IsInInstance();
