@@ -48,12 +48,13 @@ LCT_SpellData[45438] = {
 	cooldown = 300,
 }
 
--- Alter Time (defensive)
+-- Alter Time (defensive). The 180/90s cooldown begins on the initial 108978
+-- cast. Aura 110909 is not written to the combat log, and 127140 is only the
+-- manual return spell, so neither is a reliable cooldown-start event.
 LCT_SpellData[108978] = {
 	class = "MAGE",
 	defensive = true,
-	duration = 10,
-	cooldown_starts_on_aura_fade = true,
+	duration = 6,
 	cooldown = 180,
 	cooldown_variants = { 90 },
 }
@@ -147,6 +148,14 @@ LCT_SpellData[12051] = {
 	mana = true,
 	duration = 6,
 	cooldown = 120,
+}
+
+-- Summon Water Elemental (offensive)
+LCT_SpellData[31687] = {
+	class = "MAGE",
+	specID = { 64 },
+	offensive = true,
+	cooldown = 60,
 }
 
 -- Blazing Speed (movement)

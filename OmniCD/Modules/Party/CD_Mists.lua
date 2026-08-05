@@ -364,19 +364,6 @@ end
 
 
 
-registeredEvents["SPELL_AURA_APPLIED"][110909] = function(info)
-	info:ProcessSpell(108978)
-end
-
-registeredEvents["SPELL_AURA_REMOVED"][110909] = function(info, srcGUID, spellID, destGUID)
-	local icon = info.spellIcons[108978]
-	if icon then
-		RemoveHighlightByCLEU(info, srcGUID, spellID, destGUID)
-		icon:StartCooldown()
-	end
-end
-
-
 registeredEvents["SPELL_INTERRUPT"][2139] = function(info, _, spellID, _, _, _, amount, overkill, _, _, destRaidFlags)
 	if info.talentData[131618] then
 		local icon = info.spellIcons[spellID]

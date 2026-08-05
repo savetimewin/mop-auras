@@ -170,7 +170,7 @@ E.spell_db = {
 		{ spellID = 102051,	duration = 20,	type = "disarm",	spec = true	},
 		{ spellID = 111264,	duration = 20,	type = "disarm",	spec = true	},
 		{ spellID = 45438,	duration = 300,	type = "immunity",	},
-		{ spellID = 108978,	duration = 180,	type = "defensive",	},
+		{ spellID = 108978,	duration = 180,	type = "defensive",	buff = 110909,	},
 		{ spellID = 86949,	duration = 120,	type = "defensive",	spec = true	},
 		{ spellID = 11958,	duration = 180,	type = "defensive",	spec = true	},
 		{ spellID = 110959,	duration = 90,	type = "defensive",	spec = true	},
@@ -189,7 +189,7 @@ E.spell_db = {
 		{ spellID = 108839,	duration = 20,	type = "other",	spec = true,	charges = 3	},
 		{ spellID = 66,	duration = 300,	type = "other",	talent = 110959	},
 		{ spellID = 12043,	duration = 90,	type = "other",	spec = true	},
-		{ spellID = 31687,	duration = 60,	type = "other",	spec = {64}	},
+		{ spellID = 31687,	duration = 60,	type = "offensive",	spec = {64}	},
 
 		{ spellID = 113074,	duration = 10,	type = "heal",	spec = true	},
 	},
@@ -510,6 +510,7 @@ E.buffFix = E.BLANK
 
 E.buffFixNoCLEU = {
 	[125174]	= 10,
+	[110909]	= 6,
 }
 
 E.summonedBuffDuration = E.BLANK

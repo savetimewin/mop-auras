@@ -193,7 +193,9 @@ AddCooldowns("MAGE", {
 	{ 31661, 20, "aoeCC", { specs = { 63 } } }, -- Dragon's Breath
 	{ 113724, 45, "aoeCC", { talent = true } }, -- Ring of Frost
 	{ 45438, 300, "immunity" }, -- Cold Snap
-	{ 108978, 180, "defensive", { startOnAuraRemoved = true } }, -- Alter Time
+	-- Start on the initial cast. Aura 110909 is absent from the combat log and
+	-- the manual return uses 127140, which must not restart the cooldown.
+	{ 108978, 180, "defensive" }, -- Alter Time
 	{ 86949, 120, "defensive", { talent = true } }, -- Cauterize
 	{ 11958, 180, "defensive", { talent = true } }, -- Cold Snap
 	{ 110959, 90, "defensive", { talent = true } }, -- Greater Invisibility
@@ -204,6 +206,7 @@ AddCooldowns("MAGE", {
 	{ 55342, 180, "offensive" }, -- Mirror Image
 	{ 12043, 90, "other", { talent = true, startOnAuraRemoved = true, category = Categories.CONTROL } }, -- Presence of Mind
 	{ 12051, 120, "other", { defaultDisabled = true } }, -- Evocation
+	{ 31687, 60, "offensive", { specs = { 64 }, defaultDisabled = true } }, -- Summon Water Elemental
 	{ 108843, 25, "movement", { talent = true, defaultDisabled = true } }, -- Blazing Speed
 	{ 1953, 15, "movement", { optionalCharges = 2, defaultDisabled = true } }, -- Blink
 });
@@ -551,6 +554,7 @@ addonTable.SpecHints = {
 	[16190] = 264,
 	[19574] = 253,
 	[31661] = 63,
+	[31687] = 64,
 	[31842] = 65,
 	[31850] = 66,
 	[33206] = 256,
