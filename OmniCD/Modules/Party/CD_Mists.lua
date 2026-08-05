@@ -7,6 +7,8 @@ local P, CM, CD = E.Party, E.Comm, E.Cooldowns
 local pairs, ipairs, type, tonumber, abs, min, max = pairs, ipairs, type, tonumber, abs, min, max
 local UnitTokenFromGUID, UnitHealth, UnitHealthMax, UnitChannelInfo = UnitTokenFromGUID, UnitHealth, UnitHealthMax, UnitChannelInfo
 local C_Timer_After = C_Timer.After
+local C_Timer_NewTimer = C_Timer.NewTimer
+local GetTime = GetTime
 local band = bit.band
 local CombatLogGetCurrentEventInfo = CombatLogGetCurrentEventInfo
 local COMBATLOG_OBJECT_REACTION_FRIENDLY = COMBATLOG_OBJECT_REACTION_FRIENDLY
@@ -64,6 +66,114 @@ local function RemoveHighlightByCLEU(info, srcGUID, spellID, destGUID)
 			icon:SetColorSaturation()
 		end
 	end
+end
+
+local ALTER_TIME_CAST, ALTER_TIME_AURA, ALTER_TIME_RETURN = 108978, 110909, 127140
+
+local function ClearAlterTimeState(info)
+	local naturalTimer = info.callbackTimers.alterTimeNatural
+	if naturalTimer then
+		naturalTimer:Cancel()
+		info.callbackTimers.alterTimeNatural = nil
+	end
+	local removalTimer = info.callbackTimers.alterTimeRemoval
+	if removalTimer then
+		removalTimer:Cancel()
+		info.callbackTimers.alterTimeRemoval = nil
+	end
+	info.auras.alterTimeCast = nil
+	info.auras.alterTimeSeen = nil
+	info.auras.alterTimeExpires = nil
+end
+
+local function FinishAlterTime(info, restartAt)
+	local castAt = info and info.auras.alterTimeCast
+	if not castAt then
+		return false
+	end
+
+	local icon = info.spellIcons[ALTER_TIME_CAST]
+	local now = GetTime()
+	ClearAlterTimeState(info)
+	if not icon then
+		return false
+	end
+
+	local cooldownOrigin = restartAt or castAt
+	local reducedStartTime = max(0, now - cooldownOrigin)
+	-- Arena mages are assumed to have the MoP PvP four-piece bonus. Use 90s
+	-- immediately even when inspection has not yet reported aura 131619.
+	icon:StartCooldown(P.isInArena and 90 or nil, nil, nil, reducedStartTime)
+	if icon.isHighlighted then
+		icon:RemoveHighlight()
+	end
+	return true
+end
+
+local function BeginAlterTime(info)
+	if not info then
+		return
+	end
+
+	ClearAlterTimeState(info)
+	local castAt = GetTime()
+	info.auras.alterTimeCast = castAt
+	local duration, expirationTime = P:GetBuffDuration(info.unit, ALTER_TIME_AURA)
+	if duration then
+		info.auras.alterTimeSeen = true
+		info.auras.alterTimeExpires = expirationTime
+	end
+
+	info:ProcessSpell(ALTER_TIME_CAST)
+	info.bar:RegisterUnitEvent("UNIT_AURA", info.unit)
+	info.callbackTimers.alterTimeNatural = C_Timer_NewTimer(6.15, function()
+		if info.auras.alterTimeCast == castAt then
+			FinishAlterTime(info, nil)
+		end
+	end)
+end
+
+function CD:ResolveAlterTimeAura(info)
+	local castAt = info and info.auras.alterTimeCast
+	if not castAt then
+		return false
+	end
+
+	local duration, expirationTime = P:GetBuffDuration(info.unit, ALTER_TIME_AURA)
+	if duration then
+		info.auras.alterTimeSeen = true
+		info.auras.alterTimeExpires = expirationTime
+		local removalTimer = info.callbackTimers.alterTimeRemoval
+		if removalTimer then
+			removalTimer:Cancel()
+			info.callbackTimers.alterTimeRemoval = nil
+		end
+	elseif info.auras.alterTimeSeen and not info.callbackTimers.alterTimeRemoval then
+		local now = GetTime()
+		local natural = info.auras.alterTimeExpires and now >= info.auras.alterTimeExpires - 0.05
+		if natural then
+			FinishAlterTime(info, nil)
+			return false
+		end
+
+		-- UNIT_AURA can precede the manual-return cast event. Defer the
+		-- cancel decision briefly so 127140 can preserve the cast timestamp.
+		local removedAt = now
+		info.callbackTimers.alterTimeRemoval = C_Timer_NewTimer(0.10, function()
+			if info.auras.alterTimeCast == castAt then
+				FinishAlterTime(info, removedAt)
+			end
+		end)
+	end
+	return info.auras.alterTimeCast ~= nil
+end
+
+registeredEvents["SPELL_CAST_SUCCESS"][ALTER_TIME_CAST] = function(info)
+	BeginAlterTime(info)
+end
+
+registeredEvents["SPELL_CAST_SUCCESS"][ALTER_TIME_RETURN] = function(info)
+	FinishAlterTime(info, nil)
 end
 
 for k in pairs(E.spell_highlighted) do
@@ -683,6 +793,15 @@ end
 
 function CD:COMBAT_LOG_EVENT_UNFILTERED()
 	local timestamp, event, _, srcGUID, _, srcFlags, _, destGUID, destName, destFlags, destRaidFlags, spellID, spellName, _, amount, overkill, school, resisted, _,_, critical = CombatLogGetCurrentEventInfo()
+
+	-- SPELL_DISPEL identifies Alter Time through its removed-aura field. The
+	-- affected mage is destGUID, not the dispeller who generated the event.
+	if event == "SPELL_DISPEL" and amount == ALTER_TIME_AURA then
+		local destInfo = groupInfo[destGUID]
+		if destInfo then
+			FinishAlterTime(destInfo, GetTime())
+		end
+	end
 
 	local info = groupInfo[srcGUID]
 	if info then

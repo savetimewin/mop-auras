@@ -48,16 +48,22 @@ LCT_SpellData[45438] = {
 	cooldown = 300,
 }
 
--- Alter Time (defensive). The 180/90s cooldown begins on the initial 108978
--- cast. Aura 110909 is not written to the combat log, and 127140 is only the
--- manual return spell, so neither is a reliable cooldown-start event.
+-- Alter Time (defensive). While aura 110909 is active, the original spell is
+-- replaced by manual return spell 127140. Natural expiry and manual return keep
+-- the initial cast as the cooldown origin; an early cancel/dispel starts a fresh
+-- cooldown when the aura is removed. Aura 110909 does not appear in the CLEU,
+-- so the library observes it through UNIT_AURA with a six-second fallback.
 LCT_SpellData[108978] = {
 	class = "MAGE",
 	defensive = true,
 	duration = 6,
-	cooldown = 180,
-	cooldown_variants = { 90 },
+	cooldown_starts_on_aura_resolution = true,
+	aura_resolution_spellid = 110909,
+	-- Arena mages have the PvP four-piece bonus, so GladiusEx must be correct
+	-- from the first use instead of waiting to learn the shorter recast.
+	cooldown = 90,
 }
+LCT_SpellAliases[127140] = { spellid = 108978, aura_resolution = true }
 
 -- Cauterize (defensive)
 LCT_SpellData[86949] = {

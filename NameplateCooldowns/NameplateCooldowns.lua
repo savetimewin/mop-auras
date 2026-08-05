@@ -70,6 +70,9 @@ local GUIFrame, EventFrame, TestFrame, db, aceDB, ProfileOptionsFrame, LocalPlay
 local FeignDeathGUIDs = {};
 local DetectedSpecs = {};
 local LearnedCooldowns = {};
+local AlterTimeStates = {};
+
+local ALTER_TIME_CAST, ALTER_TIME_AURA, ALTER_TIME_RETURN = 108978, 110909, 127140;
 
 local _G, pairs, UIParent, string_gsub, string_find, bit_band, GetTime, math_ceil, math_floor, math_min, table_insert, table_sort, C_Timer_After, string_format, C_Timer_NewTimer, math_max, C_NamePlate_GetNamePlateForUnit, UnitGUID =
 	  _G, pairs, UIParent, string.gsub,	string.find, bit.band, GetTime, math.ceil, math.floor, math.min, table.insert, table.sort, C_Timer.After, string.format, C_Timer.NewTimer, math.max, C_NamePlate.GetNamePlateForUnit, UnitGUID;
@@ -2738,9 +2741,55 @@ do
 		end
 	end
 
+	local function FinishAlterTime(srcGUID, restartAt)
+		local state = srcGUID and AlterTimeStates[srcGUID];
+		if (not state) then
+			return false;
+		end
+
+		local entry = db.SpellCDs[ALTER_TIME_CAST];
+		local cooldown = GetCooldownForSource(srcGUID, ALTER_TIME_CAST);
+		local started = restartAt or state.castAt;
+		if (state.naturalTimer) then state.naturalTimer:Cancel(); end
+		if (state.removalTimer) then state.removalTimer:Cancel(); end
+		AlterTimeStates[srcGUID] = nil;
+
+		if (cooldown == nil or not entry or not entry.enabled) then
+			return false;
+		end
+		if (RegisterCooldownForSource(srcGUID, ALTER_TIME_CAST, cooldown, SpellTextureByID[ALTER_TIME_CAST], started, false, false)) then
+			RegisterSharedCooldowns(srcGUID, ALTER_TIME_CAST, started);
+			UpdateNameplatesForSource(srcGUID);
+			return true;
+		end
+		return false;
+	end
+
+	local function BeginAlterTime(srcGUID, currentTime)
+		local oldState = AlterTimeStates[srcGUID];
+		if (oldState) then
+			if (oldState.naturalTimer) then oldState.naturalTimer:Cancel(); end
+			if (oldState.removalTimer) then oldState.removalTimer:Cancel(); end
+		end
+
+		local state = { castAt = currentTime };
+		AlterTimeStates[srcGUID] = state;
+		state.naturalTimer = C_Timer_NewTimer(6.15, function()
+			if (AlterTimeStates[srcGUID] == state) then
+				FinishAlterTime(srcGUID, nil);
+			end
+		end);
+	end
+
 	EventFrame.COMBAT_LOG_EVENT_UNFILTERED = function()
 		local cTime = GetTime();
-		local _, eventType, _, srcGUID, _, srcFlags, _, destGUID, _, destFlags, _, rawSpellID = CombatLogGetCurrentEventInfo();
+		local _, eventType, _, srcGUID, _, srcFlags, _, destGUID, _, destFlags, _, rawSpellID, _, _, extraSpellID = CombatLogGetCurrentEventInfo();
+
+		-- A purge is logged on the dispeller's spell; the removed aura is the
+		-- first event-specific value and the affected mage is the destination.
+		if (eventType == "SPELL_DISPEL" and extraSpellID == ALTER_TIME_AURA) then
+			FinishAlterTime(destGUID, cTime);
+		end
 
 		if (damageEvents[eventType] and destGUID and DamageTakenReductions[5484]) then
 			ApplyReduction(destGUID, { 5484 }, DamageTakenReductions[5484], cTime, true);
@@ -2774,12 +2823,21 @@ do
 			or (db.ShowCDOnAllies == true and isFriendly and srcGUID ~= LocalPlayerGUID)
 			or (not isFriendly and srcGUID ~= nil and srcGUID ~= "" and srcGUID ~= LocalPlayerGUID and spellID ~= nil and (eventType == "SPELL_CAST_SUCCESS" or eventType == "SPELL_AURA_APPLIED" or eventType == "SPELL_MISSED" or eventType == "SPELL_SUMMON"));
 		if (isTrackedSource) then
+			if (eventType == "SPELL_CAST_SUCCESS" and rawSpellID == ALTER_TIME_CAST) then
+				BeginAlterTime(srcGUID, cTime);
+			elseif (eventType == "SPELL_CAST_SUCCESS" and rawSpellID == ALTER_TIME_RETURN) then
+				-- Manual return preserves the original cast as the cooldown origin.
+				FinishAlterTime(srcGUID, nil);
+			end
+
 			local entry = db.SpellCDs[spellID];
 			local cooldown = aliasMeta and aliasMeta.cooldown or (spellID and GetCooldownForSource(srcGUID, spellID));
 			local shouldStart = false;
 			if (meta) then
 				if (meta.startOnDispel) then
 					shouldStart = eventType == "SPELL_DISPEL";
+				elseif (meta.alterTimeResolution) then
+					shouldStart = false;
 				elseif (meta.startOnAuraRemoved) then
 					shouldStart = eventType == "SPELL_AURA_REMOVED";
 				else
@@ -2824,11 +2882,49 @@ do
 	end
 
 	EventFrame.UNIT_AURA = function(_unitID)
+		local unitGUID = UnitGUID(_unitID);
+		local alterTimeState = unitGUID and AlterTimeStates[unitGUID];
+		if (alterTimeState) then
+			local auraFound, expirationTime = false, nil;
+			for auraIndex = 1, 40 do
+				local spellName, _, _, _, _, auraExpirationTime, _, _, _, spellId = UnitAura(_unitID, auraIndex);
+				if (spellName == nil) then break end
+				if (spellId == ALTER_TIME_AURA) then
+					auraFound = true;
+					expirationTime = auraExpirationTime;
+					break
+				end
+			end
+
+			if (auraFound) then
+				alterTimeState.auraSeen = true;
+				alterTimeState.auraExpires = expirationTime;
+				if (alterTimeState.removalTimer) then
+					alterTimeState.removalTimer:Cancel();
+					alterTimeState.removalTimer = nil;
+				end
+			elseif (alterTimeState.auraSeen and not alterTimeState.removalTimer) then
+				local currentTime = GetTime();
+				local natural = alterTimeState.auraExpires and currentTime >= alterTimeState.auraExpires - 0.05;
+				if (natural) then
+					FinishAlterTime(unitGUID, nil);
+				else
+					-- UNIT_AURA can be delivered just before the 127140 cast event.
+					-- Wait briefly before classifying an early removal as cancel.
+					local removedAt = currentTime;
+					alterTimeState.removalTimer = C_Timer_NewTimer(0.10, function()
+						if (AlterTimeStates[unitGUID] == alterTimeState) then
+							FinishAlterTime(unitGUID, removedAt);
+						end
+					end);
+				end
+			end
+		end
+
 		local feignDeath = db.SpellCDs[HUNTER_FEIGN_DEATH];
 		local cooldown = AllCooldowns[HUNTER_FEIGN_DEATH];
 		if (cooldown ~= nil and feignDeath and feignDeath.enabled) then
 			local unitIsFriend = (UnitReaction("player", _unitID) or 0) > 4; -- 4 = neutral
-			local unitGUID = UnitGUID(_unitID);
 			if (not unitIsFriend or (db.ShowCDOnAllies == true and unitGUID ~= LocalPlayerGUID)) then
 				local feignDeathFound = false;
 				for auraIndex = 1, 40 do
@@ -2868,6 +2964,7 @@ do
 		wipe(PetOwnerGUIDs);
 		wipe(DetectedSpecs);
 		wipe(LearnedCooldowns);
+		wipe(AlterTimeStates);
 		local inInstance, instanceType = IsInInstance();
 		if (not inInstance) then
 			InstanceType = instanceType;

@@ -1,5 +1,5 @@
 local E = select(2, ...):unpack()
-local P, CM = E.Party, E.Comm
+local P, CM, CD = E.Party, E.Comm, E.Cooldowns
 
 local UNIT_TO_PET = {
 	["raid1"]="raidpet1", ["raid2"]="raidpet2", ["raid3"]="raidpet3", ["raid4"]="raidpet4", ["raid5"]="raidpet5",
@@ -68,6 +68,8 @@ function BarFrameMixin:OnEvent(event, ...)
 			return
 		end
 
+		local alterTimeActive = CD.ResolveAlterTimeAura and CD:ResolveAlterTimeAura(info)
+
 		local icon = info.glowIcons[125174]
 		if icon then
 			if not P:GetBuffDuration(unit, 125174) then
@@ -90,7 +92,9 @@ function BarFrameMixin:OnEvent(event, ...)
 			return
 		end
 
-		self:UnregisterEvent(event)
+		if not alterTimeActive then
+			self:UnregisterEvent(event)
+		end
 	elseif event == "PLAYER_SPECIALIZATION_CHANGED" then
 		local unit = ...
 		if unit ~= self.unit then
@@ -139,7 +143,7 @@ function BarFrameMixin:SetUnit(info, unit, index)
 	if E.postMoP and info.guid ~= E.userGUID then
 		self:RegisterUnitEvent("PLAYER_SPECIALIZATION_CHANGED", unit)
 	end
-	if info.glowIcons[125174] or info.preactiveIcons[5384] then
+	if info.glowIcons[125174] or info.preactiveIcons[5384] or info.auras.alterTimeCast then
 		self:RegisterUnitEvent("UNIT_AURA", unit)
 	end
 	if info.isDead then

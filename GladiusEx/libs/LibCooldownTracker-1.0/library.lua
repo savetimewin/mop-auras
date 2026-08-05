@@ -310,6 +310,31 @@ local function FindAuraById(auraId, unit, filter)
 	return AuraUtil.FindAura(AuraByIdPredicate, unit, filter, auraId)
 end 
 
+-- Alter Time-style cooldowns remain pre-active while their aura is present.
+-- Natural expiry/manual resolution retain the cast timestamp, while an early
+-- cancel or dispel starts a fresh cooldown at the removal timestamp.
+local function FinishAuraResolvedCooldown(unit, spellid, cast_start, restart_at)
+	local tpu = lib.tracked_players[unit]
+	local tps = tpu and tpu[spellid]
+	local spelldata = SpellData[spellid]
+	if not tps or not spelldata or not tps.aura_resolution_active then return end
+	if cast_start and tps.used_start ~= cast_start then return end
+
+	local now = GetTime()
+	local cooldown_time = GetCooldownTime(spellid, unit)
+	local cooldown_origin = restart_at or tps.used_start or now
+	if cooldown_time then
+		tps.cooldown_start = cooldown_origin
+		tps.cooldown_end = cooldown_origin + cooldown_time
+	end
+	tps.used_end = now
+	tps.aura_resolution_active = nil
+	tps.aura_resolution_seen = nil
+	tps.aura_resolution_expires = nil
+	tps.aura_resolution_removal_pending = nil
+	lib.callbacks:Fire("LCT_CooldownUsed", unit, spellid, false, true, true)
+end
+
 local function GetUnitSpecID(unit)
 	local buttons = GladiusEx and GladiusEx.buttons
 	local button = buttons and buttons[unit]
@@ -587,7 +612,6 @@ local function CooldownEvent(event, unit, spellid)
 	local raw_spellid = spellid
 	local cast_override = SpellAliases[raw_spellid]
 	local spelldata = SpellData[spellid]
-	if not spelldata then return end
 
 	if type(spelldata) == "number" then
 		spellid = spelldata
@@ -597,7 +621,7 @@ local function CooldownEvent(event, unit, spellid)
 		spellid = cast_override.spellid
 		spelldata = SpellData[spellid]
 	end
-  if not spelldata then
+	if not spelldata then
     -- TODO log error
     return
   end
@@ -677,7 +701,7 @@ local function CooldownEvent(event, unit, spellid)
 		end
 
     -- find what actions are needed
-    local used_start, used_end, cooldown_start
+    local used_start, used_end, cooldown_start, cooldown_backdated
 
     local buff_was_full_duration = false
     if spelldata.cooldown_starts_on_dispel then
@@ -694,6 +718,14 @@ local function CooldownEvent(event, unit, spellid)
           cooldown_start = true
         end
       end
+    elseif spelldata.cooldown_starts_on_aura_resolution then
+		if cast_override and cast_override.aura_resolution then
+			used_end = true
+			cooldown_start = true
+			cooldown_backdated = true
+		elseif event == "UNIT_SPELLCAST_SUCCEEDED" or event == "SPELL_CAST_SUCCESS" then
+			used_start = true
+		end
     elseif spelldata.cooldown_starts_on_aura_fade then
       if event == "UNIT_SPELLCAST_SUCCEEDED" or event == "SPELL_CAST_SUCCESS" or event == "SPELL_AURA_APPLIED" then
         used_start = true
@@ -779,6 +811,18 @@ local function CooldownEvent(event, unit, spellid)
 
       tps.icon = cast_override and cast_override.icon or nil
 
+		if spelldata.cooldown_starts_on_aura_resolution then
+			tps.aura_resolution_active = true
+			tps.aura_resolution_removal_pending = nil
+			local _, _, _, _, _, expiration_time = FindAuraById(spelldata.aura_resolution_spellid, unit)
+			if expiration_time then
+				tps.aura_resolution_seen = true
+				tps.aura_resolution_expires = expiration_time
+			end
+			local cast_start = tps.used_start
+			SetTimer(now + (spelldata.duration or 6) + 0.15, FinishAuraResolvedCooldown, unit, spellid, cast_start, nil)
+		end
+
       -- Some cooldown-reset abilities restore charges instead of resetting the
       -- entire spell. This generic behavior was accidentally removed by the
       -- modifier experiment and is required by existing cooldown data.
@@ -831,8 +875,16 @@ local function CooldownEvent(event, unit, spellid)
       -- if the spell has charges and the cooldown is already in progress, it does not need to be reset
       if not tps.charges or not tps.cooldown_end or tps.cooldown_end <= now then
         local cooldown_time = cast_override and cast_override.cooldown or GetCooldownTime(spellid, unit)
-        tps.cooldown_start = cooldown_time and now
-        tps.cooldown_end = cooldown_time and (now + cooldown_time)
+        local cooldown_origin = cooldown_backdated and (tps.used_start or now) or now
+        tps.cooldown_start = cooldown_time and cooldown_origin
+        tps.cooldown_end = cooldown_time and (cooldown_origin + cooldown_time)
+
+		if spelldata.cooldown_starts_on_aura_resolution then
+			tps.aura_resolution_active = nil
+			tps.aura_resolution_seen = nil
+			tps.aura_resolution_expires = nil
+			tps.aura_resolution_removal_pending = nil
+		end
 
         -- set charge timer
         if tps.charges and not tps.charge_timer then
@@ -1248,6 +1300,22 @@ function events:CombatLogEvent(_, timestamp, event, hideCaster, sourceGUID, sour
 		end
 	end
 
+	-- SPELL_DISPEL reports the removed aura as its first event-specific value.
+	-- This remains observable even when the aura itself has the "do not log" flag.
+	if event == "SPELL_DISPEL" then
+		local target_unit = lib.guid_to_unitid[destGUID]
+		local tracked = target_unit and lib.tracked_players[target_unit]
+		if tracked then
+			for tracked_spellid, state in pairs(tracked) do
+				local tracked_spelldata = SpellData[tracked_spellid]
+				if tracked_spelldata and tracked_spelldata.cooldown_starts_on_aura_resolution and tracked_spelldata.aura_resolution_spellid == auraType then
+					FinishAuraResolvedCooldown(target_unit, tracked_spellid, state.used_start, GetTime())
+					break
+				end
+			end
+		end
+	end
+
 	local recipientInfo = SymbiosisData.recipientByAura and SymbiosisData.recipientByAura[spellId]
 	if recipientInfo then
 		local targetUnit = lib.guid_to_unitid[destGUID]
@@ -1273,6 +1341,10 @@ function events:CombatLogEvent(_, timestamp, event, hideCaster, sourceGUID, sour
 
 	-- Check the spell before doing the slower pet-owner fallback.
 	local spelldata = SpellData[spellId]
+	local spell_alias = SpellAliases[spellId]
+	if not spelldata and spell_alias then
+		spelldata = SpellData[spell_alias.spellid]
+	end
 	if not spelldata then return end
 
 	-- Pet abilities are cast by the pet GUID but their cooldown belongs to the
@@ -1315,6 +1387,34 @@ end
 function events:UNIT_AURA(event, unit)
 	if lib:IsUnitRegistered(unit) then
 		lib:RefreshSymbiosis(unit, true)
+
+		local tracked = lib.tracked_players[unit]
+		if tracked then
+			local now = GetTime()
+			for spellid, state in pairs(tracked) do
+				local spelldata = SpellData[spellid]
+				if spelldata and spelldata.cooldown_starts_on_aura_resolution and state.aura_resolution_active then
+					local _, _, _, _, _, expiration_time = FindAuraById(spelldata.aura_resolution_spellid, unit)
+					if expiration_time then
+						state.aura_resolution_seen = true
+						state.aura_resolution_expires = expiration_time
+						state.aura_resolution_removal_pending = nil
+					elseif state.aura_resolution_seen and not state.aura_resolution_removal_pending then
+						local natural = state.aura_resolution_expires and now >= state.aura_resolution_expires - 0.05
+						if natural then
+							FinishAuraResolvedCooldown(unit, spellid, state.used_start, nil)
+						else
+							-- UNIT_AURA can precede SPELL_CAST_SUCCESS for manual return.
+							-- Delay the cancel decision briefly so 127140 can win that race.
+							local cast_start = state.used_start
+							local removed_at = now
+							state.aura_resolution_removal_pending = true
+							SetTimer(now + 0.10, FinishAuraResolvedCooldown, unit, spellid, cast_start, removed_at)
+						end
+					end
+				end
+			end
+		end
 	end
 end
 

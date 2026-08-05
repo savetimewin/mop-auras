@@ -193,9 +193,9 @@ AddCooldowns("MAGE", {
 	{ 31661, 20, "aoeCC", { specs = { 63 } } }, -- Dragon's Breath
 	{ 113724, 45, "aoeCC", { talent = true } }, -- Ring of Frost
 	{ 45438, 300, "immunity" }, -- Cold Snap
-	-- Start on the initial cast. Aura 110909 is absent from the combat log and
-	-- the manual return uses 127140, which must not restart the cooldown.
-	{ 108978, 180, "defensive" }, -- Alter Time
+	-- Natural expiry/manual return retain the initial cast timestamp. An early
+	-- cancel or dispel starts a fresh cooldown when aura 110909 disappears.
+	{ 108978, { arena = 90, pvp = 90, default = 180 }, "defensive", { alterTimeResolution = true } }, -- Alter Time
 	{ 86949, 120, "defensive", { talent = true } }, -- Cauterize
 	{ 11958, 180, "defensive", { talent = true } }, -- Cold Snap
 	{ 110959, 90, "defensive", { talent = true } }, -- Greater Invisibility
