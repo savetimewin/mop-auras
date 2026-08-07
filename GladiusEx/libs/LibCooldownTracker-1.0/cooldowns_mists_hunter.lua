@@ -131,7 +131,6 @@ LCT_SpellData[121818] = {
 LCT_SpellData[53271] = {
 	class = "HUNTER",
 	pet = true,
-	defensive = true,
 	mobility = true,
 	duration = 4,
 	cooldown = 45,
