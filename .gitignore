@@ -4,9 +4,6 @@
 # But allow directories to be traversed
 !*/
 
-# Allow ONLY these files
-!BigDebuffs/Spells/Mists.lua
-
 # Allow everything inside these folders
 !Diminish/**
 !Diminish_Options/**
@@ -20,3 +17,4 @@
 !NamePlateCooldowns/**
 !BetterBlizzFrames/**
 !BetterBlizzPlates/**
+!BigDebuffs/**
