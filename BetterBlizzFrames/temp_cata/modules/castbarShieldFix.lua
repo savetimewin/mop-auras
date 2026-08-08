@@ -13,7 +13,7 @@
 -- alone and renders two visual copies instead:
 --
 --   * borderCopy: gray border only, using BBF's current BorderShield geometry
---   * shieldCopy: left shield only, anchored/scaled to the spell icon
+--   * shieldCopy: Blizzard Arena-Shield art, anchored/scaled to the spell icon
 --
 -- The original BorderShield region is only made transparent; its size, points,
 -- show/hide state, and test behavior remain untouched.
@@ -24,9 +24,9 @@ local SHIELD_SOURCE_WIDTH = 256
 local SHIELD_SOURCE_ART_WIDTH = 36
 local SHIELD_U = SHIELD_SOURCE_ART_WIDTH / SHIELD_SOURCE_WIDTH
 
--- Normal shield appearance at Icon Size = 1.
-local BASE_SHIELD_WIDTH = 28.125
-local BASE_SHIELD_HEIGHT = 55
+-- ClassicCastbars uses Blizzard's dedicated arena shield art for the icon.
+-- Keep that separate from BorderShield so castbar width/height never distort it.
+local ICON_SHIELD_TEXTURE = "Interface\\CastingBar\\UI-CastingBar-Arena-Shield"
 
 local updateFrame = CreateFrame("Frame")
 local elapsedSinceUpdate = 0
@@ -99,6 +99,7 @@ local function EnsureCopies(bar)
     if not bar.BBFShieldArtCopy then
         -- ARTWORK keeps the decorative shield below the spell icon.
         local shieldCopy = bar:CreateTexture(nil, "ARTWORK")
+        shieldCopy:SetTexture(ICON_SHIELD_TEXTURE)
         shieldCopy:Hide()
         bar.BBFShieldArtCopy = shieldCopy
     end
@@ -128,7 +129,7 @@ local function UpdateOneBar(bar)
     end
 
     borderCopy:SetTexture(texture)
-    shieldCopy:SetTexture(texture)
+    shieldCopy:SetTexture(ICON_SHIELD_TEXTURE)
 
     -- The original continues to own all sizing/show/hide behavior.
     -- We only make its combined artwork invisible.
@@ -172,16 +173,19 @@ local function UpdateOneBar(bar)
     borderCopy:Show()
 
     -- Decorative shield is independent from castbar width/height.
-    -- It follows ONLY the spell icon's position and configured icon scale.
+    -- Match ClassicCastbars' proven Blizzard Arena-Shield geometry:
+    --   size = 3x the displayed icon size
+    --   left edge = 0.44 icon widths left of the icon's left edge
+    -- This makes the visible shield slightly larger and visually centered
+    -- around the spell icon while still following Icon Size and icon X/Y.
     local iconScale = icon:GetScale() or 1
+    local iconWidth = icon:GetWidth() or 22
+    local displayedIconSize = iconWidth * iconScale
 
     shieldCopy:ClearAllPoints()
-    shieldCopy:SetPoint("CENTER", icon, "CENTER", 1, 0)
-    shieldCopy:SetSize(
-        BASE_SHIELD_WIDTH * iconScale,
-        BASE_SHIELD_HEIGHT * iconScale
-    )
-    shieldCopy:SetTexCoord(0, SHIELD_U, 0, 1)
+    shieldCopy:SetPoint("LEFT", icon, "LEFT", -0.44 * displayedIconSize, 0)
+    shieldCopy:SetSize(displayedIconSize * 3, displayedIconSize * 3)
+    shieldCopy:SetTexCoord(0, 1, 0, 1)
     CopyVertexColor(original, shieldCopy)
     shieldCopy:SetAlpha(1)
     shieldCopy:Show()
