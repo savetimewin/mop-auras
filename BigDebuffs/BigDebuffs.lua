@@ -500,7 +500,7 @@ local function Gw2FrameMatchesUnit(frame, unit, targetGUID)
             end
         end
     end
-end
+        end
 
 local function FindGw2FrameInGroup(group, unit, targetGUID)
     if not group then return end
@@ -1356,9 +1356,9 @@ function BigDebuffs:Refresh()
     for frame, _ in pairs(self.frames) do
         local unit = frame.displayedUnit or frame.unit
         if frame:IsVisible() and unit and UnitExists(unit) then
-            if CompactUnitFrame_UpdateAuras then
+            if not useModernAuraPath and CompactUnitFrame_UpdateAuras then
                 pcall(CompactUnitFrame_UpdateAuras, frame)
-            elseif frame.auraSize and type(CompactUnitFrame_UpdateAll) == "function" then
+            elseif not useModernAuraPath and frame.auraSize and type(CompactUnitFrame_UpdateAll) == "function" then
                 -- Midnight-era clients (MoP Classic 5.5.4, TBC Anniversary 2.5.6):
                 -- native buff icons render in C with no buffFrames array to resize,
                 -- so the only lever is frame.auraSize. The C aura layout only re-reads
@@ -1942,7 +1942,9 @@ local function OnCompactUnitFrame_UpdateAll(frame)
 		BigDebuffs:AddBigDebuffs(frame)
 	end
 
-	if frame.auraSize and BigDebuffs.db.profile.raidFrames.enabled then
+	-- Legacy CompactUnitFrame only. On modern MoP Classic, auraSize is Blizzard
+	-- compact-frame state used alongside protected private-aura attributes.
+	if not useModernAuraPath and frame.auraSize and BigDebuffs.db.profile.raidFrames.enabled then
 		local size = frame:GetHeight() * BigDebuffs.db.profile.raidFrames.buffs * 0.01
 		frame.auraSize = size
 	end
@@ -2552,10 +2554,9 @@ if useModernAuraPath then
             end
         end
 
-        -- resize raid frame buffs
-        if frame.auraSize then
-            frame.auraSize = frame:GetHeight() * self.db.profile.raidFrames.buffs * 0.01
-        end
+        -- Do not write frame.auraSize on the modern CompactUnitFrame path.
+        -- Blizzard uses compact-frame aura state while updating protected
+        -- private-aura anchors; tainting it can block CompactRaidFrame:SetAttribute().
 
         if #debuffs < 1 then return end
 
