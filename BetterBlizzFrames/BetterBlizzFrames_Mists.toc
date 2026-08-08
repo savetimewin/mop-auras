@@ -36,3 +36,4 @@ temp_cata\modules\loc.lua
 
 temp_cata\gui.lua
 temp_cata\BetterBlizzFrames.lua
+temp_cata\modules\castbarTest.lua
