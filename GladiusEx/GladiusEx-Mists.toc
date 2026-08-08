@@ -22,6 +22,7 @@ modules\castbar.lua
 modules\classicon.lua
 modules\clicks.lua
 modules\cooldowns.lua
+modules\cooldowns_protected_fix.lua
 modules\drtracker.lua
 modules\healthbar.lua
 modules\highlight.lua
