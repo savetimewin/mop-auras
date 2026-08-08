@@ -92,21 +92,22 @@ local function EnsureCopies(bar)
 
     if not bar.BBFShieldBorderCopy then
         local borderCopy = bar:CreateTexture(nil, "OVERLAY")
+        borderCopy:SetDrawLayer("OVERLAY", 5)
         borderCopy:Hide()
         bar.BBFShieldBorderCopy = borderCopy
     end
 
     if not bar.BBFShieldArtCopy then
-        -- ARTWORK keeps the decorative shield below the spell icon.
-        local shieldCopy = bar:CreateTexture(nil, "ARTWORK")
+        local shieldCopy = bar:CreateTexture(nil, "OVERLAY")
+        shieldCopy:SetDrawLayer("OVERLAY", 6)
         shieldCopy:SetTexture(ICON_SHIELD_TEXTURE)
         shieldCopy:Hide()
         bar.BBFShieldArtCopy = shieldCopy
     end
 
-    -- Explicitly keep the icon above the decorative shield.
+    -- Valid WoW draw sublevels only: gray border < shield < spell icon.
     if bar.Icon.SetDrawLayer then
-        bar.Icon:SetDrawLayer("OVERLAY")
+        bar.Icon:SetDrawLayer("OVERLAY", 7)
     end
 
     return true
@@ -183,15 +184,15 @@ local function UpdateOneBar(bar)
     local displayedIconSize = iconWidth * iconScale
 
     shieldCopy:ClearAllPoints()
-    shieldCopy:SetPoint("LEFT", icon, "LEFT", -0.44 * displayedIconSize, 0)
+    shieldCopy:SetPoint("LEFT", icon, "LEFT", -0.44 * displayedIconSize, -0.5)
     shieldCopy:SetSize(displayedIconSize * 3, displayedIconSize * 3)
     shieldCopy:SetTexCoord(0, 1, 0, 1)
     CopyVertexColor(original, shieldCopy)
     shieldCopy:SetAlpha(1)
     shieldCopy:Show()
 
-    -- Icon must stay in front of shield art.
-    icon:SetDrawLayer("OVERLAY")
+    -- Keep the icon above the shield; 7 is the highest valid overlay sublevel.
+    icon:SetDrawLayer("OVERLAY", 7)
 end
 
 local function UpdateAllBars()
