@@ -294,6 +294,7 @@ local war_personal_stackable_debuffs = {
 
 -- size 1.8
 local major_defensive_buffs = {
+	114052, -- Ascendance (Resto)
 	108271, -- Astral Shift
 	16188,-- Ancestral Swiftness, can either be defensive or offensive but want size to be big so added here
 	114214, -- Angelic bulwark
@@ -378,50 +379,38 @@ local minor_defensive_buffs = {
 	126697, -- Tremendous Fortitude
 	16491, -- Second Wind
 	114893, -- Stone Bulwark
-	114168, -- Dark Apotheosis
+	114168, -- Dark Apotheosis 1.8
 	16689, -- Nature's Grasp Buff
 	114039, -- Hand of Purity
 	111264, -- Ice Ward
 	15286, -- Vampiric Embrace
 	113613, -- Growl (ROGUE Symbiosis)
 	131523, -- Zen Meditation
-	131523, -- Zen Meditation
 	106922, -- Might of Ursoc
 }
 
--- size 1.6
+-- size 1.8
 local major_offensive_buffs = {
 	13750, -- Adrenaline Rush 
 	12042, -- Arcane Power 
-	114049, -- Ascendance 
+	114050, -- Ascendance (Ele)
+	114051, -- Ascendance (Enhance)	
 	107574, -- Avatar
 	31884, -- Avenging Wrath 
 	23505, -- Battleground Damage buff
 	23451, -- Battleground Speed buff 
 	50334, -- Berserk
 	102543, -- Incarnation: King of the Jungle
-	23505, -- Berserking (BG DMG BUFF)
-	13877, -- Blade Flurry 
-	20572, -- Blood Fury 
-	2825, -- Bloodlust 
-	126690, -- Call of Conquest 
-	126683, -- Call of Dominance 
-	126679, -- Call of Victory 
-	126700, -- Surge of Victory
 	112071, -- Celestial Alignment
 	102560, -- Incarnation: Chosen of Elune
 	113858, -- Dark Soul: Instability
 	113861, -- Dark Soul: Knowledge
 	113860, -- Dark Soul: Misery
-	16166, -- Elemental Mastery
 	115288, -- Energizing Brew
-	82726, -- Fervor
-	44544, -- Fingers of Frost
-	32182, -- Heroism 
+	44544, -- Fingers of Frost 
 	105809, -- Holy Avenger
 	131078, -- Icy Veins -- no check spell id
 	51690, -- Killing Spree
-	103958, -- Metamorphosis
 	51271, -- Pillar of Frost 
 	10060, -- Power Infusion 
 	3045, -- Rapid Fire 
@@ -429,19 +418,22 @@ local major_offensive_buffs = {
 	51713, -- Shadow Dance
 	121818, -- Stampede
 	34471, -- The Beast Within 
-	5217, -- Tiger's Fury
 	49016, -- Unholy Frenzy
 	108288, -- Heart of the Wild
-	122783, -- Diffuse Magic
+	121471, -- Shadow Blades
+	116740, -- Tigereye Brew, could be 1247275
+	23505, -- Berserking (BG DMG BUFF)
 }
 
--- size 1.5
+-- size 1.6
 local  minor_offensive_buffs = {
+	103958, -- Metamorphosis
+	82726, -- Fervor
+	16166, -- Elemental Mastery
 	114206, -- Skull Banner -- 20% Crit Damage
 	116267, -- incanter's absorption
 	-- 120676, -- Stormlash Totem Effect
 	-- 57761, -- Brain Freeze
-	121471, -- Shadow Blades
 	19574, -- Bestial Wrath
 	-- 93435, -- Roar of Courage
 	-- 104423, -- Windsong
@@ -449,11 +441,22 @@ local  minor_offensive_buffs = {
 	-- 120032, -- Dancing Steel
 	-- 125489, -- Swordguard Embroidery
 	-- 104993, -- Jade Spirit
+	5217, -- Tiger's Fury
 	126734, -- Synapse Springs
 	-- 115989, -- Unholy Blight
 	-- 128432, -- Cackling Howl
 	-- 108508, -- Mannoroth's Fury
 	-- 57934, -- Tricks of the Trade
+	80353, -- Time Warp
+	2825, -- Bloodlust
+	32182, -- Heroism
+	20572, -- Blood Fury
+	126690, -- Call of Conquest 
+	126683, -- Call of Dominance 
+	126679, -- Call of Victory 
+	126700, -- Surge of Victory
+	126705, -- Surge of Dominance
+	126707, -- Surge of Conquest
 }
 
 -- size 2.0 -- includes cc reductions too
@@ -479,9 +482,10 @@ local spell_immunities = {
 	33961, -- Spell Reflection
 	23920, -- Spell Reflection (Warrior)
 	113002, -- Spell Reflection (Druid) (symbiosis)
+	122783, -- Diffuse Magic
 }
 
--- size 1.5
+-- size 1.7
 local mobility_buffs = {
 	124488, -- Zen Focus
 	96267, -- Inner Focus
@@ -505,7 +509,7 @@ local mobility_buffs = {
 	79438, -- Soulburn: Demonic Circle
 }
 
--- size 1.5
+-- size 1.6
 local speed_buffs = {
 	108843, -- Blazing Speed
 	2983, -- Sprint
@@ -545,7 +549,7 @@ local drinkflags = {
 	44166, -- Refreshment
 }
 
--- size 1.4
+-- size 1.6
 local stances_forms = {
 	5487, -- Bear Form
 	768, -- Cat Form

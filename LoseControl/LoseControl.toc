@@ -17,7 +17,8 @@
 ## X-Website: http://www.curse.com/addons/wow/losecontrol
 ## X-Website2: http://www.wowinterface.com/downloads/info11642-LoseControl.html
 ## X-Category: Buffs
-## OptionalDeps: LibStub, PitBull4
+## OptionalDeps: LibStub, PitBull4, Ace3, flyPlateBuffsFixed
+## SavedVariables: LoseControlDBProfiles
 ## SavedVariablesPerCharacter: LoseControlDB
 
 #@no-lib-strip@
@@ -26,3 +27,4 @@ Libs\LibStub\LibStub.lua
 
 localization.lua
 LoseControl.lua
+Profiles.lua

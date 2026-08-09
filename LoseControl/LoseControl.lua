@@ -8,6 +8,7 @@
 ]]
 
 local addonName, L = ...
+L["Offensive"] = L["Offensive"] or "Offensive"
 local _G = _G				-- it's faster to keep local references to frequently used global vars
 local _
 local UIParent = UIParent
@@ -648,6 +649,20 @@ local interruptsIds = {
 }
 
 local spellIds = {
+	-- Brian's new category: Offensive
+	[1719] = "Offensive",		-- Recklessness
+	[31884] = "Offensive",		-- Avenging Wrath 
+	[114050] = "Offensive",		-- Ascendance (Ele)
+	[114051] = "Offensive",		-- Ascendance (Enhance)
+	[112071] = "Offensive",		-- Celestial Alignment
+	[102560] = "Offensive",		-- Incarnation: Chosen of Elune
+	[50334] = "Offensive",		-- Berserk
+	[49016] = "Offensive",		-- Unholy Frenzy
+	[121471] = "Offensive",		-- Shadow Blades
+	[3045] = "Offensive",		-- Rapid Fire
+	[115288] = "Offensive",		-- Energizing Brew
+	[102543] = "Offensive",		-- Incarnation: King of the Jungle
+	[12042] = "Offensive",		-- Arcane Power 
 	-- Death Knight
 	[108194] = "CC",		-- Asphyxiate
 	[115001] = "CC",		-- Remorseless Winter
@@ -8084,7 +8099,7 @@ local anchors = {
 -------------------------------------------------------------------------------
 -- Default settings
 local DBdefaults = {
-	version = 8.0, -- This is the settings version, not necessarily the same as the LoseControl version
+	version = 8.1, -- This is the settings version, not necessarily the same as the LoseControl version
 	noCooldownCount = false,
 	noBlizzardCooldownCount = true,
 	noLossOfControlCooldown = false,
@@ -8119,6 +8134,7 @@ local DBdefaults = {
 		Silence = 50,
 		Interrupt = 40,
 		Disarm = 30,
+		Offensive = 20,
 		Other = 10,
 		Root = 0,
 		Snare = 0,
@@ -8139,10 +8155,10 @@ local DBdefaults = {
 			anchor = "None",
 			categoriesEnabled = {
 				buff = {
-					friendly = { PvE = true, Immune = false, ImmuneSpell = false, ImmunePhysical = false, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = true }
+					friendly = { PvE = true, Immune = false, ImmuneSpell = false, ImmunePhysical = false, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = true }
 				},
 				debuff = {
-					friendly = { PvE = true, Immune = false, ImmuneSpell = false, ImmunePhysical = false, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = true }
+					friendly = { PvE = true, Immune = false, ImmuneSpell = false, ImmunePhysical = false, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = true }
 				},
 				interrupt = {
 					friendly = (not(GetCVarBool("lossOfControl")) or (GetCVar("lossOfControlInterrupt")~="2"))
@@ -8164,10 +8180,10 @@ local DBdefaults = {
 			anchor = "Blizzard",
 			categoriesEnabled = {
 				buff = {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = true, Root = true, Snare = true }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = true, Other = true, Root = true, Snare = true }
 				},
 				debuff = {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = true, Root = true, Snare = true }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = true, Other = true, Root = true, Snare = true }
 				},
 				interrupt = {
 					friendly = true
@@ -8189,10 +8205,10 @@ local DBdefaults = {
 			anchor = "Blizzard",
 			categoriesEnabled = {
 				buff = {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = true, Root = true, Snare = true }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = true, Other = true, Root = true, Snare = true }
 				},
 				debuff = {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = true, Root = true, Snare = true }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = true, Other = true, Root = true, Snare = true }
 				},
 				interrupt = {
 					friendly = true
@@ -8214,12 +8230,12 @@ local DBdefaults = {
 			anchor = "Blizzard",
 			categoriesEnabled = {
 				buff = {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = true, Root = true, Snare = true },
-					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = true, Root = true, Snare = true }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = true, Other = true, Root = true, Snare = true },
+					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = true, Other = true, Root = true, Snare = true }
 				},
 				debuff = {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = true, Root = true, Snare = true },
-					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = true, Root = true, Snare = true }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = true, Other = true, Root = true, Snare = true },
+					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = true, Other = true, Root = true, Snare = true }
 				},
 				interrupt = {
 					friendly = true,
@@ -8242,12 +8258,12 @@ local DBdefaults = {
 			anchor = "Blizzard",
 			categoriesEnabled = {
 				buff = {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = true, Root = true, Snare = true },
-					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = true, Root = true, Snare = true }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = true, Other = true, Root = true, Snare = true },
+					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = true, Other = true, Root = true, Snare = true }
 				},
 				debuff = {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = true, Root = true, Snare = true },
-					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = true, Root = true, Snare = true }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = true, Other = true, Root = true, Snare = true },
+					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = true, Other = true, Root = true, Snare = true }
 				},
 				interrupt = {
 					friendly = true,
@@ -8270,12 +8286,12 @@ local DBdefaults = {
 			anchor = "Blizzard",
 			categoriesEnabled = {
 				buff = {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = true, Root = true, Snare = true },
-					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = true, Root = true, Snare = true }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = true, Other = true, Root = true, Snare = true },
+					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = true, Other = true, Root = true, Snare = true }
 				},
 				debuff = {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = true, Root = true, Snare = true },
-					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = true, Root = true, Snare = true }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = true, Other = true, Root = true, Snare = true },
+					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = true, Other = true, Root = true, Snare = true }
 				},
 				interrupt = {
 					friendly = true,
@@ -8298,12 +8314,12 @@ local DBdefaults = {
 			anchor = "Blizzard",
 			categoriesEnabled = {
 				buff = {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = true, Root = true, Snare = true },
-					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = true, Root = true, Snare = true }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = true, Other = true, Root = true, Snare = true },
+					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = true, Other = true, Root = true, Snare = true }
 				},
 				debuff = {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = true, Root = true, Snare = true },
-					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = true, Root = true, Snare = true }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = true, Other = true, Root = true, Snare = true },
+					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = true, Other = true, Root = true, Snare = true }
 				},
 				interrupt = {
 					friendly = true,
@@ -8326,10 +8342,10 @@ local DBdefaults = {
 			anchor = "Blizzard",
 			categoriesEnabled = {
 				buff = {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = true }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = true }
 				},
 				debuff = {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = true, Root = true, Snare = true }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = true, Other = true, Root = true, Snare = true }
 				},
 				interrupt = {
 					friendly = true
@@ -8351,10 +8367,10 @@ local DBdefaults = {
 			anchor = "Blizzard",
 			categoriesEnabled = {
 				buff = {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = true }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = true }
 				},
 				debuff = {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = true, Root = true, Snare = true }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = true, Other = true, Root = true, Snare = true }
 				},
 				interrupt = {
 					friendly = true
@@ -8376,10 +8392,10 @@ local DBdefaults = {
 			anchor = "Blizzard",
 			categoriesEnabled = {
 				buff = {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = true }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = true }
 				},
 				debuff = {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = true, Root = true, Snare = true }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = true, Other = true, Root = true, Snare = true }
 				},
 				interrupt = {
 					friendly = true
@@ -8401,10 +8417,10 @@ local DBdefaults = {
 			anchor = "Blizzard",
 			categoriesEnabled = {
 				buff = {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = true }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = true }
 				},
 				debuff = {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = true, Root = true, Snare = true }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = true, Other = true, Root = true, Snare = true }
 				},
 				interrupt = {
 					friendly = true
@@ -8426,10 +8442,10 @@ local DBdefaults = {
 			anchor = "None",
 			categoriesEnabled = {
 				buff = {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = true }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = true }
 				},
 				debuff = {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = true, Root = true, Snare = true }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = true, Other = true, Root = true, Snare = true }
 				},
 				interrupt = {
 					friendly = true
@@ -8451,10 +8467,10 @@ local DBdefaults = {
 			anchor = "Blizzard",
 			categoriesEnabled = {
 				buff = {
-					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = true, Root = true, Snare = true }
+					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = true, Other = true, Root = true, Snare = true }
 				},
 				debuff = {
-					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = true, Root = true, Snare = true }
+					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = true, Other = true, Root = true, Snare = true }
 				},
 				interrupt = {
 					enemy    = true
@@ -8476,10 +8492,10 @@ local DBdefaults = {
 			anchor = "Blizzard",
 			categoriesEnabled = {
 				buff = {
-					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = true, Root = true, Snare = true }
+					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = true, Other = true, Root = true, Snare = true }
 				},
 				debuff = {
-					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = true, Root = true, Snare = true }
+					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = true, Other = true, Root = true, Snare = true }
 				},
 				interrupt = {
 					enemy    = true
@@ -8501,10 +8517,10 @@ local DBdefaults = {
 			anchor = "Blizzard",
 			categoriesEnabled = {
 				buff = {
-					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = true, Root = true, Snare = true }
+					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = true, Other = true, Root = true, Snare = true }
 				},
 				debuff = {
-					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = true, Root = true, Snare = true }
+					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = true, Other = true, Root = true, Snare = true }
 				},
 				interrupt = {
 					enemy    = true
@@ -8526,10 +8542,10 @@ local DBdefaults = {
 			anchor = "Blizzard",
 			categoriesEnabled = {
 				buff = {
-					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = true, Root = true, Snare = true }
+					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = true, Other = true, Root = true, Snare = true }
 				},
 				debuff = {
-					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = true, Root = true, Snare = true }
+					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = true, Other = true, Root = true, Snare = true }
 				},
 				interrupt = {
 					enemy    = true
@@ -8551,10 +8567,10 @@ local DBdefaults = {
 			anchor = "Blizzard",
 			categoriesEnabled = {
 				buff = {
-					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = true, Root = true, Snare = true }
+					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = true, Other = true, Root = true, Snare = true }
 				},
 				debuff = {
-					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = true, Root = true, Snare = true }
+					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = true, Other = true, Root = true, Snare = true }
 				},
 				interrupt = {
 					enemy    = true
@@ -8577,8 +8593,8 @@ local DBdefaults = {
 			x = 0,
 			y = 1,
 			categoriesEnabled = {
-				buff =      { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = true } },
-				debuff =    { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = true, Root = true, Snare = true } },
+				buff =      { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = true } },
+				debuff =    { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = true, Other = true, Root = true, Snare = true } },
 				interrupt = { friendly = true }
 			}
 		},
@@ -8598,8 +8614,8 @@ local DBdefaults = {
 			x = 0,
 			y = 1,
 			categoriesEnabled = {
-				buff =      { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = true } },
-				debuff =    { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = true, Root = true, Snare = true } },
+				buff =      { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = true } },
+				debuff =    { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = true, Other = true, Root = true, Snare = true } },
 				interrupt = { friendly = true }
 			}
 		},
@@ -8619,8 +8635,8 @@ local DBdefaults = {
 			x = 0,
 			y = 1,
 			categoriesEnabled = {
-				buff =      { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = true } },
-				debuff =    { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = true, Root = true, Snare = true } },
+				buff =      { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = true } },
+				debuff =    { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = true, Other = true, Root = true, Snare = true } },
 				interrupt = { friendly = true }
 			}
 		},
@@ -8640,8 +8656,8 @@ local DBdefaults = {
 			x = 0,
 			y = 1,
 			categoriesEnabled = {
-				buff =      { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = true } },
-				debuff =    { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = true, Root = true, Snare = true } },
+				buff =      { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = true } },
+				debuff =    { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = true, Other = true, Root = true, Snare = true } },
 				interrupt = { friendly = true }
 			}
 		},
@@ -8661,8 +8677,8 @@ local DBdefaults = {
 			x = 0,
 			y = 1,
 			categoriesEnabled = {
-				buff =      { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = true } },
-				debuff =    { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = true, Root = true, Snare = true } },
+				buff =      { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = true } },
+				debuff =    { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = true, Other = true, Root = true, Snare = true } },
 				interrupt = { friendly = true }
 			}
 		},
@@ -8682,8 +8698,8 @@ local DBdefaults = {
 			x = 0,
 			y = 1,
 			categoriesEnabled = {
-				buff =      { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = true } },
-				debuff =    { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = true, Root = true, Snare = true } },
+				buff =      { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = true } },
+				debuff =    { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = true, Other = true, Root = true, Snare = true } },
 				interrupt = { friendly = true }
 			}
 		},
@@ -8703,8 +8719,8 @@ local DBdefaults = {
 			x = 0,
 			y = 1,
 			categoriesEnabled = {
-				buff =      { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = true } },
-				debuff =    { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = true, Root = true, Snare = true } },
+				buff =      { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = true } },
+				debuff =    { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = true, Other = true, Root = true, Snare = true } },
 				interrupt = { friendly = true }
 			}
 		},
@@ -8724,8 +8740,8 @@ local DBdefaults = {
 			x = 0,
 			y = 1,
 			categoriesEnabled = {
-				buff =      { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = true } },
-				debuff =    { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = true, Root = true, Snare = true } },
+				buff =      { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = true } },
+				debuff =    { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = true, Other = true, Root = true, Snare = true } },
 				interrupt = { friendly = true }
 			}
 		},
@@ -8745,8 +8761,8 @@ local DBdefaults = {
 			x = 0,
 			y = 1,
 			categoriesEnabled = {
-				buff =      { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = true } },
-				debuff =    { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = true, Root = true, Snare = true } },
+				buff =      { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = true } },
+				debuff =    { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = true, Other = true, Root = true, Snare = true } },
 				interrupt = { friendly = true }
 			}
 		},
@@ -8766,8 +8782,8 @@ local DBdefaults = {
 			x = 0,
 			y = 1,
 			categoriesEnabled = {
-				buff =      { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = true } },
-				debuff =    { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = true, Root = true, Snare = true } },
+				buff =      { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = true } },
+				debuff =    { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = true, Other = true, Root = true, Snare = true } },
 				interrupt = { friendly = true }
 			}
 		},
@@ -8787,8 +8803,8 @@ local DBdefaults = {
 			x = 0,
 			y = 1,
 			categoriesEnabled = {
-				buff =      { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = true } },
-				debuff =    { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = true, Root = true, Snare = true } },
+				buff =      { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = true } },
+				debuff =    { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = true, Other = true, Root = true, Snare = true } },
 				interrupt = { friendly = true }
 			}
 		},
@@ -8808,8 +8824,8 @@ local DBdefaults = {
 			x = 0,
 			y = 1,
 			categoriesEnabled = {
-				buff =      { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = true } },
-				debuff =    { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = true, Root = true, Snare = true } },
+				buff =      { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = true } },
+				debuff =    { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = true, Other = true, Root = true, Snare = true } },
 				interrupt = { friendly = true }
 			}
 		},
@@ -8829,8 +8845,8 @@ local DBdefaults = {
 			x = 0,
 			y = 1,
 			categoriesEnabled = {
-				buff =      { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = true } },
-				debuff =    { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = true, Root = true, Snare = true } },
+				buff =      { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = true } },
+				debuff =    { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = true, Other = true, Root = true, Snare = true } },
 				interrupt = { friendly = true }
 			}
 		},
@@ -8850,8 +8866,8 @@ local DBdefaults = {
 			x = 0,
 			y = 1,
 			categoriesEnabled = {
-				buff =      { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = true } },
-				debuff =    { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = true, Root = true, Snare = true } },
+				buff =      { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = true } },
+				debuff =    { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = true, Other = true, Root = true, Snare = true } },
 				interrupt = { friendly = true }
 			}
 		},
@@ -8871,8 +8887,8 @@ local DBdefaults = {
 			x = 0,
 			y = 1,
 			categoriesEnabled = {
-				buff =      { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = true } },
-				debuff =    { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = true, Root = true, Snare = true } },
+				buff =      { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = true } },
+				debuff =    { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = true, Other = true, Root = true, Snare = true } },
 				interrupt = { friendly = true }
 			}
 		},
@@ -8892,8 +8908,8 @@ local DBdefaults = {
 			x = 0,
 			y = 1,
 			categoriesEnabled = {
-				buff =      { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = true } },
-				debuff =    { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = true, Root = true, Snare = true } },
+				buff =      { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = true } },
+				debuff =    { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = true, Other = true, Root = true, Snare = true } },
 				interrupt = { friendly = true }
 			}
 		},
@@ -8913,8 +8929,8 @@ local DBdefaults = {
 			x = 0,
 			y = 1,
 			categoriesEnabled = {
-				buff =      { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = true } },
-				debuff =    { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = true, Root = true, Snare = true } },
+				buff =      { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = true } },
+				debuff =    { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = true, Other = true, Root = true, Snare = true } },
 				interrupt = { friendly = true }
 			}
 		},
@@ -8934,8 +8950,8 @@ local DBdefaults = {
 			x = 0,
 			y = 1,
 			categoriesEnabled = {
-				buff =      { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = true } },
-				debuff =    { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = true, Root = true, Snare = true } },
+				buff =      { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = true } },
+				debuff =    { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = true, Other = true, Root = true, Snare = true } },
 				interrupt = { friendly = true }
 			}
 		},
@@ -8955,8 +8971,8 @@ local DBdefaults = {
 			x = 0,
 			y = 1,
 			categoriesEnabled = {
-				buff =      { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = true } },
-				debuff =    { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = true, Root = true, Snare = true } },
+				buff =      { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = true } },
+				debuff =    { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = true, Other = true, Root = true, Snare = true } },
 				interrupt = { friendly = true }
 			}
 		},
@@ -8976,8 +8992,8 @@ local DBdefaults = {
 			x = 0,
 			y = 1,
 			categoriesEnabled = {
-				buff =      { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = true } },
-				debuff =    { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = true, Root = true, Snare = true } },
+				buff =      { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = true } },
+				debuff =    { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = true, Other = true, Root = true, Snare = true } },
 				interrupt = { friendly = true }
 			}
 		},
@@ -8997,8 +9013,8 @@ local DBdefaults = {
 			x = 0,
 			y = 1,
 			categoriesEnabled = {
-				buff =      { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = true } },
-				debuff =    { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = true, Root = true, Snare = true } },
+				buff =      { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = true } },
+				debuff =    { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = true, Other = true, Root = true, Snare = true } },
 				interrupt = { friendly = true }
 			}
 		},
@@ -9018,8 +9034,8 @@ local DBdefaults = {
 			x = 0,
 			y = 1,
 			categoriesEnabled = {
-				buff =      { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = true } },
-				debuff =    { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = true, Root = true, Snare = true } },
+				buff =      { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = true } },
+				debuff =    { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = true, Other = true, Root = true, Snare = true } },
 				interrupt = { friendly = true }
 			}
 		},
@@ -9039,8 +9055,8 @@ local DBdefaults = {
 			x = 0,
 			y = 1,
 			categoriesEnabled = {
-				buff =      { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = true } },
-				debuff =    { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = true, Root = true, Snare = true } },
+				buff =      { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = true } },
+				debuff =    { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = true, Other = true, Root = true, Snare = true } },
 				interrupt = { friendly = true }
 			}
 		},
@@ -9060,8 +9076,8 @@ local DBdefaults = {
 			x = 0,
 			y = 1,
 			categoriesEnabled = {
-				buff =      { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = true } },
-				debuff =    { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = true, Root = true, Snare = true } },
+				buff =      { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = true } },
+				debuff =    { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = true, Other = true, Root = true, Snare = true } },
 				interrupt = { friendly = true }
 			}
 		},
@@ -9081,8 +9097,8 @@ local DBdefaults = {
 			x = 0,
 			y = 1,
 			categoriesEnabled = {
-				buff =      { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = true } },
-				debuff =    { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = true, Root = true, Snare = true } },
+				buff =      { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = true } },
+				debuff =    { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = true, Other = true, Root = true, Snare = true } },
 				interrupt = { friendly = true }
 			}
 		},
@@ -9102,8 +9118,8 @@ local DBdefaults = {
 			x = 0,
 			y = 1,
 			categoriesEnabled = {
-				buff =      { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = true } },
-				debuff =    { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = true, Root = true, Snare = true } },
+				buff =      { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = true } },
+				debuff =    { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = true, Other = true, Root = true, Snare = true } },
 				interrupt = { friendly = true }
 			}
 		},
@@ -9123,8 +9139,8 @@ local DBdefaults = {
 			x = 0,
 			y = 1,
 			categoriesEnabled = {
-				buff =      { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = true } },
-				debuff =    { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = true, Root = true, Snare = true } },
+				buff =      { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = true } },
+				debuff =    { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = true, Other = true, Root = true, Snare = true } },
 				interrupt = { friendly = true }
 			}
 		},
@@ -9144,8 +9160,8 @@ local DBdefaults = {
 			x = 0,
 			y = 1,
 			categoriesEnabled = {
-				buff =      { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = true } },
-				debuff =    { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = true, Root = true, Snare = true } },
+				buff =      { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = true } },
+				debuff =    { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = true, Other = true, Root = true, Snare = true } },
 				interrupt = { friendly = true }
 			}
 		},
@@ -9165,8 +9181,8 @@ local DBdefaults = {
 			x = 0,
 			y = 1,
 			categoriesEnabled = {
-				buff =      { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = true } },
-				debuff =    { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = true, Root = true, Snare = true } },
+				buff =      { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = true } },
+				debuff =    { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = true, Other = true, Root = true, Snare = true } },
 				interrupt = { friendly = true }
 			}
 		},
@@ -9186,8 +9202,8 @@ local DBdefaults = {
 			x = 0,
 			y = 1,
 			categoriesEnabled = {
-				buff =      { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = true } },
-				debuff =    { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = true, Root = true, Snare = true } },
+				buff =      { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = true } },
+				debuff =    { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = true, Other = true, Root = true, Snare = true } },
 				interrupt = { friendly = true }
 			}
 		},
@@ -9207,8 +9223,8 @@ local DBdefaults = {
 			x = 0,
 			y = 1,
 			categoriesEnabled = {
-				buff =      { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = true } },
-				debuff =    { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = true, Root = true, Snare = true } },
+				buff =      { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = true } },
+				debuff =    { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = true, Other = true, Root = true, Snare = true } },
 				interrupt = { friendly = true }
 			}
 		},
@@ -9228,8 +9244,8 @@ local DBdefaults = {
 			x = 0,
 			y = 1,
 			categoriesEnabled = {
-				buff =      { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = true } },
-				debuff =    { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = true, Root = true, Snare = true } },
+				buff =      { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = true } },
+				debuff =    { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = true, Other = true, Root = true, Snare = true } },
 				interrupt = { friendly = true }
 			}
 		},
@@ -9249,8 +9265,8 @@ local DBdefaults = {
 			x = 0,
 			y = 1,
 			categoriesEnabled = {
-				buff =      { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = true } },
-				debuff =    { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = true, Root = true, Snare = true } },
+				buff =      { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = true } },
+				debuff =    { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = true, Other = true, Root = true, Snare = true } },
 				interrupt = { friendly = true }
 			}
 		},
@@ -9270,8 +9286,8 @@ local DBdefaults = {
 			x = 0,
 			y = 1,
 			categoriesEnabled = {
-				buff =      { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = true } },
-				debuff =    { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = true, Root = true, Snare = true } },
+				buff =      { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = true } },
+				debuff =    { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = true, Other = true, Root = true, Snare = true } },
 				interrupt = { friendly = true }
 			}
 		},
@@ -9291,8 +9307,8 @@ local DBdefaults = {
 			x = 0,
 			y = 1,
 			categoriesEnabled = {
-				buff =      { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = true } },
-				debuff =    { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = true, Root = true, Snare = true } },
+				buff =      { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = true } },
+				debuff =    { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = true, Other = true, Root = true, Snare = true } },
 				interrupt = { friendly = true }
 			}
 		},
@@ -9312,8 +9328,8 @@ local DBdefaults = {
 			x = 0,
 			y = 1,
 			categoriesEnabled = {
-				buff =      { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = true } },
-				debuff =    { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = true, Root = true, Snare = true } },
+				buff =      { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = true } },
+				debuff =    { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = true, Other = true, Root = true, Snare = true } },
 				interrupt = { friendly = true }
 			}
 		},
@@ -9333,8 +9349,8 @@ local DBdefaults = {
 			x = 0,
 			y = 1,
 			categoriesEnabled = {
-				buff =      { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = true } },
-				debuff =    { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = true, Root = true, Snare = true } },
+				buff =      { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = true } },
+				debuff =    { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = true, Other = true, Root = true, Snare = true } },
 				interrupt = { friendly = true }
 			}
 		},
@@ -9354,8 +9370,8 @@ local DBdefaults = {
 			x = 0,
 			y = 1,
 			categoriesEnabled = {
-				buff =      { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = true } },
-				debuff =    { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = true, Root = true, Snare = true } },
+				buff =      { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = true } },
+				debuff =    { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = true, Other = true, Root = true, Snare = true } },
 				interrupt = { friendly = true }
 			}
 		},
@@ -9375,8 +9391,8 @@ local DBdefaults = {
 			x = 0,
 			y = 1,
 			categoriesEnabled = {
-				buff =      { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = true } },
-				debuff =    { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = true, Root = true, Snare = true } },
+				buff =      { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = true } },
+				debuff =    { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = true, Other = true, Root = true, Snare = true } },
 				interrupt = { friendly = true }
 			}
 		},
@@ -9396,8 +9412,8 @@ local DBdefaults = {
 			x = 0,
 			y = 1,
 			categoriesEnabled = {
-				buff =      { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = true } },
-				debuff =    { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = true, Root = true, Snare = true } },
+				buff =      { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = true } },
+				debuff =    { friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = true, Other = true, Root = true, Snare = true } },
 				interrupt = { friendly = true }
 			}
 		},
@@ -9420,12 +9436,12 @@ local DBdefaults = {
 			y = 0,
 			categoriesEnabled = {
 				buff =      {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false },
-					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false },
+					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false }
 				},
 				debuff = {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false },
-					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false },
+					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false }
 				},
 				interrupt = { friendly = true, enemy = true }
 			}
@@ -9449,12 +9465,12 @@ local DBdefaults = {
 			y = 0,
 			categoriesEnabled = {
 				buff =      {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false },
-					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false },
+					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false }
 				},
 				debuff = {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false },
-					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false },
+					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false }
 				},
 				interrupt = { friendly = true, enemy = true }
 			}
@@ -9478,12 +9494,12 @@ local DBdefaults = {
 			y = 0,
 			categoriesEnabled = {
 				buff =      {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false },
-					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false },
+					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false }
 				},
 				debuff = {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false },
-					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false },
+					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false }
 				},
 				interrupt = { friendly = true, enemy = true }
 			}
@@ -9507,12 +9523,12 @@ local DBdefaults = {
 			y = 0,
 			categoriesEnabled = {
 				buff =      {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false },
-					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false },
+					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false }
 				},
 				debuff = {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false },
-					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false },
+					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false }
 				},
 				interrupt = { friendly = true, enemy = true }
 			}
@@ -9536,12 +9552,12 @@ local DBdefaults = {
 			y = 0,
 			categoriesEnabled = {
 				buff =      {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false },
-					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false },
+					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false }
 				},
 				debuff = {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false },
-					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false },
+					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false }
 				},
 				interrupt = { friendly = true, enemy = true }
 			}
@@ -9565,12 +9581,12 @@ local DBdefaults = {
 			y = 0,
 			categoriesEnabled = {
 				buff =      {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false },
-					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false },
+					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false }
 				},
 				debuff = {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false },
-					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false },
+					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false }
 				},
 				interrupt = { friendly = true, enemy = true }
 			}
@@ -9594,12 +9610,12 @@ local DBdefaults = {
 			y = 0,
 			categoriesEnabled = {
 				buff =      {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false },
-					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false },
+					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false }
 				},
 				debuff = {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false },
-					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false },
+					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false }
 				},
 				interrupt = { friendly = true, enemy = true }
 			}
@@ -9623,12 +9639,12 @@ local DBdefaults = {
 			y = 0,
 			categoriesEnabled = {
 				buff =      {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false },
-					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false },
+					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false }
 				},
 				debuff = {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false },
-					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false },
+					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false }
 				},
 				interrupt = { friendly = true, enemy = true }
 			}
@@ -9652,12 +9668,12 @@ local DBdefaults = {
 			y = 0,
 			categoriesEnabled = {
 				buff =      {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false },
-					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false },
+					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false }
 				},
 				debuff = {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false },
-					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false },
+					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false }
 				},
 				interrupt = { friendly = true, enemy = true }
 			}
@@ -9681,12 +9697,12 @@ local DBdefaults = {
 			y = 0,
 			categoriesEnabled = {
 				buff =      {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false },
-					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false },
+					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false }
 				},
 				debuff = {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false },
-					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false },
+					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false }
 				},
 				interrupt = { friendly = true, enemy = true }
 			}
@@ -9710,12 +9726,12 @@ local DBdefaults = {
 			y = 0,
 			categoriesEnabled = {
 				buff =      {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false },
-					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false },
+					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false }
 				},
 				debuff = {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false },
-					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false },
+					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false }
 				},
 				interrupt = { friendly = true, enemy = true }
 			}
@@ -9739,12 +9755,12 @@ local DBdefaults = {
 			y = 0,
 			categoriesEnabled = {
 				buff =      {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false },
-					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false },
+					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false }
 				},
 				debuff = {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false },
-					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false },
+					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false }
 				},
 				interrupt = { friendly = true, enemy = true }
 			}
@@ -9768,12 +9784,12 @@ local DBdefaults = {
 			y = 0,
 			categoriesEnabled = {
 				buff =      {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false },
-					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false },
+					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false }
 				},
 				debuff = {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false },
-					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false },
+					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false }
 				},
 				interrupt = { friendly = true, enemy = true }
 			}
@@ -9797,12 +9813,12 @@ local DBdefaults = {
 			y = 0,
 			categoriesEnabled = {
 				buff =      {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false },
-					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false },
+					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false }
 				},
 				debuff = {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false },
-					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false },
+					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false }
 				},
 				interrupt = { friendly = true, enemy = true }
 			}
@@ -9826,12 +9842,12 @@ local DBdefaults = {
 			y = 0,
 			categoriesEnabled = {
 				buff =      {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false },
-					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false },
+					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false }
 				},
 				debuff = {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false },
-					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false },
+					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false }
 				},
 				interrupt = { friendly = true, enemy = true }
 			}
@@ -9855,12 +9871,12 @@ local DBdefaults = {
 			y = 0,
 			categoriesEnabled = {
 				buff =      {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false },
-					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false },
+					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false }
 				},
 				debuff = {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false },
-					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false },
+					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false }
 				},
 				interrupt = { friendly = true, enemy = true }
 			}
@@ -9884,12 +9900,12 @@ local DBdefaults = {
 			y = 0,
 			categoriesEnabled = {
 				buff =      {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false },
-					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false },
+					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false }
 				},
 				debuff = {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false },
-					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false },
+					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false }
 				},
 				interrupt = { friendly = true, enemy = true }
 			}
@@ -9913,12 +9929,12 @@ local DBdefaults = {
 			y = 0,
 			categoriesEnabled = {
 				buff =      {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false },
-					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false },
+					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false }
 				},
 				debuff = {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false },
-					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false },
+					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false }
 				},
 				interrupt = { friendly = true, enemy = true }
 			}
@@ -9942,12 +9958,12 @@ local DBdefaults = {
 			y = 0,
 			categoriesEnabled = {
 				buff =      {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false },
-					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false },
+					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false }
 				},
 				debuff = {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false },
-					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false },
+					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false }
 				},
 				interrupt = { friendly = true, enemy = true }
 			}
@@ -9971,12 +9987,12 @@ local DBdefaults = {
 			y = 0,
 			categoriesEnabled = {
 				buff =      {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false },
-					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false },
+					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false }
 				},
 				debuff = {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false },
-					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false },
+					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false }
 				},
 				interrupt = { friendly = true, enemy = true }
 			}
@@ -10000,12 +10016,12 @@ local DBdefaults = {
 			y = 0,
 			categoriesEnabled = {
 				buff =      {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false },
-					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false },
+					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false }
 				},
 				debuff = {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false },
-					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false },
+					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false }
 				},
 				interrupt = { friendly = true, enemy = true }
 			}
@@ -10029,12 +10045,12 @@ local DBdefaults = {
 			y = 0,
 			categoriesEnabled = {
 				buff =      {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false },
-					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false },
+					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false }
 				},
 				debuff = {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false },
-					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false },
+					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false }
 				},
 				interrupt = { friendly = true, enemy = true }
 			}
@@ -10058,12 +10074,12 @@ local DBdefaults = {
 			y = 0,
 			categoriesEnabled = {
 				buff =      {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false },
-					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false },
+					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false }
 				},
 				debuff = {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false },
-					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false },
+					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false }
 				},
 				interrupt = { friendly = true, enemy = true }
 			}
@@ -10087,12 +10103,12 @@ local DBdefaults = {
 			y = 0,
 			categoriesEnabled = {
 				buff =      {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false },
-					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false },
+					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false }
 				},
 				debuff = {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false },
-					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false },
+					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false }
 				},
 				interrupt = { friendly = true, enemy = true }
 			}
@@ -10116,12 +10132,12 @@ local DBdefaults = {
 			y = 0,
 			categoriesEnabled = {
 				buff =      {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false },
-					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false },
+					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false }
 				},
 				debuff = {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false },
-					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false },
+					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false }
 				},
 				interrupt = { friendly = true, enemy = true }
 			}
@@ -10145,12 +10161,12 @@ local DBdefaults = {
 			y = 0,
 			categoriesEnabled = {
 				buff =      {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false },
-					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false },
+					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false }
 				},
 				debuff = {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false },
-					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false },
+					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false }
 				},
 				interrupt = { friendly = true, enemy = true }
 			}
@@ -10174,12 +10190,12 @@ local DBdefaults = {
 			y = 0,
 			categoriesEnabled = {
 				buff =      {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false },
-					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false },
+					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false }
 				},
 				debuff = {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false },
-					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false },
+					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false }
 				},
 				interrupt = { friendly = true, enemy = true }
 			}
@@ -10203,12 +10219,12 @@ local DBdefaults = {
 			y = 0,
 			categoriesEnabled = {
 				buff =      {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false },
-					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false },
+					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false }
 				},
 				debuff = {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false },
-					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false },
+					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false }
 				},
 				interrupt = { friendly = true, enemy = true }
 			}
@@ -10232,12 +10248,12 @@ local DBdefaults = {
 			y = 0,
 			categoriesEnabled = {
 				buff =      {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false },
-					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false },
+					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false }
 				},
 				debuff = {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false },
-					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false },
+					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false }
 				},
 				interrupt = { friendly = true, enemy = true }
 			}
@@ -10261,12 +10277,12 @@ local DBdefaults = {
 			y = 0,
 			categoriesEnabled = {
 				buff =      {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false },
-					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false },
+					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false }
 				},
 				debuff = {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false },
-					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false },
+					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false }
 				},
 				interrupt = { friendly = true, enemy = true }
 			}
@@ -10290,12 +10306,12 @@ local DBdefaults = {
 			y = 0,
 			categoriesEnabled = {
 				buff =      {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false },
-					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false },
+					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false }
 				},
 				debuff = {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false },
-					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false },
+					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false }
 				},
 				interrupt = { friendly = true, enemy = true }
 			}
@@ -10319,12 +10335,12 @@ local DBdefaults = {
 			y = 0,
 			categoriesEnabled = {
 				buff =      {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false },
-					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false },
+					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false }
 				},
 				debuff = {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false },
-					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false },
+					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false }
 				},
 				interrupt = { friendly = true, enemy = true }
 			}
@@ -10348,12 +10364,12 @@ local DBdefaults = {
 			y = 0,
 			categoriesEnabled = {
 				buff =      {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false },
-					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false },
+					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false }
 				},
 				debuff = {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false },
-					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false },
+					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false }
 				},
 				interrupt = { friendly = true, enemy = true }
 			}
@@ -10377,12 +10393,12 @@ local DBdefaults = {
 			y = 0,
 			categoriesEnabled = {
 				buff =      {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false },
-					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false },
+					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false }
 				},
 				debuff = {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false },
-					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false },
+					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false }
 				},
 				interrupt = { friendly = true, enemy = true }
 			}
@@ -10406,12 +10422,12 @@ local DBdefaults = {
 			y = 0,
 			categoriesEnabled = {
 				buff =      {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false },
-					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false },
+					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false }
 				},
 				debuff = {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false },
-					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false },
+					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false }
 				},
 				interrupt = { friendly = true, enemy = true }
 			}
@@ -10435,12 +10451,12 @@ local DBdefaults = {
 			y = 0,
 			categoriesEnabled = {
 				buff =      {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false },
-					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false },
+					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false }
 				},
 				debuff = {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false },
-					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false },
+					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false }
 				},
 				interrupt = { friendly = true, enemy = true }
 			}
@@ -10464,12 +10480,12 @@ local DBdefaults = {
 			y = 0,
 			categoriesEnabled = {
 				buff =      {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false },
-					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false },
+					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false }
 				},
 				debuff = {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false },
-					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false },
+					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false }
 				},
 				interrupt = { friendly = true, enemy = true }
 			}
@@ -10493,12 +10509,12 @@ local DBdefaults = {
 			y = 0,
 			categoriesEnabled = {
 				buff =      {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false },
-					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false },
+					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false }
 				},
 				debuff = {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false },
-					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false },
+					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false }
 				},
 				interrupt = { friendly = true, enemy = true }
 			}
@@ -10522,12 +10538,12 @@ local DBdefaults = {
 			y = 0,
 			categoriesEnabled = {
 				buff =      {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false },
-					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false },
+					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false }
 				},
 				debuff = {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false },
-					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false },
+					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false }
 				},
 				interrupt = { friendly = true, enemy = true }
 			}
@@ -10551,18 +10567,21 @@ local DBdefaults = {
 			y = 0,
 			categoriesEnabled = {
 				buff =      {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false },
-					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false },
+					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false }
 				},
 				debuff = {
-					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false },
-					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Other = false, Root = true, Snare = false }
+					friendly = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false },
+					enemy    = { PvE = true, Immune = true, ImmuneSpell = true, ImmunePhysical = true, CC = true, Silence = true, Disarm = true, Offensive = false, Other = false, Root = true, Snare = false }
 				},
 				interrupt = { friendly = true, enemy = true }
 			}
 		},
 	},
 }
+-- Exposed read-only source for the AceDB profile module loaded after this file.
+_G.LoseControlDBDefaults = DBdefaults
+
 local LoseControlDB -- local reference to the addon settings. this gets initialized when the ADDON_LOADED event fires
 
 -------------------------------------------------------------------------------
@@ -13862,7 +13881,8 @@ PrioritySlider.Interrupt:SetPoint("TOPLEFT", PrioritySlider.PvE, "TOPRIGHT", 40,
 PrioritySlider.Disarm:SetPoint("TOPLEFT", PrioritySlider.Interrupt, "BOTTOMLEFT", 0, -24)
 PrioritySlider.Root:SetPoint("TOPLEFT", PrioritySlider.Disarm, "BOTTOMLEFT", 0, -24)
 PrioritySlider.Snare:SetPoint("TOPLEFT", PrioritySlider.Root, "BOTTOMLEFT", 0, -24)
-PrioritySlider.Other:SetPoint("TOPLEFT", PrioritySlider.Snare, "BOTTOMLEFT", 0, -24)
+PrioritySlider.Offensive:SetPoint("TOPLEFT", PrioritySlider.Snare, "BOTTOMLEFT", 0, -24)
+PrioritySlider.Other:SetPoint("TOPLEFT", PrioritySlider.Offensive, "BOTTOMLEFT", 0, -24)
 
 BlizzardLossOfControl:SetPoint("TOPLEFT", PriorityDescription, "BOTTOMLEFT", 0, -270)
 BlizzardLossOfControlCombatWarning:SetPoint("LEFT", BlizzardLossOfControl, "RIGHT", 0, 0)
@@ -13881,6 +13901,10 @@ BlizzardLossOfControlRoot:SetPoint("LEFT", BlizzardLossOfControlRootLabel, "LEFT
 
 -------------------------------------------------------------------------------
 function OptionsPanelSetDefault() -- This method will run when the player clicks "defaults".
+	if _G.LoseControlProfileDB and _G.LoseControlProfileDB.ResetProfile then
+		_G.LoseControlProfileDB:ResetProfile()
+		return
+	end
 	_G.LoseControlDB = nil
 	LoseControl:ADDON_LOADED(addonName)
 	for _, v in pairs(LCframes) do
@@ -13934,6 +13958,10 @@ end)
 OptionsPanel:RegisterEvent("ADDON_LOADED")
 
 LoseControlCategory = Settings.RegisterCanvasLayoutCategory(OptionsPanel, OptionsPanel.name)
+-- AceConfigDialog resolves subcategory parents through Settings.GetCategory().
+-- Give the native LoseControl category the same stable ID/name that AceConfig
+-- uses for top-level addon categories so Profiles can register beneath it.
+LoseControlCategory.ID = addonName
 Settings.RegisterAddOnCategory(LoseControlCategory)
 
 -------------------------------------------------------------------------------
@@ -13961,7 +13989,8 @@ for _, v in ipairs({ "player", "pet", "target", "targettarget", "focus", "focust
 
 	OptionsPanelFrame.scrollframe:SetScrollChild(OptionsPanelFrame.scrollchild)
 	OptionsPanelFrame.scrollframe:SetAllPoints(OptionsPanelFrame)
-	OptionsPanelFrame.scrollchild:SetSize(623, 720)
+	-- Extra height for the Offensive category row.
+	OptionsPanelFrame.scrollchild:SetSize(623, 752)
 
 	OptionsPanelFrame.container = OptionsPanelFrame.container or CreateFrame("Frame", OptionsPanelFrame.scrollchild:GetName().."Container", OptionsPanelFrame.scrollchild)
 	OptionsPanelFrame.container:SetAllPoints(OptionsPanelFrame.scrollchild)
@@ -14018,6 +14047,8 @@ for _, v in ipairs({ "player", "pet", "target", "targettarget", "focus", "focust
 	CategoryEnabledSnareLabel:SetText(L["Snare"]..":")
 	local CategoryEnabledOtherLabel = OptionsPanelFrame.container:CreateFontString(O..v.."CategoryEnabledOtherLabel", "ARTWORK", "GameFontNormal")
 	CategoryEnabledOtherLabel:SetText(L["Other"]..":")
+	local CategoryEnabledOffensiveLabel = OptionsPanelFrame.container:CreateFontString(O..v.."CategoryEnabledOffensiveLabel", "ARTWORK", "GameFontNormal")
+	CategoryEnabledOffensiveLabel:SetText(L["Offensive"]..":")
 	local AdditionalOptionsLabel = OptionsPanelFrame.container:CreateFontString(O..v.."AdditionalOptionsLabel", "ARTWORK", "GameFontNormal")
 	AdditionalOptionsLabel:SetText(L["AdditionalOptionsLabel"])
 	AdditionalOptionsLabel:SetJustifyH("LEFT")
@@ -14035,6 +14066,7 @@ for _, v in ipairs({ "player", "pet", "target", "targettarget", "focus", "focust
 		["Disarm"] = CategoryEnabledDisarmLabel,
 		["Root"] = CategoryEnabledRootLabel,
 		["Snare"] = CategoryEnabledSnareLabel,
+		["Offensive"] = CategoryEnabledOffensiveLabel,
 		["Other"] = CategoryEnabledOtherLabel
 	}
 
@@ -15740,7 +15772,7 @@ for _, v in ipairs({ "player", "pet", "target", "targettarget", "focus", "focust
 		end
 	end)
 
-	local catListEnChecksButtons = { "PvE", "Immune", "ImmuneSpell", "ImmunePhysical", "CC", "Silence", "Disarm", "Root", "Snare", "Other" }
+	local catListEnChecksButtons = { "PvE", "Immune", "ImmuneSpell", "ImmunePhysical", "CC", "Silence", "Disarm", "Root", "Snare", "Offensive", "Other" }
 	local CategoriesCheckButtons = { }
 	if v ~= "arena" then
 		local FriendlyInterrupt = CreateFrame("CheckButton", O..v.."FriendlyInterrupt", OptionsPanelFrame.container, "OptionsBaseCheckButtonTemplate")
@@ -16140,6 +16172,7 @@ for _, v in ipairs({ "player", "pet", "target", "targettarget", "focus", "focust
 		CategoryEnabledDisarmLabel:SetVertexColor(NORMAL_FONT_COLOR:GetRGB())
 		CategoryEnabledRootLabel:SetVertexColor(NORMAL_FONT_COLOR:GetRGB())
 		CategoryEnabledSnareLabel:SetVertexColor(NORMAL_FONT_COLOR:GetRGB())
+		CategoryEnabledOffensiveLabel:SetVertexColor(NORMAL_FONT_COLOR:GetRGB())
 		CategoryEnabledOtherLabel:SetVertexColor(NORMAL_FONT_COLOR:GetRGB())
 		PositionEditBoxLabel:SetVertexColor(NORMAL_FONT_COLOR:GetRGB())
 		AdditionalOptionsLabel:SetVertexColor(NORMAL_FONT_COLOR:GetRGB())
@@ -16247,6 +16280,7 @@ for _, v in ipairs({ "player", "pet", "target", "targettarget", "focus", "focust
 		CategoryEnabledDisarmLabel:SetVertexColor(GRAY_FONT_COLOR:GetRGB())
 		CategoryEnabledRootLabel:SetVertexColor(GRAY_FONT_COLOR:GetRGB())
 		CategoryEnabledSnareLabel:SetVertexColor(GRAY_FONT_COLOR:GetRGB())
+		CategoryEnabledOffensiveLabel:SetVertexColor(GRAY_FONT_COLOR:GetRGB())
 		CategoryEnabledOtherLabel:SetVertexColor(GRAY_FONT_COLOR:GetRGB())
 		PositionEditBoxLabel:SetVertexColor(GRAY_FONT_COLOR:GetRGB())
 		AdditionalOptionsLabel:SetVertexColor(GRAY_FONT_COLOR:GetRGB())
@@ -16406,7 +16440,8 @@ for _, v in ipairs({ "player", "pet", "target", "targettarget", "focus", "focust
 	CategoryEnabledDisarmLabel:SetPoint("TOPLEFT", CategoryEnabledSilenceLabel, "BOTTOMLEFT", 0, -8)
 	CategoryEnabledRootLabel:SetPoint("TOPLEFT", CategoryEnabledDisarmLabel, "BOTTOMLEFT", 0, -8)
 	CategoryEnabledSnareLabel:SetPoint("TOPLEFT", CategoryEnabledRootLabel, "BOTTOMLEFT", 0, -8)
-	CategoryEnabledOtherLabel:SetPoint("TOPLEFT", CategoryEnabledSnareLabel, "BOTTOMLEFT", 0, -8)
+	CategoryEnabledOffensiveLabel:SetPoint("TOPLEFT", CategoryEnabledSnareLabel, "BOTTOMLEFT", 0, -8)
+	CategoryEnabledOtherLabel:SetPoint("TOPLEFT", CategoryEnabledOffensiveLabel, "BOTTOMLEFT", 0, -8)
 	AdditionalOptionsLabel:SetPoint("TOPLEFT", CategoryEnabledOtherLabel, "BOTTOMLEFT", 0, -20)
 	AlphaSliderBackgroundInterrupt:SetPoint("TOPLEFT", AdditionalOptionsLabel, "BOTTOMLEFT", 20, -20)
 	InterruptBackgroundColorLabel:SetPoint("TOPLEFT", AdditionalOptionsLabel, "BOTTOMLEFT", 16, -50)
@@ -16776,7 +16811,7 @@ function SlashCmd:help()
 	print("    customspells wipe")
 	print("    customspells checkandclean")
 	print("<unit> can be: player, pet, target, focus, targettarget, focustarget, party1 ... party4, arena1 ... arena5, raid1 ... raid40, nameplate")
-	print("<category> can be: none, pve, immune, immunespell, immunephysical, cc, silence, interrupt, disarm, other, root, snare")
+	print("<category> can be: none, pve, immune, immunespell, immunephysical, cc, silence, interrupt, disarm, offensive, other, root, snare")
 end
 function SlashCmd:debug(value)
 	if value == "on" then
@@ -16903,6 +16938,8 @@ function SlashCmd:customspells(operation, spellId, category)
 				category = "Silence"
 			elseif category == "disarm" then
 				category = "Disarm"
+			elseif category == "offensive" then
+				category = "Offensive"
 			elseif category == "other" then
 				category = "Other"
 			elseif category == "root" then
@@ -17033,7 +17070,7 @@ function SlashCmd:customspells(operation, spellId, category)
 		print("    list")
 		print("    wipe")
 		print("    checkandclean")
-		print("<category> can be: none, pve, immune, immunespell, immunephysical, cc, silence, disarm, other, root, snare")
+		print("<category> can be: none, pve, immune, immunespell, immunephysical, cc, silence, disarm, offensive, other, root, snare")
 	end
 end
 

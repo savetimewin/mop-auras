@@ -374,7 +374,7 @@ do --add default spells
       DefaultSettings.profile.Spells[spellID] = {
         name = spellInfo.name,
         spellID = spellID,
-        scale = 1.6,
+        scale = 1.8,
         durationSize = 14,
         show = 5, -- 1 = always, 2 = mine, 3 = never, 4 = on ally, 5 = on enemy
         stackSize = 14,
@@ -389,7 +389,7 @@ do --add default spells
       DefaultSettings.profile.Spells[spellID] = {
         name = spellInfo.name,
         spellID = spellID,
-        scale = 1.5,
+        scale = 1.6,
         durationSize = 14,
         show = 5, -- 1 = always, 2 = mine, 3 = never, 4 = on ally, 5 = on enemy
         stackSize = 14,
@@ -434,7 +434,7 @@ do --add default spells
       DefaultSettings.profile.Spells[spellID] = {
         name = spellInfo.name,
         spellID = spellID,
-        scale = 1.5,
+        scale = 1.7,
         durationSize = 14,
         show = 5, -- 1 = always, 2 = mine, 3 = never, 4 = on ally, 5 = on enemy
         stackSize = 14,
@@ -449,7 +449,7 @@ do --add default spells
       DefaultSettings.profile.Spells[spellID] = {
         name = spellInfo.name,
         spellID = spellID,
-        scale = 1.5,
+        scale = 1.6,
         durationSize = 14,
         show = 5, -- 1 = always, 2 = mine, 3 = never, 4 = on ally, 5 = on enemy
         stackSize = 14,
@@ -494,7 +494,7 @@ do --add default spells
       DefaultSettings.profile.Spells[spellID] = {
         name = spellInfo.name,
         spellID = spellID,
-        scale = 1.4,
+        scale = 1.6,
         durationSize = 14,
         show = 5, -- 1 = always, 2 = mine, 3 = never, 4 = on ally, 5 = on enemy
         stackSize = 14,
