@@ -43,6 +43,9 @@ function Timers:Insert(unitGUID, srcGUID, category, spellID, isFriendly, isNotPe
         local timer = timers[category]
         if TimerIsFinished(timer) then
             self:Remove(unitGUID, category, true)
+            -- Remove() may free the GUID bucket when this was its last timer.
+            -- Refresh the local reference before inserting the replacement.
+            timers = activeTimers[unitGUID]
         else
             -- Timer already active, update everything
             return self:Update(unitGUID, srcGUID, category, spellID, isFriendly, isNotPetOrPlayer, true)
@@ -50,7 +53,8 @@ function Timers:Insert(unitGUID, srcGUID, category, spellID, isFriendly, isNotPe
     end
 
     if not timers then
-        activeTimers[unitGUID] = {}
+        timers = {}
+        activeTimers[unitGUID] = timers
     end
 
     local drTime = --[[isNotPetOrPlayer and 20 or]] DR_TIME
@@ -68,7 +72,7 @@ function Timers:Insert(unitGUID, srcGUID, category, spellID, isFriendly, isNotPe
     local _, englishClass = GetPlayerInfoByGUID(unitGUID)
     timer.unitClass = englishClass
 
-    activeTimers[unitGUID][category] = timer
+    timers[category] = timer
     StartTimers(timer, isApplied, nil, nil, nil, not isApplied)
 end
 
