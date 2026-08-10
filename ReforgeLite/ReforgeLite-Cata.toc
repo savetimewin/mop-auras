@@ -1,0 +1,24 @@
+## Interface: 40402
+## Author: d07.RiV (Iroared) (Continued by Brues)
+## Title: ReforgeLite Classic
+## Notes: Calculates optimal reforging for given weights/caps.
+## Version: v3.0.0
+## SavedVariables: ReforgeLiteDB
+## OptionalDeps: Pawn
+## X-Website: https://github.com/brues-code/ReforgeLite/issues
+## X-Curse-Project-ID: 1004227
+
+#@no-lib-strip@
+embeds.xml
+#@end-no-lib-strip@
+
+GUI.lua
+ReforgeLite.lua
+ReforgeEngine.lua
+BranchAndBound.lua
+Presets.lua
+ExportImport.lua
+
+Cata\root.xml
+
+locales.xml
