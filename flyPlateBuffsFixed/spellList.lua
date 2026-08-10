@@ -421,12 +421,12 @@ local major_offensive_buffs = {
 	49016, -- Unholy Frenzy
 	108288, -- Heart of the Wild
 	121471, -- Shadow Blades
-	116740, -- Tigereye Brew, could be 1247275
 	23505, -- Berserking (BG DMG BUFF)
 }
 
 -- size 1.6
 local  minor_offensive_buffs = {
+	116740, -- Tigereye Brew, could be 1247275
 	103958, -- Metamorphosis
 	82726, -- Fervor
 	16166, -- Elemental Mastery
