@@ -171,6 +171,7 @@ LCT_SpellData[123040] = {
 LCT_SpellData[6346] = {
 	class = "PRIEST",
 	defensive = true,
+	cooldown_starts_on_cast = true,
 	cooldown = 180,
 	cooldown_variants = { 120 },
 }

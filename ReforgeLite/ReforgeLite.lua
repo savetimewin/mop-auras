@@ -942,6 +942,11 @@ end
 ---@param loading? boolean Whether this is being called during initialization
 ---@return nil
 function ReforgeLite:AddCapPoint (i, loading)
+  -- Numeric edit boxes commit on focus loss. Commit before inserting a new
+  -- dynamic cap row so the focus-lost setter cannot run UpdateCapPoints()
+  -- while the new row exists but its cells are only partially initialized.
+  GUI:ClearEditFocus()
+
   local row = (loading or #self.pdb.caps[i].points + 1) + (i == 1 and 1 or #self.pdb.caps[1].points + 2)
   local point = (loading or #self.pdb.caps[i].points + 1)
   self.statCaps:AddRow (row)
@@ -1051,6 +1056,22 @@ end
 ---@param loading? boolean Whether this is being called during initialization
 ---@return nil
 function ReforgeLite:RemoveCapPoint (i, point, loading)
+  -- Save the logical point before focus loss. Committing the active edit can
+  -- reorder cap points, so find that same object again before tremove().
+  local points = self.pdb.caps[i].points
+  local targetPoint = point and points[point]
+
+  GUI:ClearEditFocus()
+
+  if targetPoint then
+    for index, capPoint in ipairs(points) do
+      if capPoint == targetPoint then
+        point = index
+        break
+      end
+    end
+  end
+
   local row = #self.pdb.caps[1].points + (i == 1 and 1 or #self.pdb.caps[2].points + 2)
   tremove (self.pdb.caps[i].points, point)
   self.statCaps:DeleteRow (row)
@@ -1367,7 +1388,12 @@ function ReforgeLite:CreateOptionList ()
   self.statCaps:OnUpdate()
   RunNextFrame(function() self:CapUpdater() end)
 
-  self.computeButton = GUI:CreatePanelButton (self.content, L["Compute"], function() self:StartCompute() end, {
+  self.computeButton = GUI:CreatePanelButton (self.content, L["Compute"], function()
+    -- Edit boxes only commit their numeric values on focus loss. Commit now so
+    -- Compute always uses exactly the weights/caps currently displayed in the UI.
+    GUI:ClearEditFocus()
+    self:StartCompute()
+  end, {
     OnCalculateFinish = function(btn)
       btn:RenderText(L["Compute"])
     end,

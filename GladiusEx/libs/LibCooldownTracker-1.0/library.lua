@@ -12,7 +12,7 @@
 		spells_data = lib:GetCooldownsData()
 ]]
 
-local version = 13
+local version = 14
 local lib = LibStub:NewLibrary("LibCooldownTracker-1.0", version)
 local IsRetail = WOW_PROJECT_ID == WOW_PROJECT_MAINLINE
 local LGIST = IsRetail and LibStub:GetLibrary("LibGroupInSpecT-1.1")
@@ -625,6 +625,16 @@ local function CooldownEvent(event, unit, spellid)
     -- TODO log error
     return
   end
+
+	-- Some cooldowns begin on the actual cast and must not be touched by their
+	-- aura lifecycle. In particular, purging/consuming Fear Ward removes only
+	-- the buff; it does not restart or otherwise change the spell cooldown.
+	if spelldata.cooldown_starts_on_cast and
+	   event ~= "UNIT_SPELLCAST_SUCCEEDED" and
+	   event ~= "SPELL_CAST_SUCCESS" then
+		return
+	end
+
 	local duration = spelldata.duration
 
 	if lib:IsUnitRegistered(unit) then
