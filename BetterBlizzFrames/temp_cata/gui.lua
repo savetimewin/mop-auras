@@ -987,6 +987,144 @@ local function CreateTooltipTwo(widget, title, mainText, subText, anchor, cvarNa
     end)
 end
 
+local function CreateToTNameScaleControl(parent, settingKey, applyFunctionName)
+    local minScale = 0.40
+    local maxScale = 1.50
+    local defaultScale = 1
+    local syncing = false
+
+    local function ClampAndRound(value)
+        value = tonumber(value) or defaultScale
+        value = math.max(minScale, math.min(maxScale, value))
+        return math.floor((value * 100) + 0.5) / 100
+    end
+
+    local function GetSavedValue()
+        if type(BetterBlizzFramesDB) ~= "table" then
+            return defaultScale
+        end
+
+        local value = ClampAndRound(BetterBlizzFramesDB[settingKey])
+        BetterBlizzFramesDB[settingKey] = value
+        return value
+    end
+
+    local function ApplyValue(value)
+        if type(BetterBlizzFramesDB) ~= "table" then return end
+
+        value = ClampAndRound(value)
+        BetterBlizzFramesDB[settingKey] = value
+
+        local applyFunc = BBF[applyFunctionName]
+        if applyFunc then
+            applyFunc()
+        end
+    end
+
+    local container = CreateFrame("Frame", nil, parent)
+    container:SetSize(120, 48)
+
+    local label = container:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+    label:SetPoint("TOP", container, "TOP", 0, 0)
+    label:SetText("ToT Name Size")
+    label:SetJustifyH("CENTER")
+    label:SetTextColor(1, 0.81, 0, 1)
+
+    local editBox = CreateFrame("EditBox", nil, container, "InputBoxTemplate")
+    editBox:SetAutoFocus(false)
+    editBox:SetSize(46, 18)
+    editBox:SetPoint("TOP", label, "BOTTOM", 0, -1)
+    editBox:SetMaxLetters(4)
+    editBox:SetFontObject(GameFontHighlightSmall)
+    editBox:SetJustifyH("CENTER")
+
+    local slider = CreateFrame("Slider", nil, container, "OptionsSliderTemplate")
+    slider:SetOrientation("HORIZONTAL")
+    slider:SetMinMaxValues(minScale, maxScale)
+    slider:SetValueStep(0.01)
+    slider:SetObeyStepOnDrag(true)
+    slider:SetSize(100, 17)
+    slider:SetPoint("TOP", editBox, "BOTTOM", 0, -1)
+    slider.Low:SetText(" ")
+    slider.High:SetText(" ")
+    slider.Text:SetText(" ")
+
+    local function UpdateEditBox(value)
+        if not editBox:HasFocus() then
+            editBox:SetText(string.format("%.2f", value))
+        end
+    end
+
+    slider:SetScript("OnValueChanged", function(_, value)
+        if syncing then return end
+
+        value = ClampAndRound(value)
+        ApplyValue(value)
+        UpdateEditBox(value)
+    end)
+
+    local function CommitEditBox()
+        local value = tonumber(editBox:GetText())
+        if not value or value < minScale or value > maxScale then
+            editBox:SetText(string.format("%.2f", GetSavedValue()))
+            editBox:HighlightText()
+            return
+        end
+
+        value = ClampAndRound(value)
+        syncing = true
+        slider:SetValue(value)
+        syncing = false
+        ApplyValue(value)
+        editBox:SetText(string.format("%.2f", value))
+        editBox:ClearFocus()
+    end
+
+    editBox:SetScript("OnEnterPressed", CommitEditBox)
+    editBox:SetScript("OnEscapePressed", function(self)
+        self:SetText(string.format("%.2f", GetSavedValue()))
+        self:ClearFocus()
+    end)
+    editBox:SetScript("OnEditFocusGained", function(self)
+        self:HighlightText()
+    end)
+    editBox:SetScript("OnEditFocusLost", function(self)
+        local value = tonumber(self:GetText())
+        if value and value >= minScale and value <= maxScale then
+            value = ClampAndRound(value)
+            syncing = true
+            slider:SetValue(value)
+            syncing = false
+            ApplyValue(value)
+            self:SetText(string.format("%.2f", value))
+        else
+            self:SetText(string.format("%.2f", GetSavedValue()))
+        end
+    end)
+
+    CreateTooltipTwo(
+        slider,
+        "ToT Name Size",
+        "Scale only the Target-of-Target name text.",
+        "1.00 = BBF's normal ToT name size. Custom sizes resize the actual font for sharp rendering. Range: 0.40 - 1.50"
+    )
+    CreateTooltipTwo(
+        editBox,
+        "ToT Name Size",
+        "Enter an exact Target-of-Target name scale.",
+        "1.00 = BBF's normal ToT name size. Custom sizes resize the actual font for sharp rendering. Range: 0.40 - 1.50"
+    )
+
+    local initialValue = GetSavedValue()
+    syncing = true
+    slider:SetValue(initialValue)
+    syncing = false
+    editBox:SetText(string.format("%.2f", initialValue))
+    ApplyValue(initialValue)
+
+    return container, slider, editBox
+end
+
 local function notWorking(element, re)
     --element:Disable()
     local hasOnClick = pcall(function() return element:GetScript("OnClick") end)
@@ -2625,7 +2763,21 @@ local function guiGeneralTab()
     ----------------------
     -- Main panel:
     ----------------------
-    local mainGuiAnchor = BetterBlizzFrames:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    local scrollFrame = CreateFrame(
+        "ScrollFrame",
+        "BBFGeneralSettingsScrollFrame",
+        BetterBlizzFrames,
+        "UIPanelScrollFrameTemplate"
+    )
+    scrollFrame:SetPoint("TOPLEFT", BetterBlizzFrames, "TOPLEFT", 0, 0)
+    scrollFrame:SetPoint("BOTTOMRIGHT", BetterBlizzFrames, "BOTTOMRIGHT", -24, 42)
+
+    local contentFrame = CreateFrame("Frame", nil, scrollFrame)
+    contentFrame:SetSize(680, 680)
+    contentFrame.name = BetterBlizzFrames.name
+    scrollFrame:SetScrollChild(contentFrame)
+
+    local mainGuiAnchor = contentFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     mainGuiAnchor:SetPoint("TOPLEFT", 15, -15)
     mainGuiAnchor:SetText(" ")
 
@@ -2688,12 +2840,12 @@ local function guiGeneralTab()
     -- General:
     ----------------------
     -- "General:" text
-    local settingsText = BetterBlizzFrames:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    local settingsText = contentFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     settingsText:SetPoint("TOPLEFT", mainGuiAnchor, "BOTTOMLEFT", 0, 30)
     settingsText:SetText(L["General_Settings"])
     settingsText:SetFont(fontLarge, 16)
     settingsText:SetTextColor(1,1,1)
-    local generalSettingsIcon = BetterBlizzFrames:CreateTexture(nil, "ARTWORK")
+    local generalSettingsIcon = contentFrame:CreateTexture(nil, "ARTWORK")
     generalSettingsIcon:SetAtlas("optionsicon-brown")
     generalSettingsIcon:SetSize(22, 22)
     generalSettingsIcon:SetPoint("RIGHT", settingsText, "LEFT", -3, -1)
@@ -2703,7 +2855,7 @@ local function guiGeneralTab()
 
 
 
-    local hideArenaFrames = CreateCheckbox("hideArenaFrames", L["Hide_Arena_Frames"], BetterBlizzFrames, nil, BBF.HideArenaFrames)
+    local hideArenaFrames = CreateCheckbox("hideArenaFrames", L["Hide_Arena_Frames"], contentFrame, nil, BBF.HideArenaFrames)
     hideArenaFrames:SetPoint("TOPLEFT", settingsText, "BOTTOMLEFT", -24, pixelsOnFirstBox)
     hideArenaFrames:HookScript("OnClick", function(self)
         if not self:GetChecked() then
@@ -2712,16 +2864,16 @@ local function guiGeneralTab()
     end)
     CreateTooltip(hideArenaFrames, L["Tooltip_Hide_Arena_Frames"])
 
-    -- local hideBossFrames = CreateCheckbox("hideBossFrames", L["Hide_Boss_Frames"], BetterBlizzFrames, nil, BBF.HideArenaFrames)
+    -- local hideBossFrames = CreateCheckbox("hideBossFrames", L["Hide_Boss_Frames"], contentFrame, nil, BBF.HideArenaFrames)
     -- hideBossFrames:SetPoint("TOPLEFT", hideArenaFrames, "BOTTOMLEFT", 0, pixelsBetweenBoxes)
     -- CreateTooltip(hideBossFrames, "Hide the Blizzard Boss Frames that are underneath the minimap.")
     -- notWorking(hideBossFrames, true)
 
-    -- local hideBossFramesParty = CreateCheckbox("hideBossFramesParty", L["Party"], BetterBlizzFrames, nil, BBF.HideArenaFrames)
+    -- local hideBossFramesParty = CreateCheckbox("hideBossFramesParty", L["Party"], contentFrame, nil, BBF.HideArenaFrames)
     -- hideBossFramesParty:SetPoint("LEFT", hideBossFrames.text, "RIGHT", 0, 0)
     -- CreateTooltip(hideBossFramesParty, "Hide Boss Frames in Party", "ANCHOR_LEFT")
 
-    -- local hideBossFramesRaid = CreateCheckbox("hideBossFramesRaid", L["Raid"], BetterBlizzFrames, nil, BBF.HideArenaFrames)
+    -- local hideBossFramesRaid = CreateCheckbox("hideBossFramesRaid", L["Raid"], contentFrame, nil, BBF.HideArenaFrames)
     -- hideBossFramesRaid:SetPoint("LEFT", hideBossFramesParty.text, "RIGHT", 0, 0)
     -- CreateTooltip(hideBossFramesRaid, "Hide Boss Frames in Raid", "ANCHOR_LEFT")
 
@@ -2755,7 +2907,7 @@ local function guiGeneralTab()
     --     hideBossFramesRaid:Disable()
     -- end
 
-    local playerFrameOCD = CreateCheckbox("playerFrameOCD", L["OCD_Tweaks"], BetterBlizzFrames, nil, BBF.FixStupidBlizzPTRShit)
+    local playerFrameOCD = CreateCheckbox("playerFrameOCD", L["OCD_Tweaks"], contentFrame, nil, BBF.FixStupidBlizzPTRShit)
     playerFrameOCD:SetPoint("TOPLEFT", hideArenaFrames, "BOTTOMLEFT", 0, pixelsBetweenBoxes)
     CreateTooltipTwo(playerFrameOCD, L["OCD_Tweaks"], L["Tooltip_OCD_Tweaks_Classic"])
     playerFrameOCD:SetScript("OnMouseDown", function(self, button)
@@ -2765,7 +2917,7 @@ local function guiGeneralTab()
         end
     end)
 
-    -- local playerFrameOCDTextureBypass = CreateCheckbox("playerFrameOCDTextureBypass", L["OCD_Skip_Bars"], BetterBlizzFrames, nil, BBF.HideFrames)
+    -- local playerFrameOCDTextureBypass = CreateCheckbox("playerFrameOCDTextureBypass", L["OCD_Skip_Bars"], contentFrame, nil, BBF.HideFrames)
     -- playerFrameOCDTextureBypass:SetPoint("LEFT", playerFrameOCD.text, "RIGHT", 0, 0)
     -- CreateTooltip(playerFrameOCDTextureBypass, "If healthbars & manabars look weird enable this to skip\nadjusting them and only fix portraits + Name Background")
     -- notWorking(playerFrameOCDTextureBypass, true)
@@ -2787,7 +2939,7 @@ local function guiGeneralTab()
     --     playerFrameOCDTextureBypass:SetAlpha(0)
     -- end
 
-    local enableLoCFrame = CreateCheckbox("enableLoCFrame", L["Enable_LossOfControl"], BetterBlizzFrames)
+    local enableLoCFrame = CreateCheckbox("enableLoCFrame", L["Enable_LossOfControl"], contentFrame)
     enableLoCFrame:SetPoint("TOPLEFT", playerFrameOCD, "BOTTOMLEFT", 0, pixelsBetweenBoxes)
     CreateTooltipTwo(enableLoCFrame, L["Tooltip_Enable_LoC_Frame_Desc"], L["Tooltip_Enable_LoC_Frame_Full_Desc"])
     enableLoCFrame:HookScript("OnClick", function(self)
@@ -2806,7 +2958,7 @@ local function guiGeneralTab()
         end
     end)
 
-    local showCooldownOnLoC = CreateCheckbox("showCooldownOnLoC", L["Show_CD"], BetterBlizzFrames)
+    local showCooldownOnLoC = CreateCheckbox("showCooldownOnLoC", L["Show_CD"], contentFrame)
     showCooldownOnLoC:SetPoint("LEFT", enableLoCFrame.text, "RIGHT", 0, 0)
     CreateTooltipTwo(showCooldownOnLoC, L["Show_CD"], L["Tooltip_Show_CD_On_LoC_Desc"])
     showCooldownOnLoC:HookScript("OnClick", function(self)
@@ -2814,25 +2966,25 @@ local function guiGeneralTab()
         BBF.ToggleLossOfControlTestMode()
     end)
 
-    local hideLossOfControlFrameBg = CreateCheckbox("hideLossOfControlFrameBg", L["Hide_CC_Background"], BetterBlizzFrames, nil, BBF.HideFrames)
+    local hideLossOfControlFrameBg = CreateCheckbox("hideLossOfControlFrameBg", L["Hide_CC_Background"], contentFrame, nil, BBF.HideFrames)
     hideLossOfControlFrameBg:SetPoint("TOPLEFT", enableLoCFrame, "BOTTOMLEFT", 0, pixelsBetweenBoxes)
     CreateTooltip(hideLossOfControlFrameBg, L["Tooltip_Hide_CC_Background"])
     hideLossOfControlFrameBg:HookScript("OnClick", function()
         BBF.ToggleLossOfControlTestMode()
     end)
 
-    local hideLossOfControlFrameLines = CreateCheckbox("hideLossOfControlFrameLines", L["Hide_CC_Red_Lines"], BetterBlizzFrames, nil, BBF.HideFrames)
+    local hideLossOfControlFrameLines = CreateCheckbox("hideLossOfControlFrameLines", L["Hide_CC_Red_Lines"], contentFrame, nil, BBF.HideFrames)
     hideLossOfControlFrameLines:SetPoint("TOPLEFT", hideLossOfControlFrameBg, "BOTTOMLEFT", 0, pixelsBetweenBoxes)
     CreateTooltip(hideLossOfControlFrameLines, L["Tooltip_Hide_CC_Red_Lines"])
     hideLossOfControlFrameLines:HookScript("OnClick", function()
         BBF.ToggleLossOfControlTestMode()
     end)
 
-    local lossOfControlScale = CreateSlider(BetterBlizzFrames, "CC Scale", 0.4, 1.4, 0.01, "lossOfControlScale", nil, 90)
+    local lossOfControlScale = CreateSlider(contentFrame, "CC Scale", 0.4, 1.4, 0.01, "lossOfControlScale", nil, 90)
     lossOfControlScale:SetPoint("LEFT", hideLossOfControlFrameBg.text, "RIGHT", 3, -16)
     CreateTooltipTwo(lossOfControlScale, L["Tooltip_LoC_Scale_Title"], L["Tooltip_LoC_Scale_Desc"])
 
-    local darkModeUi = CreateCheckbox("darkModeUi", L["Dark_Mode"], BetterBlizzFrames)
+    local darkModeUi = CreateCheckbox("darkModeUi", L["Dark_Mode"], contentFrame)
     darkModeUi:SetPoint("TOPLEFT", hideLossOfControlFrameLines, "BOTTOMLEFT", 0, pixelsBetweenBoxes)
     darkModeUi:HookScript("OnClick", function(self)
         BBF.DarkmodeFrames(true)
@@ -2910,28 +3062,28 @@ local function guiGeneralTab()
 
 
 
-    local playerFrameText = BetterBlizzFrames:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    local playerFrameText = contentFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     playerFrameText:SetPoint("TOPLEFT", mainGuiAnchor, "BOTTOMLEFT", 0, editModeIntroduced and -160 or -150)
     playerFrameText:SetText(L["Player_Frame"])
     playerFrameText:SetFont(fontLarge, 16)
     playerFrameText:SetTextColor(1,1,1)
-    local playerFrameIcon = BetterBlizzFrames:CreateTexture(nil, "ARTWORK")
+    local playerFrameIcon = contentFrame:CreateTexture(nil, "ARTWORK")
     playerFrameIcon:SetAtlas("groupfinder-icon-friend")
     playerFrameIcon:SetSize(28, 28)
     playerFrameIcon:SetPoint("RIGHT", playerFrameText, "LEFT", -0.5, 0)
 
     if not editModeIntroduced then
-        local playerFrameScale = CreateSlider(BetterBlizzFrames, "Size", 0.7, 1.4, 0.01, "playerFrameScale", nil, 120)
+        local playerFrameScale = CreateSlider(contentFrame, "Size", 0.7, 1.4, 0.01, "playerFrameScale", nil, 120)
         playerFrameScale:SetPoint("TOP", playerFrameText, "BOTTOM", -4, -13)
         CreateTooltipTwo(playerFrameScale, L["Tooltip_PlayerFrame_Size_Title"], L["Tooltip_PlayerFrame_Size_Desc"], L["Tooltip_Right_Click_For_Value"])
     end
 
-    local playerFrameClickthrough = CreateCheckbox("playerFrameClickthrough", L["Clickthrough"], BetterBlizzFrames, nil, BBF.ClickthroughFrames)
+    local playerFrameClickthrough = CreateCheckbox("playerFrameClickthrough", L["Clickthrough"], contentFrame, nil, BBF.ClickthroughFrames)
     playerFrameClickthrough:SetPoint("TOPLEFT", playerFrameText, "BOTTOMLEFT", -24, editModeIntroduced and -1 or -26)
     CreateTooltip(playerFrameClickthrough, L["Tooltip_Clickthrough"])
 
     local textures = 3
-    local playerEliteFrame = CreateCheckbox("playerEliteFrame", L["Elite_Texture"], BetterBlizzFrames)
+    local playerEliteFrame = CreateCheckbox("playerEliteFrame", L["Elite_Texture"], contentFrame)
     playerEliteFrame:SetPoint("TOPLEFT", playerFrameClickthrough, "BOTTOMLEFT", 0, pixelsBetweenBoxes)
     playerEliteFrame:HookScript("OnClick", function(self)
         BBF.PlayerElite(BetterBlizzFramesDB.playerEliteFrameMode)
@@ -2944,11 +3096,11 @@ local function guiGeneralTab()
     end)
     CreateTooltipTwo(playerEliteFrame, L["Show_Elite_Texture"], string.format(L["Tooltip_Elite_Texture_Classic_Desc"], textures))
 
-    local playerReputationColor = CreateCheckbox("playerReputationColor", L["Add_Name_Bg_Classic"], BetterBlizzFrames, nil, BBF.PlayerReputationColor)
+    local playerReputationColor = CreateCheckbox("playerReputationColor", L["Add_Name_Bg_Classic"], contentFrame, nil, BBF.PlayerReputationColor)
     playerReputationColor:SetPoint("TOPLEFT", playerEliteFrame, "BOTTOMLEFT", 0, pixelsBetweenBoxes)
     CreateTooltip(playerReputationColor, L["Tooltip_Add_Name_Bg_Classic"] .. " |A:UI-HUD-UnitFrame-Target-PortraitOn-Type:18:98|a")
 
-    local playerReputationClassColor = CreateCheckbox("playerReputationClassColor", L["Class_Color_Combo"], BetterBlizzFrames, nil, BBF.PlayerReputationColor)
+    local playerReputationClassColor = CreateCheckbox("playerReputationClassColor", L["Class_Color_Combo"], contentFrame, nil, BBF.PlayerReputationColor)
     playerReputationClassColor:SetPoint("LEFT", playerReputationColor.text, "RIGHT", 5, 0)
     CreateTooltip(playerReputationClassColor, L["Tooltip_Class_Color_Reputation"])
     playerReputationColor:HookScript("OnClick", function(self)
@@ -2965,7 +3117,7 @@ local function guiGeneralTab()
         playerReputationClassColor:Disable()
     end
 
-    local hidePlayerName = CreateCheckbox("hidePlayerName", L["Hide_Names"], BetterBlizzFrames)
+    local hidePlayerName = CreateCheckbox("hidePlayerName", L["Hide_Names"], contentFrame)
     hidePlayerName:SetPoint("TOPLEFT", playerReputationColor, "BOTTOMLEFT", 0, pixelsBetweenBoxes)
     hidePlayerName:HookScript("OnClick", function(self)
         BBF.UpdateUserTargetSettings()
@@ -2979,47 +3131,47 @@ local function guiGeneralTab()
         end
     end)
 
-    local hidePlayerRestAnimation = CreateCheckbox("hidePlayerRestAnimation", L["Hide_Zzz_Rest_Animation"], BetterBlizzFrames, nil, BBF.HideFrames)
+    local hidePlayerRestAnimation = CreateCheckbox("hidePlayerRestAnimation", L["Hide_Zzz_Rest_Animation"], contentFrame, nil, BBF.HideFrames)
     hidePlayerRestAnimation:SetPoint("TOPLEFT", hidePlayerName, "BOTTOMLEFT", 0, pixelsBetweenBoxes)
     CreateTooltip(hidePlayerRestAnimation, L["Tooltip_Hide_Zzz_Rest"])
 
-    local hidePlayerRestGlow = CreateCheckbox("hidePlayerRestGlow", L["Hide_Rest_Glow"], BetterBlizzFrames, nil, BBF.HideFrames)
+    local hidePlayerRestGlow = CreateCheckbox("hidePlayerRestGlow", L["Hide_Rest_Glow"], contentFrame, nil, BBF.HideFrames)
     hidePlayerRestGlow:SetPoint("TOPLEFT", hidePlayerRestAnimation, "BOTTOMLEFT", 0, pixelsBetweenBoxes)
     CreateTooltip(hidePlayerRestGlow, L["Tooltip_Hide_Rest_Glow"] .. " |A:UI-HUD-UnitFrame-Player-PortraitOn-Status:30:80|a")
 
-    local hideMultiGroupFrame = CreateCheckbox("hideMultiGroupFrame", L["Hide_MultiGroup_Icon"], BetterBlizzFrames, nil, BBF.HideFrames)
+    local hideMultiGroupFrame = CreateCheckbox("hideMultiGroupFrame", L["Hide_MultiGroup_Icon"], contentFrame, nil, BBF.HideFrames)
     hideMultiGroupFrame:SetPoint("TOPLEFT", hidePlayerRestGlow, "BOTTOMLEFT", 0, pixelsBetweenBoxes)
     CreateTooltip(hideMultiGroupFrame, L["Tooltip_Hide_MultiGroup_Icon_Desc"])
 
-    local hideCombatIcon = CreateCheckbox("hideCombatIcon", L["Hide_Combat_Icon"], BetterBlizzFrames, nil, BBF.HideFrames)
+    local hideCombatIcon = CreateCheckbox("hideCombatIcon", L["Hide_Combat_Icon"], contentFrame, nil, BBF.HideFrames)
     hideCombatIcon:SetPoint("TOPLEFT", hideMultiGroupFrame, "BOTTOMLEFT", 0, pixelsBetweenBoxes)
     local textureStringWithCoords = GenerateTextureString(130936, 32, 32, 0.5, 1, 0, 0.484375, 256, 256)
     CreateTooltip(hideCombatIcon, L["Tooltip_Hide_Combat_Icon"] .. textureStringWithCoords)
 
-    local hideGroupIndicator = CreateCheckbox("hideGroupIndicator", L["Hide_Group_Indicator"], BetterBlizzFrames, nil, BBF.HideFrames)
+    local hideGroupIndicator = CreateCheckbox("hideGroupIndicator", L["Hide_Group_Indicator"], contentFrame, nil, BBF.HideFrames)
     hideGroupIndicator:SetPoint("TOPLEFT", hideCombatIcon, "BOTTOMLEFT", 0, pixelsBetweenBoxes)
     CreateTooltip(hideGroupIndicator, L["Tooltip_Hide_Group_Indicator"])
 
-    local hidePlayerLeaderIcon = CreateCheckbox("hidePlayerLeaderIcon", L["Hide_Leader_Icon"], BetterBlizzFrames, nil, BBF.HideFrames)
+    local hidePlayerLeaderIcon = CreateCheckbox("hidePlayerLeaderIcon", L["Hide_Leader_Icon"], contentFrame, nil, BBF.HideFrames)
     hidePlayerLeaderIcon:SetPoint("TOPLEFT", hideGroupIndicator, "BOTTOMLEFT", 0, pixelsBetweenBoxes)
     local leaderIcon = GenerateTextureString(132062, 32, 32)
     CreateTooltip(hidePlayerLeaderIcon, L["Tooltip_Hide_Leader_Icon"]..leaderIcon)
 
-    -- local hidePlayerGuideIcon = CreateCheckbox("hidePlayerGuideIcon", L["Hide_Guide_Icon"], BetterBlizzFrames, nil, BBF.HideFrames)
+    -- local hidePlayerGuideIcon = CreateCheckbox("hidePlayerGuideIcon", L["Hide_Guide_Icon"], contentFrame, nil, BBF.HideFrames)
     -- hidePlayerGuideIcon:SetPoint("LEFT", hidePlayerLeaderIcon.text, "RIGHT", 0, 0)
     -- CreateTooltip(hidePlayerGuideIcon, "Hide the guide icon from PlayerFrame.|A:UI-HUD-UnitFrame-Player-Group-GuideIcon:22:22|a")
     -- notWorking(hidePlayerGuideIcon, true)
 
-    local hidePlayerRoleIcon = CreateCheckbox("hidePlayerRoleIcon", L["Hide_Role_Icon"], BetterBlizzFrames, nil, BBF.HideFrames)
+    local hidePlayerRoleIcon = CreateCheckbox("hidePlayerRoleIcon", L["Hide_Role_Icon"], contentFrame, nil, BBF.HideFrames)
     hidePlayerRoleIcon:SetPoint("TOPLEFT", hidePlayerLeaderIcon, "BOTTOMLEFT", 0, pixelsBetweenBoxes)
     CreateTooltip(hidePlayerRoleIcon, L["Tooltip_Hide_Role_Icon"] .. " |A:roleicon-tiny-dps:22:22|a")
     notWorking(hidePlayerRoleIcon, true)
 
-    local hidePvpTimerText = CreateCheckbox("hidePvpTimerText", L["Hide_PvP_Timer"], BetterBlizzFrames, nil, BBF.HideFrames)
+    local hidePvpTimerText = CreateCheckbox("hidePvpTimerText", L["Hide_PvP_Timer"], contentFrame, nil, BBF.HideFrames)
     hidePvpTimerText:SetPoint("TOPLEFT", hidePlayerRoleIcon, "BOTTOMLEFT", 0, pixelsBetweenBoxes)
     CreateTooltip(hidePvpTimerText, L["Tooltip_Hide_PvP_Timer_Desc"])
 
-    local hidePlayerPower = CreateCheckbox("hidePlayerPower", L["Hide_Resource_Power"], BetterBlizzFrames, nil, BBF.HideFrames)
+    local hidePlayerPower = CreateCheckbox("hidePlayerPower", L["Hide_Resource_Power"], contentFrame, nil, BBF.HideFrames)
     hidePlayerPower:SetPoint("TOPLEFT", hidePvpTimerText, "BOTTOMLEFT", 0, pixelsBetweenBoxes)
     CreateTooltipTwo(hidePlayerPower, L["Hide_Resource_Power"], L["Tooltip_Hide_Resource_Power_Desc"])
 
@@ -3101,63 +3253,63 @@ local function guiGeneralTab()
 
 
 
-    local petFrameText = BetterBlizzFrames:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    petFrameText:SetPoint("TOPLEFT", mainGuiAnchor, "BOTTOMLEFT", 460, -455)
+    local petFrameText = contentFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    petFrameText:SetPoint("TOPLEFT", mainGuiAnchor, "BOTTOMLEFT", 460, -503)
     petFrameText:SetText(L["Pet_Frame"])
     petFrameText:SetFont(fontLarge, 16)
     petFrameText:SetTextColor(1,1,1)
-    local petFrameIcon = BetterBlizzFrames:CreateTexture(nil, "ARTWORK")
+    local petFrameIcon = contentFrame:CreateTexture(nil, "ARTWORK")
     petFrameIcon:SetAtlas("newplayerchat-chaticon-newcomer")
     petFrameIcon:SetSize(21, 21)
     petFrameIcon:SetPoint("RIGHT", petFrameText, "LEFT", -2, 0)
 
-    local hidePetFrame = CreateCheckbox("hidePetFrame", L["Hide_Pet_Frame"], BetterBlizzFrames, nil, BBF.HideFrames)
+    local hidePetFrame = CreateCheckbox("hidePetFrame", L["Hide_Pet_Frame"], contentFrame, nil, BBF.HideFrames)
     hidePetFrame:SetPoint("TOPLEFT", petFrameText, "BOTTOMLEFT", -24, pixelsOnFirstBox)
     CreateTooltipTwo(hidePetFrame, L["Hide_Pet_Frame"], L["Tooltip_Hide_Pet_Frame_Desc"])
 
-    local petCastbar = CreateCheckbox("petCastbar", L["Pet_Castbar"], BetterBlizzFrames, nil, BBF.UpdatePetCastbar)
+    local petCastbar = CreateCheckbox("petCastbar", L["Pet_Castbar"], contentFrame, nil, BBF.UpdatePetCastbar)
     petCastbar:SetPoint("TOPLEFT", hidePetFrame, "BOTTOMLEFT", 0, pixelsBetweenBoxes)
     CreateTooltip(petCastbar, L["Tooltip_Pet_Castbar"])
 
-    local hidePetName = CreateCheckbox("hidePetName", L["Hide_Pet_Name"], BetterBlizzFrames)
+    local hidePetName = CreateCheckbox("hidePetName", L["Hide_Pet_Name"], contentFrame)
     hidePetName:SetPoint("TOPLEFT", petCastbar, "BOTTOMLEFT", 0, pixelsBetweenBoxes)
     hidePetName:HookScript("OnClick", function (self)
         BBF.AllNameChanges()
     end)
     CreateTooltipTwo(hidePetName, L["Hide_Pet_Name"], L["Tooltip_Hide_Pet_Name_Desc"])
 
-    local colorPetAfterOwner = CreateCheckbox("colorPetAfterOwner", L["Color_Pet_After_Player_Class"], BetterBlizzFrames)
+    local colorPetAfterOwner = CreateCheckbox("colorPetAfterOwner", L["Color_Pet_After_Player_Class"], contentFrame)
     colorPetAfterOwner:SetPoint("TOPLEFT", hidePetName, "BOTTOMLEFT", 0, pixelsBetweenBoxes)
     colorPetAfterOwner:HookScript("OnClick", function (self)
         BBF.UpdateFrames()
     end)
 
-    local hidePetText = CreateCheckbox("hidePetText", L["Hide_Pet_Statusbar_Text"], BetterBlizzFrames, nil, BBF.HideFrames)
+    local hidePetText = CreateCheckbox("hidePetText", L["Hide_Pet_Statusbar_Text"], contentFrame, nil, BBF.HideFrames)
     hidePetText:SetPoint("TOPLEFT", colorPetAfterOwner, "BOTTOMLEFT", 0, pixelsBetweenBoxes)
     CreateTooltipTwo(hidePetText, L["Hide_Pet_Statusbar_Text"], L["Tooltip_Hide_Pet_Statusbar_Text_Desc"])
 
-    local partyFrameText = BetterBlizzFrames:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    local partyFrameText = contentFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     partyFrameText:SetPoint("TOPLEFT", mainGuiAnchor, "BOTTOMLEFT", 0, -410)
     partyFrameText:SetText(L["Party_Frame"])
     partyFrameText:SetFont(fontLarge, 16)
     partyFrameText:SetTextColor(1,1,1)
-    local partyFrameIcon = BetterBlizzFrames:CreateTexture(nil, "ARTWORK")
+    local partyFrameIcon = contentFrame:CreateTexture(nil, "ARTWORK")
     partyFrameIcon:SetAtlas("groupfinder-icon-friend")
     partyFrameIcon:SetSize(25, 25)
     partyFrameIcon:SetPoint("RIGHT", partyFrameText, "LEFT", -4, -1)
-    local partyFrameIcon2 = BetterBlizzFrames:CreateTexture(nil, "BORDER")
+    local partyFrameIcon2 = contentFrame:CreateTexture(nil, "BORDER")
     partyFrameIcon2:SetAtlas("groupfinder-icon-friend")
     partyFrameIcon2:SetSize(20, 20)
     partyFrameIcon2:SetPoint("RIGHT", partyFrameText, "LEFT", 0, 4)
 
-    local showPartyCastbar = CreateCheckbox("showPartyCastbar", L["Party_Castbars"], BetterBlizzFrames, nil, BBF.UpdateCastbars)
+    local showPartyCastbar = CreateCheckbox("showPartyCastbar", L["Party_Castbars"], contentFrame, nil, BBF.UpdateCastbars)
     showPartyCastbar:SetPoint("TOPLEFT", partyFrameText, "BOTTOMLEFT", -24, pixelsOnFirstBox)
     showPartyCastbar:HookScript("OnClick", function(self)
         --BBF.AbsorbCaller()
     end)
     CreateTooltip(showPartyCastbar, L["Tooltip_Party_Castbars_Desc"])
 
-    local betterDefaultPartyFrames = CreateCheckbox("betterDefaultPartyFrames", L["Larger_Frames"], BetterBlizzFrames, nil, BBF.BiggerDefaultPartyFrames)
+    local betterDefaultPartyFrames = CreateCheckbox("betterDefaultPartyFrames", L["Larger_Frames"], contentFrame, nil, BBF.BiggerDefaultPartyFrames)
     betterDefaultPartyFrames:SetPoint("LEFT", showPartyCastbar.text, "RIGHT", 0, 0)
     CreateTooltipTwo(betterDefaultPartyFrames, L["Larger_Frames"], L["Tooltip_Better_Frames_Desc"])
     betterDefaultPartyFrames:HookScript("OnClick", function(self)
@@ -3167,14 +3319,14 @@ local function guiGeneralTab()
     end)
 
 --[=[
-    local sortGroup = CreateCheckbox("sortGroup", L["Sort_Group"], BetterBlizzFrames, nil, BBF.SortGroup)
+    local sortGroup = CreateCheckbox("sortGroup", L["Sort_Group"], contentFrame, nil, BBF.SortGroup)
     sortGroup:SetPoint("TOPLEFT", showPartyCastbar, "BOTTOMLEFT", 0, pixelsBetweenBoxes)
     CreateTooltip(sortGroup, L["Tooltip_Sort_Group"])
 
-    local sortGroupPlayerTop = CreateCheckbox("sortGroupPlayerTop", L["Player_On_Top"], BetterBlizzFrames, nil, BBF.SortGroup)
+    local sortGroupPlayerTop = CreateCheckbox("sortGroupPlayerTop", L["Player_On_Top"], contentFrame, nil, BBF.SortGroup)
     sortGroupPlayerTop:SetPoint("LEFT", sortGroup.text, "RIGHT", 0, 0)
 
-    local sortGroupPlayerBottom = CreateCheckbox("sortGroupPlayerBottom", L["Player_On_Bottom"], BetterBlizzFrames, nil, BBF.SortGroup)
+    local sortGroupPlayerBottom = CreateCheckbox("sortGroupPlayerBottom", L["Player_On_Bottom"], contentFrame, nil, BBF.SortGroup)
     sortGroupPlayerBottom:SetPoint("LEFT", sortGroupPlayerTop.text, "RIGHT", 0, 0)
 
     sortGroupPlayerTop:HookScript("OnClick", function(self)
@@ -3212,22 +3364,22 @@ local function guiGeneralTab()
 ]=]
 
 
-    local hidePartyFramesInArena = CreateCheckbox("hidePartyFramesInArena", L["Hide_Party_in_Arena_GEX"], BetterBlizzFrames, nil, BBF.HidePartyInArena)
+    local hidePartyFramesInArena = CreateCheckbox("hidePartyFramesInArena", L["Hide_Party_in_Arena_GEX"], contentFrame, nil, BBF.HidePartyInArena)
     hidePartyFramesInArena:SetPoint("TOPLEFT", showPartyCastbar, "BOTTOMLEFT", 0, pixelsBetweenBoxes)
     CreateTooltip(hidePartyFramesInArena, L["Tooltip_Hide_Party_in_Arena_GEX"]) 
     notWorking(hidePartyFramesInArena, true)
 
-    local hidePartyNames = CreateCheckbox("hidePartyNames", L["Hide_Names"], BetterBlizzFrames)
+    local hidePartyNames = CreateCheckbox("hidePartyNames", L["Hide_Names"], contentFrame)
     hidePartyNames:SetPoint("TOPLEFT", hidePartyFramesInArena, "BOTTOMLEFT", 0, pixelsBetweenBoxes)
     hidePartyNames:HookScript("OnClick", function(self)
         BBF.AllNameChanges()
     end)
 
-    local hidePartyAggroHighlight = CreateCheckbox("hidePartyAggroHighlight", L["Hide_Aggro_Highlight"], BetterBlizzFrames, nil, BBF.HideFrames)
+    local hidePartyAggroHighlight = CreateCheckbox("hidePartyAggroHighlight", L["Hide_Aggro_Highlight"], contentFrame, nil, BBF.HideFrames)
     hidePartyAggroHighlight:SetPoint("LEFT", hidePartyNames.text, "RIGHT", 0, 0)
     CreateTooltip(hidePartyAggroHighlight, L["Tooltip_Hide_Party_Aggro_Highlight"])
 
-    local hidePartyRoles = CreateCheckbox("hidePartyRoles", L["Hide_Role_Icons"], BetterBlizzFrames)
+    local hidePartyRoles = CreateCheckbox("hidePartyRoles", L["Hide_Role_Icons"], contentFrame)
     hidePartyRoles:SetPoint("TOPLEFT", hidePartyNames, "BOTTOMLEFT", 0, pixelsBetweenBoxes)
     hidePartyRoles:HookScript("OnClick", function(self)
         BBF.UpdateUserTargetSettings()
@@ -3257,20 +3409,20 @@ local function guiGeneralTab()
     end)
     CreateTooltip(hidePartyRoles, L["Tooltip_Hide_Role_Icons_Desc"])
 
-    local hidePartyFrameTitle = CreateCheckbox("hidePartyFrameTitle", L["Hide_CompactPartyFrame_Title"], BetterBlizzFrames, nil, BBF.HideFrames)
+    local hidePartyFrameTitle = CreateCheckbox("hidePartyFrameTitle", L["Hide_CompactPartyFrame_Title"], contentFrame, nil, BBF.HideFrames)
     hidePartyFrameTitle:SetPoint("TOPLEFT", hidePartyRoles, "BOTTOMLEFT", 0, pixelsBetweenBoxes)
     CreateTooltip(hidePartyFrameTitle, L["Tooltip_Hide_CompactPartyFrame_Title"])
 
-    local hideRaidFrameManager = CreateCheckbox("hideRaidFrameManager", L["Hide_RaidFrameManager"], BetterBlizzFrames, nil, BBF.HideFrames)
+    local hideRaidFrameManager = CreateCheckbox("hideRaidFrameManager", L["Hide_RaidFrameManager"], contentFrame, nil, BBF.HideFrames)
     hideRaidFrameManager:SetPoint("TOPLEFT", hidePartyFrameTitle, "BOTTOMLEFT", 0, pixelsBetweenBoxes)
     CreateTooltip(hideRaidFrameManager, L["Tooltip_Hide_RaidFrameManager"])
 
-    local hideRaidFrameContainerBorder = CreateCheckbox("hideRaidFrameContainerBorder", L["Hide_Container_Border"], BetterBlizzFrames, nil, BBF.HideFrames)
+    local hideRaidFrameContainerBorder = CreateCheckbox("hideRaidFrameContainerBorder", L["Hide_Container_Border"], contentFrame, nil, BBF.HideFrames)
     hideRaidFrameContainerBorder:SetPoint("TOPLEFT", hideRaidFrameManager, "BOTTOMLEFT", 0, pixelsBetweenBoxes)
     CreateTooltipTwo(hideRaidFrameContainerBorder, L["Hide_CompactRaidFrame_Container_Border"], L["Tooltip_Hide_Container_Border_Desc"])
 
     if BBF.isMoP or BBF.isTBC or BBF.isEra then
-        local changePartyFrameRangeAlpha = CreateCheckbox("changePartyFrameRangeAlpha", "", BetterBlizzFrames)
+        local changePartyFrameRangeAlpha = CreateCheckbox("changePartyFrameRangeAlpha", "", contentFrame)
 
         local partyFrameRangeAlpha = CreateSlider(changePartyFrameRangeAlpha, L["Party_Frame_Range_Alpha"], 0, 1, 0.01, "partyFrameRangeAlpha", nil, 120)
         partyFrameRangeAlpha:SetPoint("TOP", hideRaidFrameContainerBorder, "BOTTOM", 73, -10)
@@ -3301,12 +3453,12 @@ local function guiGeneralTab()
 
 
 
-    local targetFrameText = BetterBlizzFrames:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    local targetFrameText = contentFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     targetFrameText:SetPoint("TOPLEFT", mainGuiAnchor, "BOTTOMLEFT", 250, editModeIntroduced and -175 or -160)
     targetFrameText:SetText(L["Target_Frame"])
     targetFrameText:SetFont(fontLarge, 16)
     targetFrameText:SetTextColor(1,1,1)
-    local targetFrameIcon = BetterBlizzFrames:CreateTexture(nil, "ARTWORK")
+    local targetFrameIcon = contentFrame:CreateTexture(nil, "ARTWORK")
     targetFrameIcon:SetAtlas("groupfinder-icon-friend")
     targetFrameIcon:SetSize(28, 28)
     targetFrameIcon:SetPoint("RIGHT", targetFrameText, "LEFT", -0.5, 0)
@@ -3314,16 +3466,16 @@ local function guiGeneralTab()
     targetFrameIcon:SetVertexColor(1, 0, 0)
 
     if not editModeIntroduced then
-        local targetFrameScale = CreateSlider(BetterBlizzFrames, "Size", 0.7, 1.4, 0.01, "targetFrameScale", nil, 120)
+        local targetFrameScale = CreateSlider(contentFrame, "Size", 0.7, 1.4, 0.01, "targetFrameScale", nil, 120)
         targetFrameScale:SetPoint("TOP", targetFrameText, "BOTTOM", -4, -13)
         CreateTooltipTwo(targetFrameScale, L["Tooltip_TargetFrame_Size_Title"], L["Tooltip_TargetFrame_Size_Desc"], L["Tooltip_Right_Click_For_Value"])
     end
 
-    local targetFrameClickthrough = CreateCheckbox("targetFrameClickthrough", L["Clickthrough"], BetterBlizzFrames, nil, BBF.ClickthroughFrames)
+    local targetFrameClickthrough = CreateCheckbox("targetFrameClickthrough", L["Clickthrough"], contentFrame, nil, BBF.ClickthroughFrames)
     targetFrameClickthrough:SetPoint("TOPLEFT", targetFrameText, "BOTTOMLEFT", -24, editModeIntroduced and -1 or -26)
     CreateTooltip(targetFrameClickthrough, L["Tooltip_Target_Clickthrough"])
 
-    local hideTargetName = CreateCheckbox("hideTargetName", L["Hide_Names"], BetterBlizzFrames, nil, BBF.UpdateNameSettings)
+    local hideTargetName = CreateCheckbox("hideTargetName", L["Hide_Names"], contentFrame, nil, BBF.UpdateNameSettings)
     hideTargetName:SetPoint("TOPLEFT", targetFrameClickthrough, "BOTTOMLEFT", 0, pixelsBetweenBoxes)
     CreateTooltip(hideTargetName, L["Tooltip_Hide_Target_Name"])
     hideTargetName:HookScript("OnClick", function(self)
@@ -3339,11 +3491,11 @@ local function guiGeneralTab()
     end)
 
 
-    local hideTargetLeaderIcon = CreateCheckbox("hideTargetLeaderIcon", L["Hide_Leader_Icon"], BetterBlizzFrames, nil, BBF.HideFrames)
+    local hideTargetLeaderIcon = CreateCheckbox("hideTargetLeaderIcon", L["Hide_Leader_Icon"], contentFrame, nil, BBF.HideFrames)
     hideTargetLeaderIcon:SetPoint("TOPLEFT", hideTargetName, "BOTTOMLEFT", 0, pixelsBetweenBoxes)
     CreateTooltip(hideTargetLeaderIcon, L["Tooltip_Hide_Target_Leader_Icon"] .. " |A:UI-HUD-UnitFrame-Player-Group-LeaderIcon:22:22|a")
 
-    local classColorTargetReputationTexture = CreateCheckbox("classColorTargetReputationTexture", L["Reputation_Class_Color"], BetterBlizzFrames)
+    local classColorTargetReputationTexture = CreateCheckbox("classColorTargetReputationTexture", L["Reputation_Class_Color"], contentFrame)
     classColorTargetReputationTexture:SetPoint("TOPLEFT", hideTargetLeaderIcon, "BOTTOMLEFT", 0, pixelsBetweenBoxes)
     CreateTooltipTwo(classColorTargetReputationTexture, L["Tooltip_Class_Color_Name_Bg_Desc"] .. " |A:UI-HUD-UnitFrame-Target-PortraitOn-Type:18:98|a", L["Tooltip_Class_Color_Target_Name_Bg_Desc"])
     classColorTargetReputationTexture:HookScript("OnClick", function(self)
@@ -3354,7 +3506,7 @@ local function guiGeneralTab()
         end
     end)
 
-    local hideTargetReputationColor = CreateCheckbox("hideTargetReputationColor", L["Hide_Reputation_Color"], BetterBlizzFrames, nil, BBF.HideFrames)
+    local hideTargetReputationColor = CreateCheckbox("hideTargetReputationColor", L["Hide_Reputation_Color"], contentFrame, nil, BBF.HideFrames)
     hideTargetReputationColor:SetPoint("TOPLEFT", classColorTargetReputationTexture, "BOTTOMLEFT", 0, pixelsBetweenBoxes)
     CreateTooltip(hideTargetReputationColor, L["Tooltip_Hide_Target_Reputation_Color"] .. " |A:UI-HUD-UnitFrame-Target-PortraitOn-Type:18:98|a")
 
@@ -3363,26 +3515,26 @@ local function guiGeneralTab()
 
 
 
-    local targetToTFrameText = BetterBlizzFrames:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    local targetToTFrameText = contentFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     targetToTFrameText:SetPoint("TOPLEFT", mainGuiAnchor, "BOTTOMLEFT", 250, -295)
     targetToTFrameText:SetText(L["Target_of_Target"])
     targetToTFrameText:SetFont(fontLarge, 16)
     targetToTFrameText:SetTextColor(1,1,1)
-    local targetToTFrameIcon = BetterBlizzFrames:CreateTexture(nil, "BORDER")
+    local targetToTFrameIcon = contentFrame:CreateTexture(nil, "BORDER")
     targetToTFrameIcon:SetAtlas("groupfinder-icon-friend")
     targetToTFrameIcon:SetSize(28, 28)
     targetToTFrameIcon:SetPoint("RIGHT", targetToTFrameText, "LEFT", -0.5, 0)
     targetToTFrameIcon:SetDesaturated(1)
     targetToTFrameIcon:SetVertexColor(1, 0, 0)
-    local targetToTFrameIcon2 = BetterBlizzFrames:CreateTexture(nil, "ARTWORK")
+    local targetToTFrameIcon2 = contentFrame:CreateTexture(nil, "ARTWORK")
     targetToTFrameIcon2:SetAtlas("TargetCrosshairs")
     targetToTFrameIcon2:SetSize(28, 28)
     targetToTFrameIcon2:SetPoint("TOPLEFT", targetToTFrameIcon, "TOPLEFT", 13.5, -13)
 
-    local hideTargetToT = CreateCheckbox("hideTargetToT", L["Hide_Frame"], BetterBlizzFrames, nil, BBF.HideFrames)
+    local hideTargetToT = CreateCheckbox("hideTargetToT", L["Hide_Frame"], contentFrame, nil, BBF.HideFrames)
     hideTargetToT:SetPoint("TOPLEFT", targetToTFrameText, "BOTTOMLEFT", -24, pixelsOnFirstBox)
 
-    local hideTargetToTName = CreateCheckbox("hideTargetToTName", L["Hide_Names"], BetterBlizzFrames)
+    local hideTargetToTName = CreateCheckbox("hideTargetToTName", L["Hide_Names"], contentFrame)
     hideTargetToTName:SetPoint("LEFT", hideTargetToT.Text, "RIGHT", 0, 0)
     hideTargetToTName:HookScript("OnClick", function(self)
         if self:GetChecked() then
@@ -3393,89 +3545,104 @@ local function guiGeneralTab()
         end
     end)
 
-    local hideTargetToTDebuffs = CreateCheckbox("hideTargetToTDebuffs", L["Hide_ToT_Debuffs"], BetterBlizzFrames, nil, BBF.HideFrames)
+    local hideTargetToTDebuffs = CreateCheckbox("hideTargetToTDebuffs", L["Hide_ToT_Debuffs"], contentFrame, nil, BBF.HideFrames)
     hideTargetToTDebuffs:SetPoint("TOPLEFT", hideTargetToT, "BOTTOMLEFT", 0, pixelsBetweenBoxes)
     CreateTooltip(hideTargetToTDebuffs, L["Tooltip_Hide_ToT_Debuffs"])
 
-    local targetToTScale = CreateSlider(BetterBlizzFrames, "Size", 0.6, 2.5, 0.01, "targetToTScale", nil, 120)
+    local targetToTScale = CreateSlider(contentFrame, "Size", 0.6, 2.5, 0.01, "targetToTScale", nil, 120)
     targetToTScale:SetPoint("TOPLEFT", targetToTFrameText, "BOTTOMLEFT", -20, -55)
     CreateTooltip(targetToTScale, L["Tooltip_ToT_Scale"])
 
-    BBF.targetToTXPos = CreateSlider(BetterBlizzFrames, "x offset", -100, 100, 1, "targetToTXPos", "X", 120)
+    BBF.targetToTXPos = CreateSlider(contentFrame, "x offset", -100, 100, 1, "targetToTXPos", "X", 120)
     BBF.targetToTXPos:SetPoint("TOP", targetToTScale, "BOTTOM", 0, -15)
     CreateTooltip(BBF.targetToTXPos, L["Tooltip_ToT_X_Offset"])
 
-    BBF.targetToTYPos = CreateSlider(BetterBlizzFrames, "y offset", -100, 100, 1, "targetToTYPos", "Y", 120)
+    BBF.targetToTYPos = CreateSlider(contentFrame, "y offset", -100, 100, 1, "targetToTYPos", "Y", 120)
     BBF.targetToTYPos:SetPoint("TOP", BBF.targetToTXPos, "BOTTOM", 0, -15)
     CreateTooltip(BBF.targetToTYPos, L["Tooltip_ToT_Y_Offset"])
 
+    BBF.targetToTNameScaleControl,
+    BBF.targetToTNameScaleSlider,
+    BBF.targetToTNameScaleEditBox = CreateToTNameScaleControl(
+        contentFrame,
+        "targetToTNameScale",
+        "ApplyTargetToTNameScale"
+    )
+    BBF.targetToTNameScaleControl:SetPoint(
+        "TOP",
+        BBF.targetToTYPos,
+        "BOTTOM",
+        0,
+        -2
+    )
 
 
 
-    local chatFrameText = BetterBlizzFrames:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    chatFrameText:SetPoint("TOPLEFT", mainGuiAnchor, "BOTTOMLEFT", 250, -455)
+
+    local chatFrameText = contentFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    chatFrameText:SetPoint("TOPLEFT", mainGuiAnchor, "BOTTOMLEFT", 250, -503)
     chatFrameText:SetText(L["Chat_Frame"])
     chatFrameText:SetFont(fontLarge, 16)
     chatFrameText:SetTextColor(1,1,1)
-    local chatFrameIcon = BetterBlizzFrames:CreateTexture(nil, "BORDER")
+    local chatFrameIcon = contentFrame:CreateTexture(nil, "BORDER")
     chatFrameIcon:SetAtlas("transmog-icon-chat")
     chatFrameIcon:SetSize(18, 16)
     chatFrameIcon:SetPoint("RIGHT", chatFrameText, "LEFT", -4, 0)
 
-    local hideChatButtons = CreateCheckbox("hideChatButtons", L["Hide_Chat_Buttons"], BetterBlizzFrames, nil, BBF.HideFrames)
+    local hideChatButtons = CreateCheckbox("hideChatButtons", L["Hide_Chat_Buttons"], contentFrame, nil, BBF.HideFrames)
     hideChatButtons:SetPoint("TOPLEFT", chatFrameText, "BOTTOMLEFT", -24, pixelsOnFirstBox)
     CreateTooltip(hideChatButtons, L["Tooltip_Hide_Chat_Buttons"])
 
-    local chatFrameFilters = BetterBlizzFrames:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-    chatFrameFilters:SetPoint("TOPLEFT", mainGuiAnchor, "BOTTOMLEFT", 232, -495)
+    local chatFrameFilters = contentFrame:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+    chatFrameFilters:SetPoint("TOPLEFT", mainGuiAnchor, "BOTTOMLEFT", 232, -543)
     chatFrameFilters:SetText(L["Filters"])
     chatFrameFilters:SetFont(fontLarge, 12)
     chatFrameFilters:SetTextColor(1,1,1)
 
-    local filterGladiusSpam = CreateCheckbox("filterGladiusSpam", L["Gladius_Spam"], BetterBlizzFrames, nil, BBF.ChatFilterCaller)
+    local filterGladiusSpam = CreateCheckbox("filterGladiusSpam", L["Gladius_Spam"], contentFrame, nil, BBF.ChatFilterCaller)
     filterGladiusSpam:SetPoint("TOPLEFT", hideChatButtons, "BOTTOMLEFT", 0, -10)
     CreateTooltip(filterGladiusSpam, L["Tooltip_Filter_Gladius_Spam"])
 
-    local filterNpcArenaSpam = CreateCheckbox("filterNpcArenaSpam", L["Arena_Npc_Talk"], BetterBlizzFrames, nil, BBF.ChatFilterCaller)
+    local filterNpcArenaSpam = CreateCheckbox("filterNpcArenaSpam", L["Arena_Npc_Talk"], contentFrame, nil, BBF.ChatFilterCaller)
     filterNpcArenaSpam:SetPoint("LEFT", filterGladiusSpam.text, "RIGHT", 0, 0)
     CreateTooltip(filterNpcArenaSpam, L["Tooltip_Filter_Arena_Npc_Talk"])
 
-    local filterTalentSpam = CreateCheckbox("filterTalentSpam", L["Talent_Spam"], BetterBlizzFrames, nil, BBF.ChatFilterCaller)
+    local filterTalentSpam = CreateCheckbox("filterTalentSpam", L["Talent_Spam"], contentFrame, nil, BBF.ChatFilterCaller)
     filterTalentSpam:SetPoint("TOPLEFT", filterGladiusSpam, "BOTTOMLEFT", 0, pixelsBetweenBoxes)
     CreateTooltip(filterTalentSpam, L["Tooltip_Filter_Talent_Spam"])
 
-    local filterEmoteSpam = CreateCheckbox("filterEmoteSpam", L["Emote_Spam"], BetterBlizzFrames, nil, BBF.ChatFilterCaller)
+    local filterEmoteSpam = CreateCheckbox("filterEmoteSpam", L["Emote_Spam"], contentFrame, nil, BBF.ChatFilterCaller)
     filterEmoteSpam:SetPoint("TOPLEFT", filterTalentSpam, "BOTTOMLEFT", 0, pixelsBetweenBoxes)
     CreateTooltip(filterEmoteSpam, L["Tooltip_Filter_Emote_Spam"])
 
-    local filterSystemMessages = CreateCheckbox("filterSystemMessages", L["System_Messages"], BetterBlizzFrames, nil, BBF.ChatFilterCaller)
+    local filterSystemMessages = CreateCheckbox("filterSystemMessages", L["System_Messages"], contentFrame, nil, BBF.ChatFilterCaller)
     filterSystemMessages:SetPoint("TOPLEFT", filterNpcArenaSpam, "BOTTOMLEFT", 0, pixelsBetweenBoxes)
     CreateTooltip(filterSystemMessages, L["Tooltip_Filter_System_Messages"])
 
-    local filterMiscInfo = CreateCheckbox("filterMiscInfo", L["Misc_Info"], BetterBlizzFrames, nil, BBF.ChatFilterCaller)
+    local filterMiscInfo = CreateCheckbox("filterMiscInfo", L["Misc_Info"], contentFrame, nil, BBF.ChatFilterCaller)
     filterMiscInfo:SetPoint("TOPLEFT", filterSystemMessages, "BOTTOMLEFT", 0, pixelsBetweenBoxes)
     CreateTooltip(filterMiscInfo, L["Tooltip_Filter_Misc_Info"])
 
-    local arenaNamesText = BetterBlizzFrames:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    local arenaNamesText = contentFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     arenaNamesText:SetPoint("TOPLEFT", mainGuiAnchor, "BOTTOMLEFT", 460, -80)
     arenaNamesText:SetText(L["Arena_Names"])
     arenaNamesText:SetFont(fontLarge, 16)
     arenaNamesText:SetTextColor(1,1,1)
     CreateTooltip(arenaNamesText, L["Change_player_names_into_spec"], "ANCHOR_LEFT")
-    local arenaNamesIcon = BetterBlizzFrames:CreateTexture(nil, "ARTWORK")
+    local arenaNamesIcon = contentFrame:CreateTexture(nil, "ARTWORK")
     arenaNamesIcon:SetAtlas("questbonusobjective")
     arenaNamesIcon:SetSize(24, 24)
     arenaNamesIcon:SetPoint("RIGHT", arenaNamesText, "LEFT", -3, 0)
 
-    local targetAndFocusArenaNames = CreateCheckbox("targetAndFocusArenaNames", L["Target_And_Focus_Arena_Names"], BetterBlizzFrames)
+    local targetAndFocusArenaNames = CreateCheckbox("targetAndFocusArenaNames", L["Target_And_Focus_Arena_Names"], contentFrame)
     targetAndFocusArenaNames:SetPoint("TOPLEFT", arenaNamesText, "BOTTOMLEFT", -24, pixelsOnFirstBox)
     CreateTooltipTwo(targetAndFocusArenaNames, L["Arena_Names"], L["Tooltip_Target_Focus_Arena_Names_Desc"], nil, "ANCHOR_LEFT")
 
-    local partyArenaNames = CreateCheckbox("partyArenaNames", L["Party"], BetterBlizzFrames)
+    local partyArenaNames = CreateCheckbox("partyArenaNames", L["Party"], contentFrame)
     partyArenaNames:SetPoint("LEFT", targetAndFocusArenaNames.text, "RIGHT", 0, 0)
     CreateTooltipTwo(partyArenaNames, L["Arena_Names"], L["Tooltip_Party_Arena_Names_Desc"], nil, "ANCHOR_LEFT")
 
-    local showSpecName = CreateCheckbox("showSpecName", L["Show_Spec_Name"], BetterBlizzFrames)
+    local showSpecName = CreateCheckbox("showSpecName", L["Show_Spec_Name"], contentFrame)
     showSpecName:SetPoint("TOPLEFT", targetAndFocusArenaNames, "BOTTOMLEFT", 0, pixelsBetweenBoxes)
     CreateTooltipTwo(showSpecName, L["Show_Spec_Name"], string.format(L["Tooltip_Show_Spec_Name_Desc"], (BetterBlizzFramesDB.targetAndFocusArenaNamePartyOverride and L["True"] or L["False"])).."|r")
     showSpecName:SetScript("OnMouseDown", function(self, button)
@@ -3497,11 +3664,11 @@ local function guiGeneralTab()
         end
     end)
 
-    local shortArenaSpecName = CreateCheckbox("shortArenaSpecName", L["Short"], BetterBlizzFrames)
+    local shortArenaSpecName = CreateCheckbox("shortArenaSpecName", L["Short"], contentFrame)
     shortArenaSpecName:SetPoint("LEFT", showSpecName.Text, "RIGHT", 0, 0)
     CreateTooltip(shortArenaSpecName, L["Tooltip_Short_Arena_Spec_Name"], "ANCHOR_LEFT")
 
-    local showArenaID = CreateCheckbox("showArenaID", L["Show_Arena_ID"], BetterBlizzFrames)
+    local showArenaID = CreateCheckbox("showArenaID", L["Show_Arena_ID"], contentFrame)
     showArenaID:SetPoint("TOPLEFT", showSpecName, "BOTTOMLEFT", 0, pixelsBetweenBoxes)
     CreateTooltip(showArenaID, L["Tooltip_Show_Arena_ID"])
 
@@ -3525,12 +3692,12 @@ local function guiGeneralTab()
     -- Hook into the OnClick event of partyArenaNames
     partyArenaNames:HookScript("OnClick", ToggleDependentCheckboxes)
 
-    local focusFrameText = BetterBlizzFrames:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    local focusFrameText = contentFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     focusFrameText:SetPoint("TOPLEFT", mainGuiAnchor, "BOTTOMLEFT", 460, editModeIntroduced and -175 or -160)
     focusFrameText:SetText(L["Focus_Frame"])
     focusFrameText:SetFont(fontLarge, 16)
     focusFrameText:SetTextColor(1,1,1)
-    local focusFrameIcon = BetterBlizzFrames:CreateTexture(nil, "ARTWORK")
+    local focusFrameIcon = contentFrame:CreateTexture(nil, "ARTWORK")
     focusFrameIcon:SetAtlas("groupfinder-icon-friend")
     focusFrameIcon:SetSize(28, 28)
     focusFrameIcon:SetPoint("RIGHT", focusFrameText, "LEFT", -3, 0)
@@ -3538,16 +3705,16 @@ local function guiGeneralTab()
     focusFrameIcon:SetVertexColor(0, 1, 0)
 
     if not editModeIntroduced then
-        local focusFrameScale = CreateSlider(BetterBlizzFrames, "Size", 0.7, 1.4, 0.01, "focusFrameScale", nil, 120)
+        local focusFrameScale = CreateSlider(contentFrame, "Size", 0.7, 1.4, 0.01, "focusFrameScale", nil, 120)
         focusFrameScale:SetPoint("TOP", focusFrameText, "BOTTOM", -4, -13)
         CreateTooltipTwo(focusFrameScale, L["Tooltip_FocusFrame_Size_Title"], L["Tooltip_FocusFrame_Size_Desc"], L["Tooltip_Right_Click_For_Value"])
     end
 
-    local focusFrameClickthrough = CreateCheckbox("focusFrameClickthrough", L["Clickthrough"], BetterBlizzFrames, nil, BBF.ClickthroughFrames)
+    local focusFrameClickthrough = CreateCheckbox("focusFrameClickthrough", L["Clickthrough"], contentFrame, nil, BBF.ClickthroughFrames)
     focusFrameClickthrough:SetPoint("TOPLEFT", focusFrameText, "BOTTOMLEFT", -24, editModeIntroduced and -1 or -26)
     CreateTooltip(focusFrameClickthrough, L["Tooltip_Focus_Clickthrough"])
 
-    local hideFocusName = CreateCheckbox("hideFocusName", L["Hide_Names"], BetterBlizzFrames, nil, BBF.UpdateNameSettings)
+    local hideFocusName = CreateCheckbox("hideFocusName", L["Hide_Names"], contentFrame, nil, BBF.UpdateNameSettings)
     hideFocusName:SetPoint("TOPLEFT", focusFrameClickthrough, "BOTTOMLEFT", 0, pixelsBetweenBoxes)
     CreateTooltip(hideFocusName, L["Tooltip_Hide_Focus_Name"])
     hideFocusName:HookScript("OnClick", function(self)
@@ -3562,11 +3729,11 @@ local function guiGeneralTab()
         end
     end)
 
-    local hideFocusLeaderIcon = CreateCheckbox("hideFocusLeaderIcon", L["Hide_Leader_Icon"], BetterBlizzFrames, nil, BBF.HideFrames)
+    local hideFocusLeaderIcon = CreateCheckbox("hideFocusLeaderIcon", L["Hide_Leader_Icon"], contentFrame, nil, BBF.HideFrames)
     hideFocusLeaderIcon:SetPoint("TOPLEFT", hideFocusName, "BOTTOMLEFT", 0, pixelsBetweenBoxes)
     CreateTooltip(hideFocusLeaderIcon, L["Tooltip_Hide_Focus_Leader_Icon"] .. " |A:UI-HUD-UnitFrame-Player-Group-LeaderIcon:22:22|a")
 
-    local classColorFocusReputationTexture = CreateCheckbox("classColorFocusReputationTexture", L["Reputation_Class_Color"], BetterBlizzFrames)
+    local classColorFocusReputationTexture = CreateCheckbox("classColorFocusReputationTexture", L["Reputation_Class_Color"], contentFrame)
     classColorFocusReputationTexture:SetPoint("TOPLEFT", hideFocusLeaderIcon, "BOTTOMLEFT", 0, pixelsBetweenBoxes)
     CreateTooltipTwo(classColorFocusReputationTexture, L["Tooltip_Class_Color_Name_Bg_Desc"] .. " |A:UI-HUD-UnitFrame-Target-PortraitOn-Type:18:98|a", L["Tooltip_Class_Color_Focus_Name_Bg_Desc"])
     classColorFocusReputationTexture:HookScript("OnClick", function(self)
@@ -3577,7 +3744,7 @@ local function guiGeneralTab()
         end
     end)
 
-    local hideFocusReputationColor = CreateCheckbox("hideFocusReputationColor", L["Hide_Reputation_Color"], BetterBlizzFrames, nil, BBF.HideFrames)
+    local hideFocusReputationColor = CreateCheckbox("hideFocusReputationColor", L["Hide_Reputation_Color"], contentFrame, nil, BBF.HideFrames)
     hideFocusReputationColor:SetPoint("TOPLEFT", classColorFocusReputationTexture, "BOTTOMLEFT", 0, pixelsBetweenBoxes)
     CreateTooltip(hideFocusReputationColor, L["Tooltip_Hide_Focus_Reputation_Color"] .. " |A:UI-HUD-UnitFrame-Target-PortraitOn-Type:18:98|a")
 
@@ -3587,26 +3754,26 @@ local function guiGeneralTab()
 
 
 
-    local focusToTFrameText = BetterBlizzFrames:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    local focusToTFrameText = contentFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     focusToTFrameText:SetPoint("TOPLEFT", mainGuiAnchor, "BOTTOMLEFT", 460, -295)
     focusToTFrameText:SetFont(fontLarge, 16)
     focusToTFrameText:SetTextColor(1,1,1)
     focusToTFrameText:SetText(L["Focus_ToT"])
-    local focusToTFrameIcon = BetterBlizzFrames:CreateTexture(nil, "BORDER")
+    local focusToTFrameIcon = contentFrame:CreateTexture(nil, "BORDER")
     focusToTFrameIcon:SetAtlas("groupfinder-icon-friend")
     focusToTFrameIcon:SetSize(28, 28)
     focusToTFrameIcon:SetPoint("RIGHT", focusToTFrameText, "LEFT", -0.5, 0)
     focusToTFrameIcon:SetDesaturated(1)
     focusToTFrameIcon:SetVertexColor(0, 1, 0)
-    local focusToTFrameIcon2 = BetterBlizzFrames:CreateTexture(nil, "ARTWORK")
+    local focusToTFrameIcon2 = contentFrame:CreateTexture(nil, "ARTWORK")
     focusToTFrameIcon2:SetAtlas("TargetCrosshairs")
     focusToTFrameIcon2:SetSize(28, 28)
     focusToTFrameIcon2:SetPoint("TOPLEFT", focusToTFrameIcon, "TOPLEFT", 13.5, -13)
 
-    local hideFocusToT = CreateCheckbox("hideFocusToT", L["Hide_Frame"], BetterBlizzFrames, nil, BBF.HideFrames)
+    local hideFocusToT = CreateCheckbox("hideFocusToT", L["Hide_Frame"], contentFrame, nil, BBF.HideFrames)
     hideFocusToT:SetPoint("TOPLEFT", focusToTFrameText, "BOTTOMLEFT", -24, pixelsOnFirstBox)
 
-    local hideFocusToTName = CreateCheckbox("hideFocusToTName", L["Hide_Names"], BetterBlizzFrames)
+    local hideFocusToTName = CreateCheckbox("hideFocusToTName", L["Hide_Names"], contentFrame)
     hideFocusToTName:SetPoint("LEFT", hideFocusToT.Text, "RIGHT", 0, 0)
     hideFocusToTName:HookScript("OnClick", function(self)
         if self:GetChecked() then
@@ -3617,49 +3784,64 @@ local function guiGeneralTab()
         end
     end)
 
-    local hideFocusToTDebuffs = CreateCheckbox("hideFocusToTDebuffs", L["Hide_FocusToT_Debuffs"], BetterBlizzFrames, nil, BBF.HideFrames)
+    local hideFocusToTDebuffs = CreateCheckbox("hideFocusToTDebuffs", L["Hide_FocusToT_Debuffs"], contentFrame, nil, BBF.HideFrames)
     hideFocusToTDebuffs:SetPoint("TOPLEFT", hideFocusToT, "BOTTOMLEFT", 0, pixelsBetweenBoxes)
     CreateTooltip(hideFocusToTDebuffs, L["Tooltip_Hide_ToT_Debuffs"])
 
-    local focusToTScale = CreateSlider(BetterBlizzFrames, "Size", 0.6, 2.5, 0.01, "focusToTScale", nil, 120)
+    local focusToTScale = CreateSlider(contentFrame, "Size", 0.6, 2.5, 0.01, "focusToTScale", nil, 120)
     focusToTScale:SetPoint("TOPLEFT", focusToTFrameText, "BOTTOMLEFT", -20, -55)
     CreateTooltip(focusToTScale, L["Tooltip_FocusToT_Scale"])
 
-    BBF.focusToTXPos = CreateSlider(BetterBlizzFrames, "x offset", -100, 100, 1, "focusToTXPos", "X", 120)
+    BBF.focusToTXPos = CreateSlider(contentFrame, "x offset", -100, 100, 1, "focusToTXPos", "X", 120)
     BBF.focusToTXPos:SetPoint("TOP", focusToTScale, "BOTTOM", 0, -15)
     CreateTooltip(BBF.focusToTXPos, L["Tooltip_FocusToT_X_Offset"])
 
-    BBF.focusToTYPos = CreateSlider(BetterBlizzFrames, "y offset", -100, 100, 1, "focusToTYPos", "Y", 120)
+    BBF.focusToTYPos = CreateSlider(contentFrame, "y offset", -100, 100, 1, "focusToTYPos", "Y", 120)
     BBF.focusToTYPos:SetPoint("TOP", BBF.focusToTXPos, "BOTTOM", 0, -15)
     CreateTooltip(BBF.focusToTYPos, L["Tooltip_FocusToT_Y_Offset"])
 
+    BBF.focusToTNameScaleControl,
+    BBF.focusToTNameScaleSlider,
+    BBF.focusToTNameScaleEditBox = CreateToTNameScaleControl(
+        contentFrame,
+        "focusToTNameScale",
+        "ApplyFocusToTNameScale"
+    )
+    BBF.focusToTNameScaleControl:SetPoint(
+        "TOP",
+        BBF.focusToTYPos,
+        "BOTTOM",
+        0,
+        -2
+    )
 
 
 
 
-    local allFrameText = BetterBlizzFrames:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+
+    local allFrameText = contentFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     allFrameText:SetPoint("TOPLEFT", mainGuiAnchor, "BOTTOMLEFT", 250, 30)
     allFrameText:SetText(L["All_Frames"])
     allFrameText:SetFont(fontLarge, 16)
     allFrameText:SetTextColor(1,1,1)
-    local allFrameIcon = BetterBlizzFrames:CreateTexture(nil, "ARTWORK")
+    local allFrameIcon = contentFrame:CreateTexture(nil, "ARTWORK")
     allFrameIcon:SetAtlas("groupfinder-icon-friend")
     allFrameIcon:SetSize(25, 25)
     allFrameIcon:SetPoint("RIGHT", allFrameText, "LEFT", -4, -1)
-    local allFrameIcon2 = BetterBlizzFrames:CreateTexture(nil, "BORDER")
+    local allFrameIcon2 = contentFrame:CreateTexture(nil, "BORDER")
     allFrameIcon2:SetAtlas("groupfinder-icon-friend")
     allFrameIcon2:SetSize(20, 20)
     allFrameIcon2:SetPoint("RIGHT", allFrameText, "LEFT", 0, 4)
     allFrameIcon2:SetDesaturated(1)
     allFrameIcon2:SetVertexColor(0, 1, 0)
-    local allFrameIcon3 = BetterBlizzFrames:CreateTexture(nil, "BORDER")
+    local allFrameIcon3 = contentFrame:CreateTexture(nil, "BORDER")
     allFrameIcon3:SetAtlas("groupfinder-icon-friend")
     allFrameIcon3:SetSize(20, 20)
     allFrameIcon3:SetPoint("RIGHT", allFrameText, "LEFT", -12, 4)
     allFrameIcon3:SetDesaturated(1)
     allFrameIcon3:SetVertexColor(1, 0, 0)
 
-    local classColorFrames = CreateCheckbox("classColorFrames", L["Class_Color_Health"], BetterBlizzFrames)
+    local classColorFrames = CreateCheckbox("classColorFrames", L["Class_Color_Health"], contentFrame)
     classColorFrames:SetPoint("TOPLEFT", allFrameText, "BOTTOMLEFT", -24, pixelsOnFirstBox)
 
     classColorFrames:HookScript("OnMouseDown", function(self, button)
@@ -3711,7 +3893,7 @@ local function guiGeneralTab()
     end)
     CreateTooltipTwo(classColorFrames, L["Tooltip_Class_Color_Healthbars_Title"], L["Tooltip_Class_Color_Healthbars"], L["Tooltip_Class_Color_Healthbars_Extra"])
 
-    local biggerHealthbars = CreateCheckbox("biggerHealthbars", L["Bigger_Healthbars"], BetterBlizzFrames, nil, BBF.HookBiggerHealthbars)
+    local biggerHealthbars = CreateCheckbox("biggerHealthbars", L["Bigger_Healthbars"], contentFrame, nil, BBF.HookBiggerHealthbars)
     biggerHealthbars:SetPoint("TOPLEFT", classColorFrames, "BOTTOMLEFT", 0, pixelsBetweenBoxes)
     CreateTooltipTwo(biggerHealthbars, L["Bigger_Healthbars"], L["Tooltip_Bigger_Healthbars_Desc"])
 
@@ -3791,7 +3973,7 @@ local function guiGeneralTab()
         end
     end)
 
-    local formatStatusBarText = CreateCheckbox("formatStatusBarText", L["Format_Numbers"], BetterBlizzFrames, nil, BBF.HookStatusBarText)
+    local formatStatusBarText = CreateCheckbox("formatStatusBarText", L["Format_Numbers"], contentFrame, nil, BBF.HookStatusBarText)
     formatStatusBarText:SetPoint("TOPLEFT", biggerHealthbars, "BOTTOMLEFT", 0, pixelsBetweenBoxes)
     CreateTooltipTwo(formatStatusBarText, L["Format_Numbers"], L["Tooltip_Format_Numbers_Desc"], L["Tooltip_Requires_Reload"])
 
@@ -3807,7 +3989,7 @@ local function guiGeneralTab()
         CheckAndToggleCheckboxes(self)
     end)
 
-    local classColorTargetNames = CreateCheckbox("classColorTargetNames", L["Class_Color_Names"], BetterBlizzFrames)
+    local classColorTargetNames = CreateCheckbox("classColorTargetNames", L["Class_Color_Names"], contentFrame)
     classColorTargetNames:SetPoint("TOPLEFT", formatStatusBarText, "BOTTOMLEFT", 0, pixelsBetweenBoxes)
     CreateTooltipTwo(classColorTargetNames, L["Class_Color_Names"], L["Tooltip_Class_Color_Names_Desc"], L["Tooltip_Class_Color_Names_Extra"])
 
@@ -3833,33 +4015,33 @@ local function guiGeneralTab()
         classColorLevelText:SetAlpha(0)
     end
 
-    -- local centerNames = CreateCheckbox("centerNames", L["Center_Name"], BetterBlizzFrames)
+    -- local centerNames = CreateCheckbox("centerNames", L["Center_Name"], contentFrame)
     -- centerNames:SetPoint("TOPLEFT", classColorTargetNames, "BOTTOMLEFT", 0, pixelsBetweenBoxes)
     -- CreateTooltipTwo(centerNames, "Center Names", "Center the name on Player, Target & Focus frames.", "Will enable a fake name. Because of this other addons like HealthBarColor's name stuff will not work properly.")
     -- centerNames:HookScript("OnClick", function()
     --     StaticPopup_Show("BBF_CONFIRM_RELOAD")
     -- end)
 
-    local removeRealmNames = CreateCheckbox("removeRealmNames", L["Hide_Realm"], BetterBlizzFrames)
+    local removeRealmNames = CreateCheckbox("removeRealmNames", L["Hide_Realm"], contentFrame)
     removeRealmNames:SetPoint("TOPLEFT", classColorTargetNames, "BOTTOMLEFT", 0, pixelsBetweenBoxes)
     removeRealmNames:HookScript("OnClick", function()
         BBF.AllNameChanges()
     end)
     CreateTooltipTwo(removeRealmNames, L["Tooltip_Hide_Realm_Indicator_Title"], L["Tooltip_Hide_Realm_Desc"], L["Tooltip_Hide_Realm_Indicator_Extra"])
 
-    local hidePrestigeBadge = CreateCheckbox("hidePrestigeBadge", L["Tooltip_Hide_PvP_Icon"], BetterBlizzFrames, nil, BBF.HideFrames)
+    local hidePrestigeBadge = CreateCheckbox("hidePrestigeBadge", L["Tooltip_Hide_PvP_Icon"], contentFrame, nil, BBF.HideFrames)
     hidePrestigeBadge:SetPoint("TOPLEFT", removeRealmNames, "BOTTOMLEFT", 0, pixelsBetweenBoxes)
     CreateTooltip(hidePrestigeBadge, L["Tooltip_Hide_Prestige_Badge_Desc"])
 
-    local hideCombatGlow = CreateCheckbox("hideCombatGlow", L["Hide_Combat_Glow"], BetterBlizzFrames, nil, BBF.HideFrames)
+    local hideCombatGlow = CreateCheckbox("hideCombatGlow", L["Hide_Combat_Glow"], contentFrame, nil, BBF.HideFrames)
     hideCombatGlow:SetPoint("TOPLEFT", hidePrestigeBadge, "BOTTOMLEFT", 0, pixelsBetweenBoxes)
     CreateTooltip(hideCombatGlow, L["Tooltip_Hide_Combat_Glow"] .. " |A:UI-HUD-UnitFrame-Player-PortraitOn-InCombat:30:80|a")
 
-    local hideLevelText = CreateCheckbox("hideLevelText", L["Hide_Max_Level_Text"], BetterBlizzFrames, nil, BBF.HideFrames)
+    local hideLevelText = CreateCheckbox("hideLevelText", L["Hide_Max_Level_Text"], contentFrame, nil, BBF.HideFrames)
     hideLevelText:SetPoint("TOPLEFT", hideCombatGlow, "BOTTOMLEFT", 0, pixelsBetweenBoxes)
     CreateTooltip(hideLevelText, L["Tooltip_Hide_Max_Level_Text"])
 
-    local hideLevelTextAlways = CreateCheckbox("hideLevelTextAlways", L["Always"], BetterBlizzFrames, nil, BBF.HideFrames)
+    local hideLevelTextAlways = CreateCheckbox("hideLevelTextAlways", L["Always"], contentFrame, nil, BBF.HideFrames)
     hideLevelTextAlways:SetPoint("LEFT", hideLevelText.Text, "RIGHT", 0, 0)
     CreateTooltip(hideLevelTextAlways, L["Tooltip_Always"])
 
@@ -3878,11 +4060,11 @@ local function guiGeneralTab()
         hideLevelTextAlways:Disable()
     end
 
-    local hidePvpIcon = CreateCheckbox("hidePvpIcon", L["Hide_PvP_Icon"], BetterBlizzFrames, nil, BBF.HideFrames)
+    local hidePvpIcon = CreateCheckbox("hidePvpIcon", L["Hide_PvP_Icon"], contentFrame, nil, BBF.HideFrames)
     hidePvpIcon:SetPoint("TOPLEFT", hideLevelText, "BOTTOMLEFT", 0, pixelsBetweenBoxes)
     CreateTooltip(hidePvpIcon, L["Tooltip_Hide_PvP_Icon_Desc"])
 
-    local classPortraits = CreateCheckbox("classPortraits", L["Class_Portraits"], BetterBlizzFrames)
+    local classPortraits = CreateCheckbox("classPortraits", L["Class_Portraits"], contentFrame)
     classPortraits:SetPoint("TOPLEFT", hidePvpIcon, "BOTTOMLEFT", 0, pixelsBetweenBoxes)
     CreateTooltip(classPortraits, L["Tooltip_Class_Portraits"] .. " |A:groupfinder-icon-class-paladin:18:18|a")
 
@@ -3919,24 +4101,24 @@ local function guiGeneralTab()
         classPortraitsIgnoreSelf:Hide()
     end
 
-    local extraFeaturesText = BetterBlizzFrames:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    local extraFeaturesText = contentFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     extraFeaturesText:SetPoint("TOPLEFT", mainGuiAnchor, "BOTTOMLEFT", 460, 30)
     extraFeaturesText:SetText(L["Extra_Features"])
     extraFeaturesText:SetFont(fontLarge, 16)
     extraFeaturesText:SetTextColor(1,1,1)
-    local extraFeaturesIcon = BetterBlizzFrames:CreateTexture(nil, "ARTWORK")
+    local extraFeaturesIcon = contentFrame:CreateTexture(nil, "ARTWORK")
     extraFeaturesIcon:SetAtlas("adventureguide-icon-whatsnew")--("Campaign-QuestLog-LoreBook")
     extraFeaturesIcon:SetSize(23, 23)
     extraFeaturesIcon:SetPoint("RIGHT", extraFeaturesText, "LEFT", -3, -2)
 
-    local combatIndicator = CreateCheckbox("combatIndicator", L["Combat_Indicator"], BetterBlizzFrames)
+    local combatIndicator = CreateCheckbox("combatIndicator", L["Combat_Indicator"], contentFrame)
     combatIndicator:SetPoint("TOPLEFT", extraFeaturesText, "BOTTOMLEFT", -24, pixelsOnFirstBox)
     combatIndicator:HookScript("OnClick", function()
         BBF.CombatIndicatorCaller()
     end)
     CreateTooltip(combatIndicator, L["Tooltip_Combat_Indicator_Main_Desc"])
 
-    local absorbIndicator = CreateCheckbox("absorbIndicator", L["Absorb_Indicator"], BetterBlizzFrames, nil, BBF.AbsorbCaller)
+    local absorbIndicator = CreateCheckbox("absorbIndicator", L["Absorb_Indicator"], contentFrame, nil, BBF.AbsorbCaller)
     absorbIndicator:SetPoint("TOPLEFT", combatIndicator, "BOTTOMLEFT", 0, pixelsBetweenBoxes)
     absorbIndicator:HookScript("OnClick", function()
         BBF.AbsorbCaller()
@@ -3944,18 +4126,18 @@ local function guiGeneralTab()
     CreateTooltip(absorbIndicator, L["Tooltip_Absorb_Indicator_Main_Desc"])
     --notWorking(absorbIndicator, true)
 
-    local racialIndicator = CreateCheckbox("racialIndicator", L["Racial_Indicator"], BetterBlizzFrames, nil, BBF.RacialIndicatorCaller)
+    local racialIndicator = CreateCheckbox("racialIndicator", L["Racial_Indicator"], contentFrame, nil, BBF.RacialIndicatorCaller)
     racialIndicator:SetPoint("TOPLEFT", absorbIndicator, "BOTTOMLEFT", 0, pixelsBetweenBoxes)
     racialIndicator:HookScript("OnClick", function()
         BBF.RacialIndicatorCaller()
     end)
     CreateTooltip(racialIndicator, L["Tooltip_Racial_Indicator_Desc"])
 
-    local overShields = CreateCheckbox("overShields", L["Overshields"], BetterBlizzFrames)
+    local overShields = CreateCheckbox("overShields", L["Overshields"], contentFrame)
     overShields:SetPoint("TOPLEFT", racialIndicator, "BOTTOMLEFT", 0, pixelsBetweenBoxes)
     CreateTooltip(overShields, L["Tooltip_Overshields_Desc"], "ANCHOR_LEFT")
 
-    local overShieldsUnitFrames = CreateCheckbox("overShieldsUnitFrames", L["A"], BetterBlizzFrames)
+    local overShieldsUnitFrames = CreateCheckbox("overShieldsUnitFrames", L["A"], contentFrame)
     overShieldsUnitFrames:SetPoint("LEFT", overShields.text, "RIGHT", 0, 0)
     CreateTooltip(overShieldsUnitFrames, L["Tooltip_Overshields_A_Desc"], "ANCHOR_LEFT")
     overShieldsUnitFrames:HookScript("OnClick", function(self)
@@ -3963,7 +4145,7 @@ local function guiGeneralTab()
         StaticPopup_Show("BBF_CONFIRM_RELOAD")
     end)
 
-    local overShieldsCompactUnitFrames = CreateCheckbox("overShieldsCompactUnitFrames", L["B"], BetterBlizzFrames)
+    local overShieldsCompactUnitFrames = CreateCheckbox("overShieldsCompactUnitFrames", L["B"], contentFrame)
     overShieldsCompactUnitFrames:SetPoint("LEFT", overShieldsUnitFrames.text, "RIGHT", 0, 0)
     CreateTooltip(overShieldsCompactUnitFrames, L["Tooltip_Overshields_B_Desc"], "ANCHOR_LEFT")
     overShieldsCompactUnitFrames:HookScript("OnClick", function(self)
@@ -4008,7 +4190,7 @@ local function guiGeneralTab()
         overShieldsCompactUnitFrames:Disable()
     end
 
-    local queueTimer = CreateCheckbox("queueTimer", L["Queue_Timer"], BetterBlizzFrames)
+    local queueTimer = CreateCheckbox("queueTimer", L["Queue_Timer"], contentFrame)
     queueTimer:SetPoint("TOPLEFT", overShields, "BOTTOMLEFT", 0, pixelsBetweenBoxes)
     CreateTooltipTwo(queueTimer, L["Queue_Timer"], L["Tooltip_Queue_Timer_Desc"], nil, "ANCHOR_LEFT")
 

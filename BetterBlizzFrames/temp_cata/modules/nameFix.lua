@@ -1090,6 +1090,205 @@ hooksecurefunc(FocusFrame.name, "SetText", function()
     FocusFrameNameChanges(FocusFrame)
 end)
 
+local function GetToTNameScale(settingKey)
+    if type(BetterBlizzFramesDB) ~= "table" then
+        return 1
+    end
+
+    local value = tonumber(BetterBlizzFramesDB[settingKey]) or 1
+
+    if value < 0.40 then
+        value = 0.40
+    elseif value > 1.50 then
+        value = 1.50
+    end
+
+    return value
+end
+
+local function CaptureToTNameFontBaseline(frame)
+    if not frame or not frame.bbfName then return end
+
+    local font, fontHeight, fontFlags = frame.bbfName:GetFont()
+    if not font or not fontHeight then return end
+
+    frame.bbfToTNameBaseFont = font
+    frame.bbfToTNameBaseFontHeight = fontHeight
+    frame.bbfToTNameBaseFontFlags = fontFlags
+end
+
+local function CaptureToTNamePositionBaseline(frame)
+    if not frame or not frame.bbfName then return end
+
+    local point, relativeTo, relativePoint, xOffset, yOffset =
+        frame.bbfName:GetPoint(1)
+
+    if not point then return end
+
+    frame.bbfToTNameBasePoint = point
+    frame.bbfToTNameBaseRelativeTo = relativeTo
+    frame.bbfToTNameBaseRelativePoint = relativePoint
+    frame.bbfToTNameBaseXOffset = xOffset or 0
+    frame.bbfToTNameBaseYOffset = yOffset or 0
+end
+
+local function EnsureToTNameBaseline(frame)
+    if not frame or not frame.bbfName then return false end
+
+    if not frame.bbfToTNameBaseFont
+        or not frame.bbfToTNameBaseFontHeight then
+        CaptureToTNameFontBaseline(frame)
+    end
+
+    if not frame.bbfToTNameBasePoint then
+        CaptureToTNamePositionBaseline(frame)
+    end
+
+    return frame.bbfToTNameBaseFont
+        and frame.bbfToTNameBaseFontHeight
+        and frame.bbfToTNameBasePoint
+end
+
+local function RestoreOriginalToTNameRendering(frame)
+    if not frame or not frame.bbfName then return end
+    if not frame.bbfToTNameScaleModified then
+        -- Fresh/default 1.00 is a true no-op.
+        return
+    end
+
+    if not EnsureToTNameBaseline(frame) then
+        return
+    end
+
+    frame.bbfName.bbfChangingToTFont = true
+    frame.bbfName:SetFont(
+        frame.bbfToTNameBaseFont,
+        frame.bbfToTNameBaseFontHeight,
+        frame.bbfToTNameBaseFontFlags
+    )
+    frame.bbfName.bbfChangingToTFont = nil
+
+    frame.bbfName:SetScale(1)
+
+    frame.bbfName.bbfChangingToTPosition = true
+    local previousChanging = frame.bbfName.changing
+    frame.bbfName.changing = true
+    frame.bbfName:ClearAllPoints()
+    frame.bbfName:SetPoint(
+        frame.bbfToTNameBasePoint,
+        frame.bbfToTNameBaseRelativeTo,
+        frame.bbfToTNameBaseRelativePoint,
+        frame.bbfToTNameBaseXOffset,
+        frame.bbfToTNameBaseYOffset
+    )
+    frame.bbfName.changing = previousChanging
+    frame.bbfName.bbfChangingToTPosition = nil
+
+    frame.bbfToTNameScaleModified = nil
+end
+
+local function ApplyToTNameScale(frame, settingKey)
+    if not frame or not frame.bbfName then return end
+
+    local scale = GetToTNameScale(settingKey)
+
+    -- 1.00 means BBF's exact current baseline for this specific ToT name.
+    if math.abs(scale - 1) < 0.0001 then
+        RestoreOriginalToTNameRendering(frame)
+        return
+    end
+
+    if not EnsureToTNameBaseline(frame) then
+        return
+    end
+
+    frame.bbfToTNameScaleModified = true
+
+    -- Keep region scale at 1 so glyphs are never stretched.
+    -- Resize BBF's real ToT font height instead, preserving BBF's chosen
+    -- font file and outline. This also respects BBF's special ToT font-size
+    -- reduction when Change UnitFrame Font is enabled.
+    frame.bbfName:SetScale(1)
+
+    local scaledHeight = frame.bbfToTNameBaseFontHeight * scale
+
+    frame.bbfName.bbfChangingToTFont = true
+    frame.bbfName:SetFont(
+        frame.bbfToTNameBaseFont,
+        scaledHeight,
+        frame.bbfToTNameBaseFontFlags
+    )
+    frame.bbfName.bbfChangingToTFont = nil
+
+    -- Non-default sizes grow/shrink from the original rendered name's left
+    -- edge. Default 1.00 restores the exact BBF baseline point above.
+    local originalName = frame.name or frame.Name
+    if originalName then
+        frame.bbfName.bbfChangingToTPosition = true
+        local previousChanging = frame.bbfName.changing
+        frame.bbfName.changing = true
+        frame.bbfName:ClearAllPoints()
+        frame.bbfName:SetPoint("TOPLEFT", originalName, "TOPLEFT", 0, 0)
+        frame.bbfName.changing = previousChanging
+        frame.bbfName.bbfChangingToTPosition = nil
+    end
+end
+
+function BBF.ApplyTargetToTNameScale()
+    ApplyToTNameScale(TargetFrameToT, "targetToTNameScale")
+end
+
+function BBF.ApplyFocusToTNameScale()
+    ApplyToTNameScale(FocusFrameToT, "focusToTNameScale")
+end
+
+local function HookToTNameBaseline(frame, settingKey)
+    if not frame or not frame.bbfName then return end
+    if frame.bbfName.bbfToTNameBaselineHooks then return end
+
+    frame.bbfName.bbfToTNameBaselineHooks = true
+
+    -- Capture the true BBF baseline immediately. This is the replacement
+    -- FontString that BBF actually renders, not the hidden Blizzard name.
+    CaptureToTNameFontBaseline(frame)
+    CaptureToTNamePositionBaseline(frame)
+
+    hooksecurefunc(frame.bbfName, "SetFont", function(self)
+        if self.bbfChangingToTFont then
+            return
+        end
+
+        -- BBF itself changed the font (including its special smaller ToT
+        -- size). That new value becomes the 1.00 baseline.
+        CaptureToTNameFontBaseline(frame)
+
+        if math.abs(GetToTNameScale(settingKey) - 1) >= 0.0001 then
+            C_Timer.After(0, function()
+                ApplyToTNameScale(frame, settingKey)
+            end)
+        end
+    end)
+
+    hooksecurefunc(frame.bbfName, "SetPoint", function(self)
+        if self.bbfChangingToTPosition then
+            return
+        end
+
+        -- BBF/EasyFrames/DragonflightUI moved the normal name. Preserve that
+        -- as the latest default position and then reapply custom sizing.
+        CaptureToTNamePositionBaseline(frame)
+
+        if math.abs(GetToTNameScale(settingKey) - 1) >= 0.0001 then
+            C_Timer.After(0, function()
+                ApplyToTNameScale(frame, settingKey)
+            end)
+        end
+    end)
+end
+
+HookToTNameBaseline(TargetFrameToT, "targetToTNameScale")
+HookToTNameBaseline(FocusFrameToT, "focusToTNameScale")
+
 local function TargetFrameToTNameChanges(frame)
     frame.name:SetAlpha(0)
     if not frame.unit then return end
@@ -1098,6 +1297,8 @@ local function TargetFrameToTNameChanges(frame)
     if not changeUnitFrameFont then
         frame.bbfName:SetFont(frame.name:GetFont())
     end
+
+    ApplyToTNameScale(frame, "targetToTNameScale")
 
     if targetAndFocusArenaNames and IsActiveBattlefieldArena() then
         SetArenaNameUnitFrame(frame, unit, frame.bbfName)
@@ -1131,6 +1332,8 @@ local function FocusFrameToTNameChanges(frame)
     if not changeUnitFrameFont then
         frame.bbfName:SetFont(frame.name:GetFont())
     end
+
+    ApplyToTNameScale(frame, "focusToTNameScale")
 
     if targetAndFocusArenaNames and IsActiveBattlefieldArena() then
         SetArenaNameUnitFrame(frame, unit, frame.bbfName)
