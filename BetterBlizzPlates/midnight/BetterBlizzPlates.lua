@@ -25,7 +25,6 @@ local playerClassColor
 BBP.hiddenFrame = CreateFrame("Frame")
 BBP.hiddenFrame:Hide()
 
-local RAID_CLASS_COLORS = RAID_CLASS_COLORS
 local UnitName = UnitName
 local UnitIsUnit = UnitIsUnit
 local UnitIsPlayer = UnitIsPlayer
@@ -108,6 +107,8 @@ local defaultSettings = {
     fakeNameFriendlyYPos = 0,
     fakeNameAnchor = "BOTTOM",
     fakeNameAnchorRelative = "TOP",
+    fakeNameAnchorFriendly = "BOTTOM",
+    fakeNameAnchorRelativeFriendly = "TOP",
     fakeNameScaleWithParent = false,
     fakeNameRaiseStrata = false,
     fakeNameMaxWidth = 250,
@@ -126,7 +127,7 @@ local defaultSettings = {
     hideLevelFrame = true,
     druidOverstacks = true,
     personalBarPosition = 0.5,
-    alwaysShowPurgeTexture = true,
+    alwaysShowPurgeTexture = false,
     levelFrameFontSize = 12,
     nameplateExtraClickHeight = 0,
     nameplateClickVerticalAdjustment = 0,
@@ -158,8 +159,6 @@ local defaultSettings = {
     npBgColorRGB = {1, 1, 1, 1},
     smallPetsWidth = 20,
     smallPetsHeight = 6,
-    enlargeAllImportantBuffs = true,
-    enlargeAllCC = true,
     normalCastbarForEmpoweredCasts = true,
     interruptedByIndicator = true,
     -- Target Text
@@ -474,25 +473,35 @@ local defaultSettings = {
     showCastbarIfTarget = false,
     castBarRecolor = false,
     castBarRecolorInterrupt = false,
-    importantCCFullGlow = true,
-    importantCCSilenceGlow = true,
-    importantBuffsOffensivesGlow = true,
-    importantBuffsDefensivesGlow = true,
-    importantBuffsMobilityGlow = true,
-    importantCCFullGlowRGB = {r = 1, g = 0.874, b = 0, a = 1},
-    importantCCDisarmGlowRGB = {r = 1, g = 0.874, b = 0, a = 1},
-    importantCCRootGlowRGB = {r = 1, g = 0.874, b = 0, a = 1},
-    importantCCSilenceGlowRGB = {r = 1, g = 0.874, b = 0, a = 1},
-    importantBuffsOffensivesGlowRGB = {r = 1, g = 0.5, b = 0, a = 1},
-    importantBuffsDefensivesGlowRGB = {r = 1, g = 0.662, b = 0.945, a = 1},
-    importantBuffsMobilityGlowRGB = {r = 0, g = 1, b = 1, a = 1},
-    nameplateKeyAurasXPos = 0,
-    nameplateKeyAurasYPos = 0,
-    nameplateKeyAuraScale = 1,
-    nameplateKeyAurasHorizontalGap = 5,
-    nameplateKeyAurasAnchor = "RIGHT",
-    keyAurasImportantGlowOn = true,
-    keyAurasImportantBuffsEnabled = true,
+    nameplateAuraDefensiveGlow = false,
+    nameplateAuraDefensiveGlowRGB = {1, 0.662, 0.945, 1},
+    nameplateAuraImportantGlow = false,
+    nameplateAuraImportantGlowRGB = {0, 1, 0, 1},
+    nameplateAuraCCGlow = false,
+    nameplateAuraCCGlowRGB = {1, 0.874, 0, 1},
+    nameplateAuraCCGlowDispelColor = false,
+    nameplateAuraPandemicGlowRGB = {1, 0, 0, 1},
+    nameplateAuraEnlargedGlowRGB = {1, 0.5, 0, 1},
+
+    nameplateAuraEnlargedScale = 1,
+    nameplateAuraEnlargedSquare = true,
+    sortEnlargedAurasFirst = true,
+    enlargeAllCC = true,
+    enlargeAllImportantBuffs = true,
+
+    auraTooltipSpellID = false,
+
+    nameplateAuraBuffsOnNpcs = true,
+    nameplateAuraBuffsOnEnemyPlayers = true,
+    nameplateAuraBuffsOnFriendlyPlayers = true,
+    nameplateAuraCCOnNpcs = true,
+    nameplateAuraCCOnEnemyPlayers = true,
+    nameplateAuraCCOnFriendlyPlayers = true,
+    nameplateAuraBuffsBlizzardInPvE = false,
+    nameplateAuraCCBlizzardInPvE = false,
+
+    nameplateAuraMillisecondsBuffs = true,
+    nameplateAuraMillisecondsCC = true,
     castBarCastColor = {
         1,
 		0.8431373238563538,
@@ -521,70 +530,42 @@ local defaultSettings = {
     castBarBackgroundColor = {0.33,0.33,0.33,1},
     -- Nameplate aura settings
     enableNameplateAuraCustomisation = true,
-    showInterruptsOnNameplateAuras = true,
-    nameplateAurasCenteredAnchor = false,
     maxAurasOnNameplate = 12,
+    maxBuffsOnNameplate = 12,
     nameplateAuraRowAmount = 5,
     targetNameplateAuraScale = 1,
     nameplateAuraCountScale = 1,
     --nameplateAuraRowFriendlyAmount = 5,
-    nameplateAuraSquare = false,
-    nameplateAuraTaller = false,
-    nameplateAuraRowAbove = true,
     nameplateAuraHeightGap = 4,
     nameplateAuraWidthGap = 4,
-    nameplateAuraTypeGap = 0,
     nameplateAurasYPos = 0,
     nameplateAurasXPos = 0,
     nameplateDebuffXPadding = 0,
-    nameplateAurasPersonalXPos = 0,
-    nameplateAurasPersonalYPos = 0,
-    nameplateAuraAnchor = "BOTTOMLEFT",
-    nameplateAuraRelativeAnchor = "TOPLEFT",
-    nameplateAurasNoNameYPos = 0,
-    nameplateAuraScale = 1,
-    nameplateAuraSelfScale = 1,
-    nameplateAuraBuffSelfScale = 1,
-    nameplateAuraDebuffSelfScale = 1,
-    hideDefaultPersonalNameplateAuras = false,
-    separateAuraBuffRow = true,
-    importantCCFull = true,
-    importantCCDisarm = true,
-    importantCCRoot = true,
-    importantCCSilence = true,
-    importantBuffsOffensives = true,
-    importantBuffsDefensives = true,
-    importantBuffsMobility = true,
-    defaultNpAuraCdSize = 0.6,
-    onlyPandemicAuraMine = true,
-    nameplateAuraEnlargedScale = 1,
-    nameplateAuraCompactedScale = 1,
-    nameplateAuraEnlargedSquare = true,
-    nameplateAuraCompactedSquare = true,
+    bbpDebuffPadding = 0,
+    bbpAuraScale = 1,
+    showDefaultCooldownNumbersOnNpAuras = true,
+    defaultNpAuraCdSize = 0.7,
+    bigNpAuraCdSize = 0.9,
+    npAuraCdTextBigOnly = false,
+    npAuraCdFont = "Yanone (BBP)",
+    npAuraCdFontEnabled = false,
+    npAuraStackFont = "Yanone (BBP)",
+    npAuraStackFontEnabled = false,
     nameplateAuraBuffScale = 1,
     nameplateAuraDebuffScale = 1,
-    sortEnlargedAurasFirst = true,
     npAuraDiseaseRGB = {1,0.53,0.14},
     npAuraOtherRGB = {0,0,0},
     npAuraCurseRGB = {0.47,0,0.78},
     npAuraBuffsRGB = {0,0.67,1},
     npAuraPoisonRGB = {0,0.52,0.031},
     npAuraMagicRGB = {0.13,0.44,1},
-    personalNpBuffEnable = true,
-    personalNpBuffFilterAll = false,
-    personalNpBuffFilterBlizzard = true,
-    personalNpBuffFilterWatchList = true,
-    personalNpBuffFilterLessMinite = false,
-    personalNpBuffFilterOnlyMe = false,
 
-    personalNpdeBuffEnable = false,
-    personalNpdeBuffFilterAll = false,
-    personalNpdeBuffFilterWatchList = true,
-    personalNpdeBuffFilterLessMinite = false,
 
     otherNpBuffEnable = false,
     otherNpBuffFilterAll = false,
-    otherNpBuffFilterWatchList = true,
+    otherNpBuffFilterImportantBuffs = false,
+    otherNpBuffFilterDefensives = false,
+    otherNpBuffFilterPurgeable = false,
     otherNpBuffFilterLessMinite = false,
     otherNpBuffPurgeGlow = false,
     otherNpBuffBlueBorder = false,
@@ -593,16 +574,19 @@ local defaultSettings = {
     otherNpdeBuffEnable = true,
     otherNpdeBuffFilterAll = false,
     otherNpdeBuffFilterBlizzard = true,
+    otherNpdeBuffFilterCC = true,
     otherNpdeBuffFilterWatchList = true,
-    otherNpdeBuffFilterLessMinite = false,
     otherNpdeBuffFilterOnlyMe = false,
+    otherNpdeBuffFilterLessMinite = false,
     otherNpdeBuffPandemicGlow = false,
 
     friendlyNpBuffEnable = false,
     friendlyNpBuffFilterAll = false,
     friendlyNpBuffFilterWatchList = false,
     friendlyNpBuffFilterLessMinite = false,
-    friendlyNpBuffFilterOnlyMe = false,
+    friendlyNpBuffFilterImportantBuffs = false,
+    friendlyNpBuffFilterDefensives = false,
+    friendlyNpBuffFilterOnlyMe = true,
     friendlyNpBuffPurgeGlow = false,
     friendlyNpBuffBlueBorder = false,
     friendlyNpBuffEmphasisedBorder = false,
@@ -610,16 +594,12 @@ local defaultSettings = {
     friendlyNpdeBuffEnable = false,
     friendlyNpdeBuffFilterAll = false,
     friendlyNpdeBuffFilterBlizzard = false,
-    friendlyNpdeBuffFilterWatchList = false,
     friendlyNpdeBuffFilterLessMinite = false,
-    friendlyNpdeBuffFilterOnlyMe = false,
     friendlyNpdeBuffFilterCC = true,
+    friendlyNpdeBuffFilterPurgeable = false,
+    friendlyNpdeBuffFilterPurgeableAny = false,
 
-    personalNpBuffFilterBlacklist = true,
-    personalNpdeBuffFilterBlacklist = true,
     friendlyNpBuffFilterBlacklist = true,
-    friendlyNpdeBuffFilterBlacklist = true,
-    otherNpBuffFilterBlacklist = true,
     otherNpdeBuffFilterBlacklist = true,
 
     testAllEnabledFeatures = false,
@@ -766,17 +746,8 @@ local defaultSettings = {
     --hideCastbarList = {},
     --hideCastbarWhitelist = {},
     --colorNpcList = {},
-    -- auraWhitelist = {
-    --     {["name"] = "Example Aura :3 (delete me)",
-    --     ["entryColors"] = {
-    --         ["text"] = {
-    --             ["b"] = 0,
-    --             ["g"] = 1,
-    --             ["r"] = 0,
-    --         },
-    --     },}
-    -- },
-    --auraBlacklist = {},
+    auraWhitelist = {},
+    auraBlacklist = {},
     --auraColorList = {},
     friendlyColorNameRGB = {1, 1, 1},
 
@@ -836,7 +807,49 @@ local defaultSettings = {
     buffIconXPos = 0,
     buffIconYPos = 0,
 
+    combineBigAuraIcons = false,
+    combinedBigIconAnchor = "RIGHT",
+    moveNormalBuffs = false,
+    moveNormalBuffsAnchor = "LEFT",
+    nameplateAuraGrowDownwards = false,
+
     hideNameShowTarget = false,
+
+    nameplateAuraSquare = true,
+    nameplateAuraTaller = false,
+    nameplateAuraPixelBorder = false,
+    nameplateAurasEnemyCenteredBuffs = false,
+    nameplateAurasEnemyCenteredDebuffs = false,
+    nameplateAurasFriendlyCenteredBuffs = false,
+    nameplateAurasFriendlyCenteredDebuffs = false,
+
+    nameplateAuraBuffLimit = 3,
+    ccIconLimit = 2,
+
+    npAuraPurgeGlowColorEnabled = false,
+    npAuraPurgeGlowRGB = {0.2, 0.6, 1, 1},
+
+    npAuraShowStackText = true,
+    npAuraStackTextXPos = 0,
+    npAuraStackTextYPos = 0,
+    npAuraStackTextAlign = "RIGHT",
+    npAuraStackTextColor = {1, 1, 1, 1},
+
+    nameplateAuraTimerColor = true,
+    nameplateAuraTimerBaseColor = {1, 0.82, 0, 1},
+    nameplateAuraTimerLowColor = {1, 0.1, 0.1, 1},
+    nameplateAuraTimerLowThreshold = 6,
+    nameplateAuraHideLongDurationText = true,
+    nameplateAuraUseBlizzardCdText = false,
+
+    npAuraBleedRGB = {0.8, 0.1, 0.1},
+
+    prdAurasEnabled = false,
+    prdAuraScale = 1,
+    prdAuraXPos = 0,
+    prdAuraYPos = 0,
+    prdAuraRowAmount = 6,
+    prdAuraLimit = 6,
 
 }
 
@@ -849,8 +862,6 @@ local function MidnightDBClean()
         "hideCastbarList",
         "hideCastbarWhitelist",
         "colorNpcList",
-        "auraWhitelist",
-        "auraBlacklist",
         "auraColorList",
         "castEmphasisList",
         "castBarEmphasisSelfColorRGB",
@@ -960,7 +971,7 @@ local function InitializeSavedVariables()
                 end
             end
         end
-        db.version = addonVersion  -- Update the version number in the database
+        db.version = addonVersion
     end
 
     if not db.classIndicatorFriendlyYPos then
@@ -968,6 +979,14 @@ local function InitializeSavedVariables()
         db.classIndicatorFriendlyYPos = db.classIndicatorYPos
         db.classIndicatorFriendlyAnchor = db.classIndicatorAnchor
         db.classIndicatorFriendlyScale = db.classIndicatorScale
+    end
+
+    if db.fakeNameAnchorFriendly == nil then
+        db.fakeNameAnchorFriendly = db.fakeNameAnchor
+    end
+
+    if db.fakeNameAnchorRelativeFriendly == nil then
+        db.fakeNameAnchorRelativeFriendly = db.fakeNameAnchorRelative
     end
 
     if not db.healerIndicatorEnemyXPos then
@@ -986,22 +1005,22 @@ local function InitializeSavedVariables()
         db.nameplateAuraRowFriendlyAmount = db.nameplateAuraRowAmount or 5
     end
 
+    if db.nameplateAurasYPos and db.nameplateAurasYPos ~= 0 then
+        db.bbpDebuffPadding = (db.bbpDebuffPadding or 0) + db.nameplateAurasYPos
+        db.nameplateAurasYPos = 0
+    end
+
+    if db.nameplateAurasXPos and db.nameplateAurasXPos ~= 0 then
+        db.nameplateDebuffXPadding = (db.nameplateDebuffXPadding or 0) + db.nameplateAurasXPos
+        db.nameplateAurasXPos = 0
+    end
+
     if db.alwaysHideFriendlyCastbar == nil then
         db.alwaysHideFriendlyCastbar = db.hideFriendlyCastbar or false
     end
 
-    if db.nameplateAuraSelfScale == nil then
-        db.nameplateAuraSelfScale = db.nameplateAuraScale
-        db.nameplateAuraBuffSelfScale = db.nameplateAuraBuffScale
-        db.nameplateAuraDebuffSelfScale = db.nameplateAuraDebuffScale
-    end
-
     if db.dpsOrHealTargetAggroColorRGB == nil then
         db.dpsOrHealTargetAggroColorRGB = db.dpsOrHealFullAggroColorRGB or {1, 0, 0, 1}
-    end
-
-    if db.nameplateAurasPersonalCenteredAnchor == nil then
-        db.nameplateAurasPersonalCenteredAnchor = db.nameplateAurasFriendlyCenteredAnchor
     end
 
     for key, defaultValue in pairs(defaultSettings) do
@@ -1014,6 +1033,108 @@ end
 function BBP.ResetTotemList()
     BetterBlizzPlatesDB.totemIndicatorNpcList = {}
     BetterBlizzPlatesDB.totemIndicatorNpcList = defaultSettings.totemIndicatorNpcList
+end
+
+local NAMEPLATE_AURA_SETTINGS = {
+    "enableNameplateAuraCustomisation",
+
+    "otherNpBuffEnable",
+    "otherNpBuffFilterImportantBuffs", "otherNpBuffFilterDefensives", "otherNpBuffFilterPurgeable",
+    "otherNpBuffFilterPurgeableAny",
+    "otherNpBuffFilterLessMinite", "otherNpBuffPurgeGlow",
+    "otherNpdeBuffEnable", "otherNpdeBuffFilterBlacklist", "otherNpdeBuffFilterWatchList",
+    "otherNpdeBuffFilterCC", "otherNpdeBuffFilterBlizzard", "otherNpdeBuffFilterLessMinite",
+    "otherNpdeBuffFilterOnlyMe", "otherNpdeBuffPandemicGlow", "blizzardDefaultFilterOnlyMine",
+    "friendlyNpBuffEnable", "friendlyNpBuffFilterBlacklist", "friendlyNpBuffFilterWatchList",
+    "friendlyNpBuffFilterImportantBuffs", "friendlyNpBuffFilterDefensives",
+    "friendlyNpBuffFilterPurgeable",
+    "friendlyNpBuffFilterPurgeableAny",
+    "friendlyNpBuffFilterLessMinite", "friendlyNpBuffFilterOnlyMe",
+    "friendlyNpdeBuffEnable",
+    "friendlyNpdeBuffFilterCC", "friendlyNpdeBuffFilterBlizzard",
+    "friendlyNpdeBuffFilterPurgeable", "friendlyNpdeBuffFilterPurgeableAny",
+    "friendlyNpdeBuffFilterLessMinite",
+
+    "nameplateAuraDefensiveGlow", "nameplateAuraDefensiveGlowRGB",
+    "nameplateAuraImportantGlow", "nameplateAuraImportantGlowRGB",
+    "nameplateAuraCCGlow", "nameplateAuraCCGlowRGB", "nameplateAuraCCGlowDispelColor",
+    "nameplateAuraPandemicGlowRGB", "alwaysShowPurgeTexture",
+    "npAuraPurgeGlowColorEnabled", "npAuraPurgeGlowRGB",
+    "nameplateAuraEnlargedGlowRGB",
+
+    "nameplateAuraSquare", "nameplateAuraTaller", "nameplateAuraPixelBorder",
+    "npColorAuraBorder",
+    "nameplateAuraRightToLeft", "nameplateAuraGrowDownwards",
+    "nameplateAurasEnemyCenteredBuffs", "nameplateAurasEnemyCenteredDebuffs",
+    "nameplateAurasFriendlyCenteredBuffs", "nameplateAurasFriendlyCenteredDebuffs",
+    "otherNpBuffBlueBorder",
+    "npAuraMagicRGB", "npAuraPoisonRGB", "npAuraCurseRGB", "npAuraDiseaseRGB",
+    "npAuraBleedRGB", "npAuraOtherRGB", "npAuraBuffsRGB",
+    "npAuraStackFont", "npAuraStackFontEnabled",
+    "npAuraShowStackText", "npAuraStackTextXPos", "npAuraStackTextYPos",
+    "npAuraStackTextAlign", "npAuraStackTextColor",
+    "npAuraCdFont", "npAuraCdFontEnabled",
+
+    "bbpAuraScale", "nameplateAuraDebuffScale", "nameplateAuraBuffScale",
+    "nameplateAuraCountScale", "nameplateAuraWidthGap", "nameplateAuraHeightGap",
+    "nameplateAuraRowAmount", "nameplateAuraRowFriendlyAmount",
+    "maxAurasOnNameplate", "maxBuffsOnNameplate", "nameplateAuraBuffLimit", "ccIconLimit",
+    "nameplateAurasXPos", "nameplateAurasYPos", "nameplateDebuffXPadding",
+    "bbpDebuffPadding", "sortDurationAuras", "sortDurationAurasReverse",
+    "targetNameplateAuraScaleEnabled", "targetNameplateAuraScale",
+    "nameplateAuraEnlargedScale", "nameplateAuraEnlargedSquare",
+    "sortEnlargedAurasFirst", "enlargeAllCC", "enlargeAllImportantBuffs",
+
+    "nameplateAuraCCOnEnemyPlayers", "nameplateAuraCCOnFriendlyPlayers",
+    "nameplateAuraCCOnNpcs", "nameplateAuraCCBlizzardInPvE",
+    "ccIconScale", "ccIconXPos", "ccIconYPos", "ccIconAnchor",
+    "nameplateAuraBuffsOnEnemyPlayers", "nameplateAuraBuffsOnFriendlyPlayers",
+    "nameplateAuraBuffsOnNpcs", "nameplateAuraBuffsBlizzardInPvE",
+    "buffIconScale", "buffIconXPos", "buffIconYPos", "buffIconAnchor",
+    "combineBigAuraIcons", "combinedBigIconAnchor",
+    "moveNormalBuffs", "moveNormalBuffsAnchor",
+
+    "showDefaultCooldownNumbersOnNpAuras", "hideNpAuraSwipe",
+    "nameplateAuraHideLongDurationText", "nameplateAuraUseBlizzardCdText",
+    "nameplateAuraMillisecondsBuffs", "nameplateAuraMillisecondsCC",
+    "nameplateAuraTimerColor", "nameplateAuraTimerBaseColor",
+    "nameplateAuraTimerLowColor", "nameplateAuraTimerLowThreshold",
+    "defaultNpAuraCdSize", "bigNpAuraCdSize", "npAuraCdTextBigOnly",
+
+    "nameplateAuraPlayersOnly", "nameplateAuraPlayersOnlyShowTarget",
+    "hideNameplateAuraTooltip", "auraTooltipSpellID", "nameplateAuraTestMode",
+    "prdAurasEnabled", "prdAuraScale", "prdAuraXPos", "prdAuraYPos",
+    "prdAuraRowAmount", "prdAuraLimit",
+}
+
+local AURA_LOOK_SETTINGS = {
+    nameplateAuraSquare = true,
+    nameplateAuraTaller = true,
+    nameplateAuraPixelBorder = true,
+    npColorAuraBorder = true,
+    npAuraMagicRGB = true,
+    npAuraPoisonRGB = true,
+    npAuraCurseRGB = true,
+    npAuraDiseaseRGB = true,
+    npAuraBleedRGB = true,
+    npAuraOtherRGB = true,
+    npAuraBuffsRGB = true,
+    npAuraStackFont = true,
+    npAuraStackFontEnabled = true,
+}
+
+function BBP.ResetNameplateAuraSettings(keep)
+    local db = BetterBlizzPlatesDB
+    for _, key in ipairs(NAMEPLATE_AURA_SETTINGS) do
+        if not (keep and keep[key]) then
+            local default = defaultSettings[key]
+            if type(default) == "table" then
+                db[key] = CopyTable(default)
+            else
+                db[key] = default
+            end
+        end
+    end
 end
 
 local cvarList = {
@@ -1054,9 +1175,9 @@ local cvarList = {
     --"nameplateSelfBottomInset",
     --"nameplateSelfAlpha",
     -- Midnights
-    "nameplateDebuffPadding",
     "nameplateStyle",
     "nameplateAuraScale",
+    "nameplateDebuffPadding",
     "nameplateSimplifiedScale",
 }
 
@@ -1139,13 +1260,15 @@ function BBP.ResetNameplateCVars()
     else
         for cvarName, indexList in pairs(bitCVarList) do
             for _, index in ipairs(indexList) do
-                local defaultValue = C_CVar.GetCVarBitfield(cvarName, index)
+                local defaultValue = BBP.GetPlayerNameplateBit(cvarName, index)
                 if not BetterBlizzPlatesDB.bitfields then BetterBlizzPlatesDB.bitfields = {} end
                 if not BetterBlizzPlatesDB.bitfields[cvarName] then BetterBlizzPlatesDB.bitfields[cvarName] = {} end
                 BetterBlizzPlatesDB.bitfields[cvarName][tostring(index)] = defaultValue
             end
         end
     end
+
+    BBP.ReassertBlizzardAuraCVars()
 end
 
 local function CVarDefaultOnLogout()
@@ -1164,6 +1287,7 @@ local function CVarDefaultOnLogout()
             end
         end
     end
+
 end
 
 local frame = CreateFrame("Frame")
@@ -1212,7 +1336,7 @@ local function CVarFetcher()
                 BetterBlizzPlatesDB.bitfields[cvarName] = {}
             end
             for _, index in ipairs(indexList) do
-                local currentValue = C_CVar.GetCVarBitfield(cvarName, index)
+                local currentValue = BBP.GetPlayerNameplateBit(cvarName, index)
                 BBPCVarBackupsDB.bitfields[cvarName][tostring(index)] = currentValue
                 BetterBlizzPlatesDB.bitfields[cvarName][tostring(index)] = currentValue
             end
@@ -1292,7 +1416,7 @@ function BBP.CVarAdditionFetcher()
             local needsDB = BetterBlizzPlatesDB.bitfields[cvarName][key] == nil
 
             if needsBackup or needsDB then
-                local currentValue = C_CVar.GetCVarBitfield(cvarName, index)
+                local currentValue = BBP.GetPlayerNameplateBit(cvarName, index)
                 if needsBackup then
                     BBPCVarBackupsDB.bitfields[cvarName][key] = currentValue
                 end
@@ -1510,36 +1634,14 @@ StaticPopupDialogs["BETTERBLIZZPLATES_COMBAT_WARNING"] = {
     preferredIndex = 3,
 }
 
-local function UpdateAuraColorsToGreen()
-    if BetterBlizzPlatesDB and BetterBlizzPlatesDB["auraWhitelist"] then
-        for _, entry in pairs(BetterBlizzPlatesDB["auraWhitelist"]) do
-            if entry.entryColors and entry.entryColors.text then
-                -- Update to green color
-                entry.entryColors.text.r = 0
-                entry.entryColors.text.g = 1
-                entry.entryColors.text.b = 0
-            else
-                entry.entryColors = { text = { r = 0, g = 1, b = 0 } }
-            end
-        end
-    end
-end
-
-local function AddAlphaValuesToAuraColors()
-    if BetterBlizzPlatesDB and BetterBlizzPlatesDB["auraWhitelist"] then
-        for _, entry in pairs(BetterBlizzPlatesDB["auraWhitelist"]) do
-            if entry.entryColors and entry.entryColors.text then
-                entry.entryColors.text.a = 1
-            else
-                entry.entryColors = { text = { r = 0, g = 1, b = 0, a = 1 } }
-            end
-        end
-    end
-end
-
 -- Update message
 local function SendUpdateMessage()
     if sendUpdate then
+        if BetterBlizzPlatesDB.skipUpdateMsg then
+            BetterBlizzPlatesDB.skipUpdateMsg = nil
+            BBP.skippedUpdateMsg = true
+            return
+        end
         if not BetterBlizzPlatesDB.scStart then
             C_Timer.After(7, function()
                 --bbp news
@@ -2458,14 +2560,14 @@ local function ClassColorPlayerNameplate(frame, force)
     if not UnitIsPlayer(frame.unit) then return end
     if isEnemy(frame.unit) and (BetterBlizzPlatesDB.nameplateShowClassColor or GetCVarBool("nameplateShowClassColor")) then
         local class = UnitClassBase(frame.unit)
-        local classColor = RAID_CLASS_COLORS[class]
+        local classColor = C_ClassColor.GetClassColor(class)
         if classColor then
             frame.healthBar:SetStatusBarColor(classColor.r, classColor.g, classColor.b)
             frame.needsRecolor = true
         end
     elseif (BetterBlizzPlatesDB.nameplateShowFriendlyClassColor or GetCVarBool("nameplateShowFriendlyClassColor")) then
         local class = UnitClassBase(frame.unit)
-        local classColor = RAID_CLASS_COLORS[class]
+        local classColor = C_ClassColor.GetClassColor(class)
         if classColor then
             frame.healthBar:SetStatusBarColor(classColor.r, classColor.g, classColor.b)
             frame.needsRecolor = true
@@ -2725,10 +2827,6 @@ local function SetCVarsOnLogin()
             C_CVar.SetCVar("nameplateShowOnlyNameForFriendlyPlayerUnits", "1")
         end
 
-        if BetterBlizzPlatesDB.nameplateDebuffPadding then
-            C_CVar.SetCVar("nameplateDebuffPadding", BetterBlizzPlatesDB.nameplateDebuffPadding)
-        end
-
         if BetterBlizzPlatesDB.nameplateSimplifiedScale then
             C_CVar.SetCVar("nameplateSimplifiedScale", BetterBlizzPlatesDB.nameplateSimplifiedScale)
         end
@@ -2737,9 +2835,17 @@ local function SetCVarsOnLogin()
             C_CVar.SetCVar("nameplateStyle", BetterBlizzPlatesDB.nameplateStyle)
         end
 
-        if BetterBlizzPlatesDB.nameplateAuraScale then
-            C_CVar.SetCVar("nameplateAuraScale", BetterBlizzPlatesDB.nameplateAuraScale)
+        if not BetterBlizzPlatesDB.enableNameplateAuraCustomisation then
+            if BetterBlizzPlatesDB.nameplateAuraScale then
+                C_CVar.SetCVar("nameplateAuraScale", BetterBlizzPlatesDB.nameplateAuraScale)
+            end
+
+            if BetterBlizzPlatesDB.nameplateDebuffPadding then
+                C_CVar.SetCVar("nameplateDebuffPadding", BetterBlizzPlatesDB.nameplateDebuffPadding)
+            end
         end
+
+        C_CVar.SetCVar(NamePlateConstants.SHOW_DEBUFFS_ON_FRIENDLY_CVAR, "0")
 
         if BetterBlizzPlatesDB.NamePlateVerticalScale then
             local verticalScale = tonumber(BetterBlizzPlatesDB.NamePlateVerticalScale)
@@ -2752,6 +2858,10 @@ local function SetCVarsOnLogin()
 
         if BetterBlizzPlatesDB.friendlyClassColorName then
             C_CVar.SetCVar("nameplateUseClassColorForFriendlyPlayerUnitNames", "1")
+        end
+
+        if BetterBlizzPlatesDB.forceShowTotemNames then
+            C_CVar.SetCVar("UnitNameEnemyTotemName", "1")
         end
 
         if BetterBlizzPlatesDB.setCVarAcrossAllCharacters then
@@ -2777,7 +2887,10 @@ local function SetCVarsOnLogin()
         if BetterBlizzPlatesDB.bitfields then
             for cvarName, indices in pairs(BetterBlizzPlatesDB.bitfields) do
                 for key, value in pairs(indices) do
-                    C_CVar.SetCVarBitfield(cvarName, tonumber(key), value)
+                    local index = tonumber(key)
+                    if not BBP.IsSuppressedAuraBit(cvarName, index) then
+                        C_CVar.SetCVarBitfield(cvarName, index, value)
+                    end
                 end
             end
         end
@@ -2787,52 +2900,33 @@ local function SetCVarsOnLogin()
 end
 
 --#################################################################################################
+local function RebindPlateAuras(frame)
+    if not frame or not frame.unit then return end
+    if not BetterBlizzPlatesDB.enableNameplateAuraCustomisation then return end
+    local info = frame.BetterBlizzPlates and frame.BetterBlizzPlates.unitInfo
+    if not info then return end
+    info.isTarget = UnitIsUnit(frame.unit, "target")
+    BBP.BindNameplateAuras(frame.unit, frame, info)
+end
+
 function BBP.ToggleNameplateAuras(frame)
-    local db = BetterBlizzPlatesDB
-    if not db.nameplateAuraPlayersOnly then return end
-    --if not frame then return end
-
-    local isTarget = UnitIsUnit(frame.unit, "target") --needs update
-    local shouldShowAuras = (db.nameplateAuraPlayersOnlyShowTarget and isTarget)
-
-    frame.AurasFrame:SetAlpha(shouldShowAuras and 1 or 0)
+    if not BetterBlizzPlatesDB.nameplateAuraPlayersOnly then return end
+    RebindPlateAuras(frame)
 end
 
 function BBP.TargetNameplateAuraSize(frame)
-    local db = BetterBlizzPlatesDB
-    if not db.targetNameplateAuraScaleEnabled then return end
-    --if not frame then return end
-    local isTarget = UnitIsUnit(frame.unit, "target") --needs update
-
-    frame.AurasFrame:SetScale(isTarget and db.targetNameplateAuraScale or 1)
+    if not BetterBlizzPlatesDB.targetNameplateAuraScaleEnabled then return end
+    RebindPlateAuras(frame)
 end
 
 --#################################################################################################
 local function ToggleNameplateBuffFrameVisibility(frame)
     local config = frame.BetterBlizzPlates.config
-    local info = frame.BetterBlizzPlates.unitInfo
-
-    local buffFrameAlpha = 1
     if config.hideNameplateAuras then
-        if not frame.bbpHookedBuffFrameAlpha then
-            hooksecurefunc(frame.AurasFrame, "SetAlpha", function(self)
-                if frame:IsForbidden() or self.changing then return end
-                self.changing = true
-                self:SetAlpha(0)
-                self.changing = false
-            end)
-            frame.bbpHookedBuffFrameAlpha = true
-            frame.AurasFrame:SetAlpha(0)
-        end
-        return
+        BBP.SetNameplateAurasShown(frame, false)
     elseif config.nameplateAuraPlayersOnly then
-        if config.nameplateAuraPlayersOnlyShowTarget and info.isTarget then
-            buffFrameAlpha = 1
-        else
-            buffFrameAlpha = info.isPlayer and 1 or 0
-        end
+        BBP.SetNameplateAurasShown(frame, true)
     end
-    frame.AurasFrame:SetAlpha(buffFrameAlpha)
 end
 
 local function ToggleTargetNameplateHighlight(frame)
@@ -2943,7 +3037,7 @@ function BBP.ClassColorAndScaleNames(frame)
     if isPlayer then
         if ((isEnemy or isNeutral) and enemyClassColorName) or (isFriend and friendlyClassColorName) then
             local _, class = UnitClass(frame.unit)
-            local classColor = RAID_CLASS_COLORS[class]
+            local classColor = C_ClassColor.GetClassColor(class)
             frame.name:SetVertexColor(classColor.r, classColor.g, classColor.b)
         elseif ((isEnemy or isNeutral) and enemyColorName) or (isFriend and friendlyColorName) then
             local color = isEnemy and db.enemyColorNameRGB or db.friendlyColorNameRGB
@@ -3919,7 +4013,7 @@ function BBP.ShowMurloc(frame)
     frame.HealthBarsContainer:SetAlpha(0)
     frame.HealthBarsContainer.alphaZero = true
     frame.selectionHighlight:SetAlpha(0)
-    frame.AurasFrame:SetAlpha(0)
+    BBP.SetNameplateAurasShown(frame, false)
     frame.name:SetAlpha(0)
     frame.nameHidden = true
     frame.murlocMode:Show()
@@ -4073,14 +4167,6 @@ end
 
 --################################################################################################
 -- Color NPCs
-local casters = {
-    ["PRIEST"] = true,
-    ["MAGE"] = true,
-    ["WARLOCK"] = true,
-    ["SHAMAN"] = true,
-    ["PALADIN"] = true,
-    ["DRUID"] = true,
-}
 function BBP.ColorNpcHealthbar(frame)
     if not BBP.isInPvE and not BetterBlizzPlatesDB.colorNPCEverywhere then return end
     if not frame or not frame.unit then return end
@@ -4090,38 +4176,39 @@ function BBP.ColorNpcHealthbar(frame)
 
     local db = BetterBlizzPlatesDB
     local lvl = UnitEffectiveLevel(frame.unit)
-    local playerLvl = UnitLevel("player")
+    local instanceLvl = BBP.npcInstanceLevel or UnitEffectiveLevel("player")
     local classification = UnitClassification(frame.unit)
+    local caster = UnitHasPowerType(frame.unit, Enum.PowerType.Mana)
 
     if classification == "elite" then
-        if lvl == playerLvl then
-            local class = UnitClassBase(frame.unit)
-            if casters[class] then
-                config.npcHealthbarColor = db.npcColorCaster
-            else
-                config.npcHealthbarColor = db.npcColorMelee
-            end
-        elseif lvl == (playerLvl + 1) then
+        if lvl == instanceLvl + 1 or UnitIsLieutenant(frame.unit) then
+            BBP.npcLieutenantLevel = lvl
             config.npcHealthbarColor = db.npcColorMiniboss
-        elseif lvl >= (playerLvl + 2) or lvl == -1 then
+        elseif lvl == -1 or lvl == instanceLvl + 2 or (BBP.npcLieutenantLevel and lvl == BBP.npcLieutenantLevel + 1) or UnitIsBossMob(frame.unit) or UnitIsQuestBoss(frame.unit) then
             config.npcHealthbarColor = db.npcColorBoss
+        elseif caster then
+            config.npcHealthbarColor = db.npcColorCaster
         else
-            if UnitIsBossMob(frame.unit) or UnitIsQuestBoss(frame.unit) then
-                config.npcHealthbarColor = db.npcColorBoss
-            else
-                local class = UnitClassBase(frame.unit)
-                if casters[class] then
-                    config.npcHealthbarColor = db.npcColorCaster
-                else
-                    config.npcHealthbarColor = nil
-                    return
-                end
-            end
+            config.npcHealthbarColor = db.npcColorMelee
         end
     elseif classification == "trivial" then
-        config.npcHealthbarColor = db.npcColorTrivial
+        if caster then
+            config.npcHealthbarColor = db.npcColorCaster
+        else
+            config.npcHealthbarColor = db.npcColorTrivial
+        end
     elseif classification == "minus" then
-        config.npcHealthbarColor = db.npcColorMinus
+        if caster then
+            config.npcHealthbarColor = db.npcColorCaster
+        else
+            config.npcHealthbarColor = db.npcColorMinus
+        end
+    elseif classification == "normal" then
+        if caster then
+            config.npcHealthbarColor = db.npcColorCaster
+        else
+            config.npcHealthbarColor = db.npcColorMelee
+        end
     elseif classification == "rareelite" or classification == "rare" then
         config.npcHealthbarColor = db.npcColorRareElite
     elseif classification == "worldboss" then
@@ -4378,13 +4465,8 @@ hooksecurefunc("CompactUnitFrame_UpdateHealthColor", function(frame)
         if totemColor then
             local isEnemyOk = not config.totemIndicatorEnemyOnly or not info.isFriend
             if isEnemyOk and config.totemIndicatorColorHealthBar then
-                if config.totemIsImportantAura ~= nil then
-                    frame.healthBar:GetStatusBarTexture():SetVertexColorFromBoolean(
-                        config.totemIsImportantAura,
-                        CreateColor(unpack(config.totemAuraColorImportant)),
-                        CreateColor(unpack(config.totemAuraColorNormal))
-                    )
-                else
+                if config.totemUninterruptible == nil
+                    or not BBP.PaintTotemHealthbarFromBoolean(frame, config.totemUninterruptible, unpack(totemColor)) then
                     frame.healthBar:SetStatusBarColor(unpack(totemColor))
                 end
             end
@@ -4445,9 +4527,8 @@ function BBP.CompactUnitFrame_UpdateHealthColor(frame, exitLoop)
 		else
 			--Try to color it by class.
 			local localizedClass, englishClass = UnitClass(frame.unit);
-			local classColor = RAID_CLASS_COLORS[englishClass];
+			local classColor = C_ClassColor.GetClassColor(englishClass)
 			--debug
-			--classColor = RAID_CLASS_COLORS["PRIEST"];
 			local useClassColors = CompactUnitFrame_GetOptionUseClassColors(frame, frame.optionTable);
 			if ( (frame.optionTable.allowClassColorsForNPCs or UnitIsPlayer(frame.unit) or UnitTreatAsPlayerForDisplay(frame.unit)) and classColor and useClassColors ) then
 				-- Use class colors for players if class color option is turned on
@@ -4534,27 +4615,17 @@ function BBP.CompactUnitFrame_UpdateHealthColor(frame, exitLoop)
         if totemColor then
             local isEnemyOk = not config.totemIndicatorEnemyOnly or not info.isFriend
             if isEnemyOk then
-                if config.totemIsImportantAura ~= nil then
-                    if config.totemIndicatorColorHealthBar then
-                        frame.healthBar:GetStatusBarTexture():SetVertexColorFromBoolean(
-                            config.totemIsImportantAura,
-                            CreateColor(unpack(config.totemAuraColorImportant)),
-                            CreateColor(unpack(config.totemAuraColorNormal))
-                        )
-                    end
-                    if config.totemIndicatorColorName or config.totemIndicatorColorNameOthers then
-                        frame.name:SetVertexColorFromBoolean(
-                            config.totemIsImportantAura,
-                            CreateColor(unpack(config.totemAuraColorImportant)),
-                            CreateColor(unpack(config.totemAuraColorNormal))
-                        )
-                    end
-                else
-                    local colorName = config.totemIsImportant and config.totemIndicatorColorName or config.totemIndicatorColorNameOthers
-                    if config.totemIndicatorColorHealthBar then
+                local uninterruptible = config.totemUninterruptible
+                local colorName = config.totemIsImportant and config.totemIndicatorColorName or config.totemIndicatorColorNameOthers
+                if config.totemIndicatorColorHealthBar then
+                    if uninterruptible == nil
+                        or not BBP.PaintTotemHealthbarFromBoolean(frame, uninterruptible, unpack(totemColor)) then
                         frame.healthBar:SetStatusBarColor(unpack(totemColor))
                     end
-                    if colorName then
+                end
+                if colorName then
+                    if uninterruptible == nil
+                        or not BBP.PaintTotemNameFromBoolean(frame, uninterruptible, unpack(totemColor)) then
                         frame.name:SetVertexColor(unpack(totemColor))
                     end
                 end
@@ -4567,7 +4638,6 @@ end
 --     local frame = PersonalResourceDisplayFrame and PersonalResourceDisplayFrame.HealthBarsContainer
 --     if not frame then return end
 --     _, playerClass = UnitClass("player")
---     playerClassColor = RAID_CLASS_COLORS[playerClass]
 
 --     local function ColorPRD()
 --         if BetterBlizzPlatesDB.personalNpTRP3Color then
@@ -4624,7 +4694,7 @@ local function NameplateShadowAndMouseoverHighlight(frame)
     local r,g,b,a
     if classColorShadow then
         local class = UnitClassBase(frame.unit)
-        local classColor = RAID_CLASS_COLORS[class]
+        local classColor = C_ClassColor.GetClassColor(class)
         if classColor then
             r,g,b = classColor.r, classColor.g, classColor.b
         else
@@ -4709,7 +4779,7 @@ local function StartPeriodicCheck()
                     local r,g,b,a
                     if classColorShadow then
                         local class = UnitClassBase(frame.unit)
-                        local classColor = RAID_CLASS_COLORS[class]
+                        local classColor = C_ClassColor.GetClassColor(class)
                         if classColor then
                             r,g,b = classColor.r, classColor.g, classColor.b
                         else
@@ -4759,7 +4829,7 @@ local function EnableMouseoverChecker()
                     local r,g,b,a
                     if classColorShadow then
                         local class = UnitClassBase(frame.unit)
-                        local classColor = RAID_CLASS_COLORS[class]
+                        local classColor = C_ClassColor.GetClassColor(class)
                         if classColor then
                             r,g,b = classColor.r, classColor.g, classColor.b
                         else
@@ -4966,69 +5036,6 @@ end
 function BBP.RefUnitAuraTotally(unitFrame)
     --local unit = unitFrame.unit
     --BBP.UpdateBuffs(unitFrame.AurasFrame, unit, nil, {}, unitFrame)
-end
-
-local auraModuleIsOn = false
-function BBP.RunAuraModule()
-    if BBP.isMidnight then return end
-    auraModuleIsOn = true
-
-    BBP.UpdateAuraTypeColors()
-
-    function BBP.HidePersonalBuffFrame()
-        if (PersonalFriendlyBuffFrame ~= nil) then
-            local parentNameplate = PersonalFriendlyBuffFrame:GetParent();
-            if (parentNameplate ~= nil and parentNameplate.UnitFrame ~= nil and not UnitIsUnit(parentNameplate.UnitFrame.unit, "player")) then
-                PersonalFriendlyBuffFrame:Hide();
-            else
-                local hideDefaultPersonalNameplateAuras = BetterBlizzPlatesDB.hideDefaultPersonalNameplateAuras
-                PersonalFriendlyBuffFrame:SetShown(not hideDefaultPersonalNameplateAuras);
-            end
-        end
-    end
-
-    function BBP.On_NpRefreshOnce(frame)
-        --if unitFrame:IsForbidden() then return end
-        BBP.RefUnitAuraTotally(frame)
-    end
-
-
-    local function UIObj_Event(self, event, ...)
-        local unit, unitAuraUpdateInfo = ...
-        if unit:find("nameplate") then
-            local nameplate, frame = BBP.GetSafeNameplate(unit)
-            if frame then
-                BBP.OnUnitAuraUpdate(frame.AurasFrame, unit, unitAuraUpdateInfo)
-            end
-        end
-    end
-
-    local UIObjectDriveFrame = CreateFrame("Frame", "BBP_Aura", UIParent)
-    UIObjectDriveFrame:SetScript("OnEvent", UIObj_Event)
-    UIObjectDriveFrame:RegisterEvent("UNIT_AURA")
-
-    --function BBP.HookBlizzedFunc()
-        hooksecurefunc(NamePlateDriverFrame, "UpdateNamePlateOptions", function()
-            for k, namePlate in pairs(C_NamePlate.GetNamePlates(false)) do
-                BBP.On_NpRefreshOnce(namePlate.UnitFrame)
-            end
-        end)
-
-        -- Unit Faction
-    hooksecurefunc(NamePlateUnitFrameMixin, "OnUnitFactionChanged", function(self, unit)
-        if not unit:find("nameplate") then return end
-        local nameplate, frame = BBP.GetSafeNameplate(unit)
-        if frame then
-            BBP.On_NpRefreshOnce(frame)
-            C_Timer.After(0.2, function()     --This needs more testing, silly attempt to make sure nameplates are updated after Mind Control
-                local nameplate, frame = BBP.GetSafeNameplate(unit)
-                if frame then
-                    BBP.On_NpRefreshOnce(frame)
-                end
-            end)
-        end
-    end)
-    --end
 end
 
 local function ColorNameplateBorder(self, frame)
@@ -5472,7 +5479,7 @@ local function HideFriendlyHealthbar(frame)
                 frame.HealthBarsContainer:SetAlpha(0)
                 frame.HealthBarsContainer.alphaZero = true
                 frame.selectionHighlight:SetAlpha(0)
-                frame.AurasFrame:SetAlpha(0)
+                BBP.SetNameplateAurasShown(frame, false)
             else
                 frame.HealthBarsContainer:SetAlpha(1)
                 frame.HealthBarsContainer.alphaZero = false
@@ -5586,13 +5593,19 @@ local function HandleNamePlateRemoved(unit)
         end
     end
 
+    frame.totemRecheckArmed = nil
+    BBP.DisableTotemAuraContainer(frame)
+
     if frame.BetterBlizzPlates and frame.BetterBlizzPlates.config then
         local config = frame.BetterBlizzPlates.config
         config.totemColorRGB = nil
         config.totemIsImportant = nil
-        config.totemIsImportantAura = nil
+        config.totemUninterruptible = nil
+        config.totemTestType = nil
         config.auraColorRGB = nil
         config.npcHealthbarColor = nil
+        BBP.ClearTotemBooleanColors(frame)
+        BBP.ClearPsyfiendIconAlpha(frame)
     end
 
     if frame.needsRecolor then
@@ -5773,6 +5786,8 @@ function BBP.RepositionName(frame)
         config.useFakeNameAnchorBottom = BetterBlizzPlatesDB.useFakeNameAnchorBottom
         config.fakeNameAnchor = BetterBlizzPlatesDB.fakeNameAnchor
         config.fakeNameAnchorRelative = BetterBlizzPlatesDB.fakeNameAnchorRelative
+        config.fakeNameAnchorFriendly = BetterBlizzPlatesDB.fakeNameAnchorFriendly
+        config.fakeNameAnchorRelativeFriendly = BetterBlizzPlatesDB.fakeNameAnchorRelativeFriendly
         config.fakeNameScaleWithParent = BetterBlizzPlatesDB.fakeNameScaleWithParent
         config.fakeNameRaiseStrata = BetterBlizzPlatesDB.fakeNameRaiseStrata
         config.fakeNameMaxWidthOn = BetterBlizzPlatesDB.fakeNameMaxWidthOn
@@ -5782,20 +5797,22 @@ function BBP.RepositionName(frame)
         if frame:IsForbidden() or not frame.unit or frame.name.changing then return end
         frame.name.changing = true
         local db = BetterBlizzPlatesDB
-        --frame.name:ClearPoint("BOTTOM")
+        local isfriend = isFriend(frame.unit)
+        local usedBottomAnchor = false
         frame.name:ClearAllPoints()
-        if isFriend(frame.unit) then
+        if isfriend then
             if db.useFakeNameAnchorBottom then
+                usedBottomAnchor = true
                 frame.name:SetPoint("BOTTOM", frame, "BOTTOM", db.fakeNameFriendlyXPos, db.fakeNameFriendlyYPos + 27)
             else
-                frame.name:SetPoint(db.fakeNameAnchor, frame.healthBar.topNameAnchor or frame.healthBar, db.fakeNameAnchorRelative, db.fakeNameFriendlyXPos, db.fakeNameFriendlyYPos + 4)
+                frame.name:SetPoint(db.fakeNameAnchorFriendly, frame.healthBar.topNameAnchor or frame.healthBar, db.fakeNameAnchorRelativeFriendly, db.fakeNameFriendlyXPos, db.fakeNameFriendlyYPos + 4)
             end
         else
             frame.name:SetPoint(db.fakeNameAnchor, frame.healthBar.topNameAnchor or frame.healthBar, db.fakeNameAnchorRelative, db.fakeNameXPos, db.fakeNameYPos + 4)
         end
-        if BetterBlizzPlatesDB.fakeNameMaxWidthOn then
-            frame.name:SetWidth(BetterBlizzPlatesDB.fakeNameMaxWidth)
-            frame.name:SetJustifyH(nameJustify[BetterBlizzPlatesDB.fakeNameAnchor] or "CENTER")
+        if db.fakeNameMaxWidthOn then
+            frame.name:SetWidth(db.fakeNameMaxWidth)
+            frame.name:SetJustifyH(usedBottomAnchor and "CENTER" or (nameJustify[isfriend and db.fakeNameAnchorFriendly or db.fakeNameAnchor] or "CENTER"))
         end
         frame.name.changing = false
     end
@@ -6934,7 +6951,9 @@ local function HandleNamePlateAdded(unit)
         -- end
     end
 
-    -- Buff/CC/LoC aura positioning is now handled centrally in BBP.NameplateAuraTweaksTemp
+    if config.enableNameplateAuraCustomisation then
+        BBP.BindNameplateAuras(unit, frame, info)
+    end
 
 
     if BetterBlizzPlatesDB.classicRetailNameplates then
@@ -7122,7 +7141,11 @@ local function HandleNamePlateAdded(unit)
     if config.showLastNameNpc then ShowLastNameOnlyNpc(frame) end
 
     -- Show totem icons
-    if config.totemIndicator and info.isNpc then BBP.ApplyTotemIconsAndColorNameplate(frame) end
+    if config.totemIndicator and info.isNpc then
+        BBP.ApplyTotemIconsAndColorNameplate(frame)
+    else
+        BBP.DisableTotemAuraContainer(frame)
+    end
 
     -- Color nameplate depending on aura
     if config.auraColor then BBP.AuraColor(frame) end
@@ -7172,8 +7195,10 @@ local function HandleNamePlateAdded(unit)
         BBP.UpdateNameplateTargetText(frame, frame.unit)
     end
     if ((config.hideFriendlyNameText or (config.partyPointerHideAll and frame.partyPointer and frame.partyPointer:IsShown())) and info.isFriend) or (config.hideEnemyNameText and not info.isFriend) then
-        frame.name:SetAlpha(0)
-        frame.nameHidden = true
+        if not (BetterBlizzPlatesDB.forceShowTotemNames and BBP.IsProbablyTotem(frame.unit)) then
+            frame.name:SetAlpha(0)
+            frame.nameHidden = true
+        end
     end
 
     if config.showGuildNames then ShowFriendlyGuildName(frame, frame.unit) end
@@ -7207,6 +7232,7 @@ local frameRemoved = CreateFrame("Frame")
 frameRemoved:RegisterEvent("NAME_PLATE_UNIT_REMOVED")
 frameRemoved:SetScript("OnEvent", function(self, event, unit)
     HandleNamePlateRemoved(unit)
+    BBP.UnbindNameplateAuras(unit)
 end)
 
 --#################################################################################################
@@ -7381,6 +7407,8 @@ function BBP.RefreshAllNameplates()
 
             if BetterBlizzPlatesDB.totemIndicator and info.isNpc then
                 BBP.ApplyTotemIconsAndColorNameplate(frame)
+            else
+                BBP.DisableTotemAuraContainer(frame)
             end
 
             if frame.castBar then
@@ -7618,17 +7646,11 @@ function BBP.ConsolidatedUpdateName(frame)
         if config.totemIndicatorHideNameAndShiftIconDown then
             frame.name:SetText("")
         else
-            if config.totemIsImportantAura ~= nil then
-                if config.totemIndicatorColorName or config.totemIndicatorColorNameOthers then
-                    frame.name:SetVertexColorFromBoolean(
-                        config.totemIsImportantAura,
-                        CreateColor(unpack(config.totemAuraColorImportant)),
-                        CreateColor(unpack(config.totemAuraColorNormal))
-                    )
-                end
-            else
-                local colorName = config.totemIsImportant and config.totemIndicatorColorName or config.totemIndicatorColorNameOthers
-                if colorName then
+            local colorName = config.totemIsImportant and config.totemIndicatorColorName or config.totemIndicatorColorNameOthers
+            if colorName then
+                local uninterruptible = config.totemUninterruptible
+                if uninterruptible == nil
+                    or not BBP.PaintTotemNameFromBoolean(frame, uninterruptible, unpack(config.totemColorRGB)) then
                     frame.name:SetVertexColor(unpack(config.totemColorRGB))
                 end
             end
@@ -7636,11 +7658,9 @@ function BBP.ConsolidatedUpdateName(frame)
     end
 
     if (config.hideFriendlyNameText and info.isFriend) or (config.hideEnemyNameText and not info.isFriend) then
-        if BetterBlizzPlatesDB.forceShowTotemNames then
-            local isProbablyTotem = UnitIsMinion(unit) and (not UnitIsOtherPlayersPet(unit) and not UnitIsUnit(unit, "pet"))
-            if not isProbablyTotem then
-                frame.name:SetAlpha(0)
-            end
+        if BetterBlizzPlatesDB.forceShowTotemNames and BBP.IsProbablyTotem(unit) then
+            frame.name:SetAlpha(1)
+            frame.nameHidden = nil
         else
             frame.name:SetAlpha(0)
         end
@@ -7703,8 +7723,10 @@ local function UpdateInstanceStatus()
     BBP.isInPvPZone = isPvPZone and pvpType ~= "sanctuary"
     BBP.IsInCompStomp = IsInBrawlCompStomp()
 
-    local _, _, _, _, _, _, _, instanceMapID = GetInstanceInfo()
+    local _, _, _, _, _, _, _, instanceMapID, _, lfgDungeonID = GetInstanceInfo()
     BBP.isInAV = instanceMapID == 30 -- Alterac Valley
+    BBP.npcInstanceLevel = lfgDungeonID and GetMaxLevelForExpansionLevel(GetMaximumExpansionLevel()) or UnitEffectiveLevel("player")
+    BBP.npcLieutenantLevel = nil
 end
 
 -- Function to update the current class role
@@ -8107,17 +8129,16 @@ Frame:SetScript("OnEvent", function(...)
     CheckForUpdate()
 
     _, playerClass = UnitClass("player")
-    playerClassColor = RAID_CLASS_COLORS[playerClass]
+    playerClassColor = C_ClassColor.GetClassColor(playerClass)
 
     --BBP.ToggleSpellCastEventRegistration()
 
     BBP.ToggleTargetTextAlwaysShow()
 
     if db.enableNameplateAuraCustomisation then
-        --BBP.RunAuraModule()
-        --BBP.SmokeCheckBootup()
-        --BBP.SetUpAuraInterrupts()
-        --BBP.UpdateImportantBuffsAndCCTables()
+        BBP.SetupNameplateAuras()
+    else
+        BBP.RestoreBlizzardNameplateAuras()
     end
 
     --if BetterBlizzPlatesDB.enableCastbarCustomization then
@@ -8392,6 +8413,7 @@ local function TurnOnEnabledFeaturesOnLogin()
     end
 
     --BBP.ToggleSpellCastEventRegistration()
+    BBP.HookCastbarStyleAndAnchoring()
     BBP.ApplyNameplateWidth()
     BBP.ToggleFriendlyNameplatesAuto()
     BBP.ToggleAbsorbIndicator()
@@ -8537,6 +8559,162 @@ First:SetScript("OnEvent", function(_, event, addonName)
                 db.dbCleanMidnight = true
             end
 
+            if not db.dbCleanAuraContainers then
+                db.dbCleanAuraContainers = true
+                local gone = {
+                    "enableMidnightNameplateTweaks", "nameplateAuraRectangleSize",
+                    "nameplateAuraHideCooldownNumbers", "nameplateAuraHideCooldownNumbersAll",
+                    "forceNpCdTextScale", "nameplateCenterOnlyBuffs", "nameplateAurasGrowLeft",
+                    "personalNpBuffEnable", "personalNpBuffFilterAll", "personalNpBuffFilterBlizzard",
+                    "personalNpBuffFilterWatchList", "personalNpBuffFilterLessMinite",
+                    "personalNpBuffFilterOnlyMe", "personalNpBuffFilterBlacklist",
+                    "personalNpBuffFilterImportantBuffs",
+                    "personalNpdeBuffEnable", "personalNpdeBuffFilterAll", "personalNpdeBuffFilterCC",
+                    "personalNpdeBuffFilterWatchList", "personalNpdeBuffFilterLessMinite",
+                    "personalNpdeBuffFilterBlacklist",
+                    "nameplateAurasPersonalXPos", "nameplateAurasPersonalYPos",
+                    "nameplateAurasPersonalCenteredAnchor", "hideDefaultPersonalNameplateAuras",
+                    "nameplateAuraSelfScale", "nameplateAuraBuffSelfScale", "nameplateAuraDebuffSelfScale",
+                    "disableEnlargedAurasOnSelf", "disableCompactedAurasOnSelf", "disableImportantAurasOnSelf",
+                    "nameplateAuraCompactedScale", "nameplateAuraCompactedSquare",
+                    "sortCompactedAurasFirst",
+                    "onlyPandemicAuraMine",
+                    "showInterruptsOnNameplateAuras", "separateAuraBuffRow", "nameplateAuraTypeGap",
+                    "nameplateAurasNoNameYPos",
+                    "importantCCFull", "importantCCDisarm", "importantCCRoot", "importantCCSilence",
+                    "importantCCFullGlow", "importantCCDisarmGlow", "importantCCRootGlow", "importantCCSilenceGlow",
+                    "importantCCFullGlowRGB", "importantCCDisarmGlowRGB", "importantCCRootGlowRGB", "importantCCSilenceGlowRGB",
+                    "importantBuffsOffensives", "importantBuffsDefensives", "importantBuffsMobility",
+                    "importantBuffsOffensivesGlow", "importantBuffsDefensivesGlow", "importantBuffsMobilityGlow",
+                    "importantBuffsOffensivesGlowRGB", "importantBuffsDefensivesGlowRGB", "importantBuffsMobilityGlowRGB",
+                    "nameplateAuraPreloadAll", "nameplateAuraDefensiveTier",
+                    "nameplateAuraKeyAuraPositionEnabled", "nameplateAuraKeyAuraPositionEnabledFriendly",
+                    "nameplateKeyAuraScale", "nameplateKeyAurasXPos", "nameplateKeyAurasYPos",
+                    "nameplateKeyAurasHorizontalGap", "nameplateKeyAurasAnchor",
+                    "keyAurasImportantBuffsEnabled", "keyAurasImportantGlowOn", "customKeyAuras",
+                }
+                for _, key in ipairs(gone) do db[key] = nil end
+            end
+
+            if not db.dbAuraSettingsRefreshed then
+                db.dbAuraSettingsRefreshed = true
+                BBP.ResetNameplateAuraSettings(AURA_LOOK_SETTINGS)
+            end
+
+            if not db.midnightAuraOverhaul then
+                db.midnightAuraOverhaul = true
+
+                local AURA_FILTERS = {
+                    otherNpBuff      = { "FilterWatchList", "FilterOnlyMe", "FilterDefensives",
+                                         "FilterImportantBuffs", "FilterPurgeable", "FilterLessMinite" },
+                    otherNpdeBuff    = { "FilterWatchList", "FilterOnlyMe", "FilterCC",
+                                         "FilterBlizzard", "FilterLessMinite" },
+                    friendlyNpBuff   = { "FilterWatchList", "FilterOnlyMe", "FilterDefensives",
+                                         "FilterImportantBuffs", "FilterPurgeable", "FilterLessMinite" },
+                    friendlyNpdeBuff = { "FilterWatchList", "FilterOnlyMe", "FilterCC", "FilterPurgeable",
+                                         "FilterBlizzard", "FilterLessMinite" },
+                }
+                local function AnyFilterOn(prefix)
+                    for _, filter in ipairs(AURA_FILTERS[prefix]) do
+                        if db[prefix .. filter] then return true end
+                    end
+                    return false
+                end
+                local hadFilter = {}
+                for prefix in pairs(AURA_FILTERS) do
+                    hadFilter[prefix] = AnyFilterOn(prefix)
+                end
+
+                local bigCCIcon = db.nameplateAuraSeparateCCIcon ~= false
+                local ccOnPlayers = bigCCIcon and db.nameplateAuraCCOnPlayers ~= false
+                local ccOnNpcs = bigCCIcon and db.nameplateAuraCCOnNpcs ~= false
+                db.nameplateAuraCCOnEnemyPlayers = ccOnPlayers
+                db.nameplateAuraCCOnFriendlyPlayers = ccOnPlayers
+                db.nameplateAuraCCOnNpcs = ccOnNpcs
+                if not (ccOnPlayers or ccOnNpcs) then
+                    db.otherNpdeBuffFilterCC = false
+                    db.friendlyNpdeBuffFilterCC = false
+                end
+
+                local buffsOnPlayers = db.nameplateAuraBuffsOnPlayers ~= false
+                local buffsOnNpcs = db.nameplateAuraBuffsOnNpcs ~= false
+                db.nameplateAuraBuffsOnEnemyPlayers = buffsOnPlayers
+                db.nameplateAuraBuffsOnFriendlyPlayers = buffsOnPlayers
+                db.nameplateAuraBuffsOnNpcs = buffsOnNpcs
+                for _, prefix in ipairs({ "otherNpBuff", "friendlyNpBuff" }) do
+                    if not (buffsOnPlayers or buffsOnNpcs) then
+                        db[prefix .. "FilterImportantBuffs"] = false
+                        db[prefix .. "FilterDefensives"] = false
+                    elseif db[prefix .. "FilterDefensives"] == nil then
+                        db[prefix .. "FilterDefensives"] = db[prefix .. "FilterImportantBuffs"] and true or false
+                    end
+                end
+
+                db.nameplateAuraSeparateCCIcon = nil
+                db.nameplateAuraCCOnPlayers = nil
+                db.nameplateAuraBuffsOnPlayers = nil
+
+                db.otherNpBuffFilterWatchList = nil
+                db.friendlyNpdeBuffFilterWatchList = nil
+                db.otherNpBuffFilterBlacklist = nil
+                db.friendlyNpdeBuffFilterBlacklist = nil
+                db.friendlyNpdeBuffFilterOnlyMe = nil
+                db.otherNpBuffFilterOnlyMe = nil
+
+                for prefix in pairs(AURA_FILTERS) do
+                    if hadFilter[prefix] and db[prefix .. "Enable"] and not AnyFilterOn(prefix) then
+                        db[prefix .. "Enable"] = false
+                    end
+                end
+
+                local enemyCentered = db.nameplateAurasEnemyCenteredAnchor
+                local friendlyCentered = db.nameplateAurasFriendlyCenteredAnchor
+                db.nameplateAurasEnemyCenteredBuffs = enemyCentered and true or false
+                db.nameplateAurasEnemyCenteredDebuffs = enemyCentered and true or false
+                db.nameplateAurasFriendlyCenteredBuffs = friendlyCentered and true or false
+                db.nameplateAurasFriendlyCenteredDebuffs = friendlyCentered and true or false
+                db.nameplateAurasEnemyCenteredAnchor = nil
+                db.nameplateAurasFriendlyCenteredAnchor = nil
+
+                db.bbpDebuffPadding = tonumber(db.nameplateDebuffPadding) or 0
+                db.bbpAuraScale = tonumber(db.nameplateAuraScale) or 1
+
+                local auraBackup = db.bbpAuraCVarBackup
+                if auraBackup then
+                    if auraBackup.bitfields then
+                        db.bitfields = db.bitfields or {}
+                        for cvarName, indices in pairs(auraBackup.bitfields) do
+                            db.bitfields[cvarName] = db.bitfields[cvarName] or {}
+                            for key, value in pairs(indices) do
+                                db.bitfields[cvarName][key] = value
+                            end
+                        end
+                    end
+                    db.bbpAuraCVarBackup = nil
+                end
+                db.blizzShowDebuffsOnFriendly = nil
+
+                local useDefaults = db.enableNameplateAuraCustomisation
+                for _, cvar in ipairs({ "nameplateDebuffPadding", "nameplateAuraScale" }) do
+                    local value = useDefaults and C_CVar.GetCVarDefault(cvar) or C_CVar.GetCVar(cvar)
+                    db[cvar] = value
+                    if BBPCVarBackupsDB then BBPCVarBackupsDB[cvar] = value end
+                end
+
+                local skipUpdateMsg = db.skipUpdateMsg or BBP.skippedUpdateMsg or db.scStart
+                if db.firstSaveComplete and not skipUpdateMsg then
+                    StaticPopupDialogs["BBP_MIDNIGHT_AURA_OVERHAUL"] = {
+                        text = BBP.ICON_NAME.."\n\n|A:services-icon-warning:20:20|a |cffff8800IMPORTANT READ:|r |A:services-icon-warning:20:20|a\n\nLots of nameplate aura issues fixed and you will likely have to tweak your settings a bit. For a full overview read patch notes. Apologies for the inconvenience.\n\n- Lots of issues with nameplate auras have been fixed and tweaked. A lot of filters were not working as intended and not displaying properly.\n\n- The handling of Important/Defensives filters is changed; These filters now add those auras at the top of the nameplate how they used to before Midnight UNLESS the \"Big Buffs Icon\" is enabled, then it goes on the side of healthbar or wherever you have the Big Icon anchored.\n\n- Lots of new settings and filters for nameplate auras. Check patch notes for more and look around.",
+                        button1 = "Okay",
+                        timeout = 0,
+                        whileDead = true,
+                    }
+                    C_Timer.After(6, function()
+                        StaticPopup_Show("BBP_MIDNIGHT_AURA_OVERHAUL")
+                    end)
+                end
+            end
+
             if db.nameplateShowFriendlyGuardians and db.nameplateShowFriendlyPlayerGuardians == nil then
                 db.nameplateShowFriendlyPlayerGuardians = db.nameplateShowFriendlyGuardians
             end
@@ -8646,6 +8824,21 @@ First:SetScript("OnEvent", function(_, event, addonName)
                     end)
                 else
                     db.totemIndicatorUpdatedForMidnight = true
+                end
+            end
+
+            if not db.midnight121AuraUpdateMsg then
+                db.midnight121AuraUpdateMsg = true
+                if db.firstSaveComplete then
+                    StaticPopupDialogs["BBP_MIDNIGHT_121_AURA_UPDATE"] = {
+                        text = "|A:gmchat-icon-blizz:16:16|a Better|cff00c0ffBlizz|rPlates:\n\nBetterBlizzPlates has been updated for Midnight 12.1.\n\nThis means new aura settings and you will have to re-do your aura settings within the new systems.\n\nThere is a reset button to restore aura settings to BBP's default if things are looking too wacko from out the gates from your old setup.\n\nThere may be bugs and please use BugSack and BugGrabber to report them.\n\nThank you!",
+                        button1 = "OK",
+                        timeout = 0,
+                        whileDead = true,
+                    }
+                    C_Timer.After(7, function()
+                        StaticPopup_Show("BBP_MIDNIGHT_121_AURA_UPDATE")
+                    end)
                 end
             end
 
@@ -8779,6 +8972,35 @@ First:SetScript("OnEvent", function(_, event, addonName)
                 end
             end
 
+            if not db.midnightAuraListsCleaned then
+                local removedNameEntries = 0
+                for _, listName in ipairs({ "auraBlacklist", "auraWhitelist" }) do
+                    local list = db[listName]
+                    if type(list) == "table" then
+                        for i = #list, 1, -1 do
+                            local entry = list[i]
+                            if type(entry) ~= "table" or not tonumber(entry.id) then
+                                table.remove(list, i)
+                                removedNameEntries = removedNameEntries + 1
+                            end
+                        end
+                    end
+                end
+
+                db.midnightAuraListsCleaned = true
+                if removedNameEntries > 0 then
+                    BBP.auraListNeedsUpdate = true
+                end
+            end
+
+            if not db.optimizedAuraLists then
+                for _, listName in ipairs({ "auraBlacklist", "auraWhitelist" }) do
+                    db[listName] = BBP.NormalizeAuraList(db[listName])
+                end
+                db.optimizedAuraLists = true
+                BBP.auraListNeedsUpdate = true
+            end
+
             if db.nameplateMinScale and db.nameplateMaxScale then
                 -- Check if the two values are not the same
                 if db.nameplateMinScale ~= db.nameplateMaxScale and not BetterBlizzPlatesDB.disableCVarForceOnLogin then
@@ -8796,8 +9018,10 @@ First:SetScript("OnEvent", function(_, event, addonName)
             end
 
             TurnOnEnabledFeaturesOnLogin()
-            if db.enableMidnightNameplateTweaks then
-                BBP.NameplateAuraTweaksTemp()
+            if db.enableNameplateAuraCustomisation then
+                BBP.SetupNameplateAuras()
+            else
+                BBP.RestoreBlizzardNameplateAuras()
             end
             BBP.HideResourceFrames()
             BBP.InitializeOptions()
@@ -8943,7 +9167,7 @@ local function NamePlateCastBarTestMode(frame)
                         frame.dummyNameText:SetJustifyH("CENTER")
 
                         local _, classIdentifier = UnitClass("player")
-                        local color = RAID_CLASS_COLORS[classIdentifier]
+                        local color = C_ClassColor.GetClassColor(classIdentifier)
 
                         if color then
                             frame.dummyNameText:SetText(GetUnitName("player"))
@@ -9417,375 +9641,6 @@ end
 --         spellbar:SetPoint("TOP", frame, "BOTTOM",0, -2)
 --     end
 -- end
-
--- config
-
-function BBP.NameplateAuraTweaksTemp()
-    local function GetListType(self, listFrame)
-        if listFrame == self.DebuffListFrame then return "debuff"
-        elseif listFrame == self.BuffListFrame then return "buff"
-        elseif listFrame == self.CrowdControlListFrame then return "cc"
-        end
-    end
-
-    local function RemoveMasksFromIcon(icon)
-        if not icon or not icon.GetMaskTextures then return end
-        local masks = icon:GetMaskTextures()
-        if masks then
-            for _, mask in ipairs(masks) do
-                icon:RemoveMaskTexture(mask)
-            end
-        end
-    end
-
-    local function RestoreMasksOnIcon(icon)
-        if not icon or not icon.GetMaskTextures then return end
-        local parent = icon:GetParent()
-        if not parent then return end
-        for i = 1, parent:GetNumRegions() do
-            local region = select(i, parent:GetRegions())
-            if region and region:GetObjectType() == "MaskTexture" then
-                local masks = icon:GetMaskTextures()
-                local alreadyApplied = false
-                if masks then
-                    for _, m in ipairs(masks) do
-                        if m == region then
-                            alreadyApplied = true
-                            break
-                        end
-                    end
-                end
-                if not alreadyApplied and region:IsShown() then
-                    icon:AddMaskTexture(region)
-                end
-            end
-        end
-    end
-
-    local function OnAuraFrameRefreshed(auraFrame, listType)
-        local db = BetterBlizzPlatesDB
-        local pixelBorder = db.nameplateAuraPixelBorder
-        local rectangleAuras = db.nameplateAuraRectangleSize
-        local hideCooldownTimer = db.nameplateAuraHideCooldownNumbers
-        local cdTextSize = db.defaultNpAuraCdSize or 0.65
-
-        if not auraFrame or not auraFrame:IsShown() then return end
-
-        local hideCooldownAll = db.nameplateAuraHideCooldownNumbersAll
-
-        if listType == "debuff" then
-            local WIDTH = 20
-            local HEIGHT = rectangleAuras and 14 or 20
-            auraFrame:SetSize(WIDTH, HEIGHT)
-            if hideCooldownTimer then
-                auraFrame.Cooldown:SetHideCountdownNumbers(true)
-                auraFrame.cdHidden = true
-            elseif auraFrame.cdHidden then
-                auraFrame.Cooldown:SetHideCountdownNumbers(false)
-                auraFrame.cdHidden = nil
-            end
-        elseif listType == "buff" then
-            auraFrame:SetSize(25,25)
-            auraFrame:SetScale(db.buffIconScale or 1.35)
-            if hideCooldownTimer and hideCooldownAll then
-                auraFrame.Cooldown:SetHideCountdownNumbers(true)
-                auraFrame.cdHidden = true
-            elseif auraFrame.cdHidden then
-                auraFrame.Cooldown:SetHideCountdownNumbers(false)
-                auraFrame.cdHidden = nil
-            end
-        elseif listType == "cc" then
-            auraFrame:SetSize(25,25)
-            auraFrame:SetScale(db.ccIconScale or 1.35)
-            if hideCooldownTimer and hideCooldownAll then
-                auraFrame.Cooldown:SetHideCountdownNumbers(true)
-                auraFrame.cdHidden = true
-            elseif auraFrame.cdHidden then
-                auraFrame.Cooldown:SetHideCountdownNumbers(false)
-                auraFrame.cdHidden = nil
-            end
-        end
-
-        if pixelBorder then
-            if not auraFrame.bbpPixelBorderApplied then
-                BBP.SetupBorderOnFrame(auraFrame)
-                auraFrame.Cooldown:SetSwipeTexture(1)
-                RemoveMasksFromIcon(auraFrame.Icon)
-                if auraFrame.CountFrame then
-                    auraFrame.CountFrame:SetFrameLevel(auraFrame.borders:GetFrameLevel() + 2)
-                end
-                auraFrame.bbpPixelBorderApplied = true
-            end
-        elseif auraFrame.bbpPixelBorderApplied then
-            RestoreMasksOnIcon(auraFrame.Icon)
-            if auraFrame.borders then auraFrame.borders:Hide() end
-            auraFrame.bbpPixelBorderApplied = nil
-        end
-
-        if auraFrame.Cooldown and (not auraFrame.Cooldown.tullaCTC or BetterBlizzPlatesDB.forceNpCdTextScale) then
-            local cdText = auraFrame.Cooldown:GetCountdownFontString()
-            if cdText then
-                cdText:SetScale(cdTextSize)
-            end
-        end
-
-        if listType == "debuff" and rectangleAuras then
-            auraFrame.Icon:SetTexCoord(0.05, 0.95, 0.10, 0.60)
-        else
-            if pixelBorder then
-                auraFrame.Icon:SetTexCoord(0.08, 0.94, 0.08, 0.94)
-            else
-                auraFrame.Icon:SetTexCoord(0.02, 0.98, 0.02, 0.98)
-            end
-        end
-
-        for i = 1, auraFrame:GetNumRegions() do
-            local region = select(i, auraFrame:GetRegions())
-            if region then
-                if region:GetObjectType() == "Texture" and region:GetAtlas() == "UI-HUD-CoolDownManager-IconOverlay" then
-                    if pixelBorder then
-                        region:Hide()
-                    else
-                        if listType == "debuff" and rectangleAuras then
-                            region:Show()
-                            region:ClearAllPoints()
-                            region:SetPoint("TOPLEFT", auraFrame, "TOPLEFT", -4, 2.5)
-                            region:SetPoint("BOTTOMRIGHT", auraFrame, "BOTTOMRIGHT", 3.5, -2.5)
-                        else
-                            region:Show()
-                            region:ClearAllPoints()
-                            region:SetPoint("TOPLEFT", auraFrame, "TOPLEFT", -3.5, 3.5)
-                            region:SetPoint("BOTTOMRIGHT", auraFrame, "BOTTOMRIGHT", 3.5, -3.5)
-                        end
-                    end
-                elseif region:GetObjectType() == "MaskTexture" then
-                    if pixelBorder then
-                        region:Hide()
-                    else
-                        region:Show()
-                    end
-                end
-            end
-        end
-    end
-
-    local function LayoutDebuffAuras(self, listFrame)
-        local parent = listFrame:GetParent() and listFrame:GetParent():GetParent()
-        if not parent then return end
-
-        local db = BetterBlizzPlatesDB
-        local rightToLeft = db.nameplateAuraRightToLeft
-        local centerAuras = db.nameplateAurasEnemyCenteredAnchor
-        local debuffPad = C_CVar.GetCVar("nameplateDebuffPadding")
-        local debuffXPad = db.nameplateDebuffXPadding or 0
-        local WIDTH = 20
-        local GAP = db.nameplateAuraWidthGap or 4
-        local widthAndGap = WIDTH + GAP
-
-        local frames = {}
-        for af in self.auraItemFramePool:EnumerateActive() do
-            if af:GetParent() == listFrame and af:IsShown() then
-                frames[#frames + 1] = af
-            end
-        end
-
-        local totalAuras = #frames
-        local centerOffset = 0
-        if centerAuras and totalAuras > 0 then
-            local totalWidth = (totalAuras * WIDTH) + ((totalAuras - 1) * GAP)
-            centerOffset = totalWidth / 2
-        end
-
-        for idx, auraFrame in ipairs(frames) do
-            local i = idx - 1
-            auraFrame:ClearAllPoints()
-            if centerAuras then
-                local xOffset = -centerOffset + (WIDTH / 2) + (i * widthAndGap) + debuffXPad
-                auraFrame:SetPoint("BOTTOM", parent.healthBar, "TOP", xOffset, debuffPad)
-            elseif rightToLeft then
-                auraFrame:SetPoint("BOTTOMRIGHT", parent.healthBar, "TOPRIGHT", -(i * widthAndGap) + debuffXPad, debuffPad)
-            else
-                auraFrame:SetPoint("BOTTOMLEFT", parent.healthBar, "TOPLEFT", i * widthAndGap + debuffXPad, debuffPad)
-            end
-        end
-    end
-
-    local function LayoutAnchoredAuras(self, listFrame, anchor, xPos, yPos)
-        local parent = listFrame:GetParent() and listFrame:GetParent():GetParent()
-        if not parent or not parent.HealthBarsContainer then return end
-
-        local db = BetterBlizzPlatesDB
-        local GAP = db.nameplateAuraWidthGap or 4
-        local healthBar = parent.HealthBarsContainer
-
-        local frames = {}
-        for af in self.auraItemFramePool:EnumerateActive() do
-            if af:GetParent() == listFrame and af:IsShown() then
-                frames[#frames + 1] = af
-            end
-        end
-
-        if #frames == 0 then return end
-
-        for idx, auraFrame in ipairs(frames) do
-            local i = idx - 1
-            local width = 25
-            local widthAndGap = width + GAP
-
-            auraFrame:ClearAllPoints()
-            if anchor == "LEFT" then
-                auraFrame:SetPoint("RIGHT", healthBar, "LEFT", -(5 + i * widthAndGap) + xPos, yPos)
-            elseif anchor == "RIGHT" then
-                auraFrame:SetPoint("LEFT", healthBar, "RIGHT", (5 + i * widthAndGap) + xPos, yPos)
-            elseif anchor == "TOP" then
-                local totalCount = #frames
-                local totalWidth = (totalCount * width) + ((totalCount - 1) * GAP)
-                local centerOffset = totalWidth / 2
-                local xOffset = -centerOffset + (width / 2) + (i * widthAndGap) + xPos
-                local debuffPad = C_CVar.GetCVar("nameplateDebuffPadding")
-                auraFrame:SetPoint("BOTTOM", parent.healthBar, "TOP", xOffset, (tonumber(debuffPad) or 0) + 15 + yPos)
-            end
-        end
-    end
-
-    local function LayoutLossOfControl(self)
-        if not self.LossOfControlFrame or not self.LossOfControlFrame:IsShown() then return end
-        local parent = self:GetParent()
-        if not parent or not parent.HealthBarsContainer then return end
-
-        local db = BetterBlizzPlatesDB
-        local anchor = db.ccIconAnchor or "RIGHT"
-        local xPos = db.ccIconXPos or 0
-        local yPos = db.ccIconYPos or 0
-
-        self.LossOfControlFrame:SetScale(1)
-        if self.LossOfControlFrame.AuraItemFrame then
-            self.LossOfControlFrame.AuraItemFrame:SetScale(1)
-        end
-        self.LossOfControlFrame:ClearAllPoints()
-
-        if anchor == "LEFT" then
-            self.LossOfControlFrame:SetPoint("RIGHT", parent.HealthBarsContainer, "LEFT", -5 + xPos, yPos)
-        elseif anchor == "RIGHT" then
-            self.LossOfControlFrame:SetPoint("LEFT", parent.HealthBarsContainer, "RIGHT", 5 + xPos, yPos)
-        elseif anchor == "TOP" then
-            local debuffPad = tonumber(C_CVar.GetCVar("nameplateDebuffPadding")) or 0
-            self.LossOfControlFrame:SetPoint("BOTTOM", parent.HealthBarsContainer, "TOP", xPos, debuffPad + 25 + yPos)
-        end
-
-        local locAuraFrame = self.LossOfControlFrame.AuraItemFrame
-        if locAuraFrame and locAuraFrame:IsShown() then
-            locAuraFrame:ClearAllPoints()
-            locAuraFrame:SetPoint("CENTER", self.LossOfControlFrame, "CENTER", 0, 0)
-            OnAuraFrameRefreshed(locAuraFrame, "cc")
-            self.LossOfControlFrame:SetSize(25, 25)
-        end
-    end
-
-    hooksecurefunc(NamePlateAurasMixin, "RefreshList", function(self, listFrame, auraList)
-        if self:IsForbidden() then return end
-
-        local db = BetterBlizzPlatesDB
-        local listType = GetListType(self, listFrame)
-        if not listType then return end
-
-        for auraItemFrame in self.auraItemFramePool:EnumerateActive() do
-            if auraItemFrame:GetParent() == listFrame then
-                OnAuraFrameRefreshed(auraItemFrame, listType)
-            end
-        end
-
-        --listFrame:Show()
-
-        if listType == "debuff" then
-            LayoutDebuffAuras(self, listFrame)
-        elseif listType == "buff" then
-            local anchor = db.buffIconAnchor or "LEFT"
-            local xPos = db.buffIconXPos or 0
-            local yPos = db.buffIconYPos or 0
-            LayoutAnchoredAuras(self, listFrame, anchor, xPos, yPos)
-        elseif listType == "cc" then
-            local anchor = db.ccIconAnchor or "RIGHT"
-            local xPos = db.ccIconXPos or 0
-            local yPos = db.ccIconYPos or 0
-            LayoutAnchoredAuras(self, listFrame, anchor, xPos, yPos)
-        end
-    end)
-
-    hooksecurefunc(NamePlateAurasMixin, "RefreshLossOfControl", function(self)
-        if self:IsForbidden() then return end
-        LayoutLossOfControl(self)
-    end)
-
-    local TRACKED = {
-        nameplateDebuffPadding = true,
-        nameplateStyle = true,
-        nameplateAuraScale = true,
-    }
-
-    local function UpdateOneNameplate(plate)
-        if not plate or not plate.UnitFrame then return end
-        local uf = plate.UnitFrame
-        if uf:IsForbidden() then return end
-        local auras = uf.AurasFrame
-        if not auras or not auras.auraItemFramePool then return end
-
-        local db = BetterBlizzPlatesDB
-
-        for auraFrame in auras.auraItemFramePool:EnumerateActive() do
-            local listType
-            local frameParent = auraFrame:GetParent()
-            if frameParent == auras.DebuffListFrame then
-                listType = "debuff"
-            elseif frameParent == auras.BuffListFrame then
-                listType = "buff"
-            elseif frameParent == auras.CrowdControlListFrame then
-                listType = "cc"
-            end
-            if listType then
-                OnAuraFrameRefreshed(auraFrame, listType)
-            end
-        end
-
-        LayoutDebuffAuras(auras, auras.DebuffListFrame)
-
-        local buffAnchor = db.buffIconAnchor or "LEFT"
-        LayoutAnchoredAuras(auras, auras.BuffListFrame, buffAnchor, db.buffIconXPos or 0, db.buffIconYPos or 0)
-
-        local ccAnchor = db.ccIconAnchor or "RIGHT"
-        LayoutAnchoredAuras(auras, auras.CrowdControlListFrame, ccAnchor, db.ccIconXPos or 0, db.ccIconYPos or 0)
-
-        LayoutLossOfControl(auras)
-    end
-
-    local function UpdateAllNameplatesAuras()
-        for _, plate in ipairs(C_NamePlate.GetNamePlates()) do
-            UpdateOneNameplate(plate)
-        end
-    end
-    BBP.UpdateAllNameplatesAuras = UpdateAllNameplatesAuras
-
-    local evt = CreateFrame("Frame")
-    evt:RegisterEvent("CVAR_UPDATE")
-
-    evt:SetScript("OnEvent", function(_, event, cvarName)
-        if TRACKED[cvarName] then
-            UpdateAllNameplatesAuras()
-        end
-    end)
-end
-
--- Fix Blizzards nameplate auras bugging after MC.
--- Varied reports of success:
--- All debuffs show afterwards instead of none, still an improvement.
--- Some reported it not working at all, no idea why that would be.
-hooksecurefunc(NamePlateAurasMixin, "UpdateFriendPlayerAuraFrames", function(self)
-    if self:IsForbidden() then return end
-    local unit = self:GetParent().unit
-    if unit and UnitIsPlayer(unit) and not self.DebuffListFrame:IsShown() and UnitCanAttack("player", unit) and C_CVar.GetCVarBitfield("nameplateEnemyPlayerAuraDisplay", Enum.NamePlateEnemyPlayerAuraDisplay.Debuffs) then
-        self.DebuffListFrame:Show()
-    end
-end)
 
 hooksecurefunc(NamePlateUnitFrameMixin, "UpdateAnchors", function(self)
     if self:IsForbidden() or not self.unit then return end
