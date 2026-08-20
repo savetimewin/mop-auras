@@ -171,6 +171,7 @@ function GladiusEx.Data.DefaultClassicon()
         [GladiusEx:SafeGetSpellName(58984)]	= 9, -- Shadowmeld
         [GladiusEx:SafeGetSpellName(11327)]	= 9, -- Vanish
         [GladiusEx:SafeGetSpellName(27827)]	= 9, -- Spirit of Redemption
+        [GladiusEx:SafeGetSpellName(1022)] = 8.9, -- Hand of Protection
 
         -- Offensive - Spell Caster Burst Damage CD + Proc (CD > Proc) (they can still use this while rooted if in range or disarmed)
         -- [GladiusEx:SafeGetSpellName(12472)]	= 8.5, -- Icy Veins
@@ -291,7 +292,6 @@ function GladiusEx.Data.DefaultClassicon()
         [GladiusEx:SafeGetSpellName(22842)]  = 5, -- Frenzied Regeneration
         [GladiusEx:SafeGetSpellName(86659)]  = 5, -- Guardian of Ancient Kings
         [GladiusEx:SafeGetSpellName(47788)]  = 5, -- Guardian Spirit
-        [GladiusEx:SafeGetSpellName(1022)]   = 5, -- Hand of Protection
         [GladiusEx:SafeGetSpellName(48792)]  = 5, -- Icebound Fortitude
         [GladiusEx:SafeGetSpellName(110575)] = 5, -- Icebound Fortitude (Druid) (Symbiosis)
         [GladiusEx:SafeGetSpellName(12975)]  = 5, -- Last Stand
