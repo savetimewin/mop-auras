@@ -276,6 +276,7 @@ local war_personal_nostack_debuffs = {
 	30108, -- Unstable Affliction Dot
 	109466, -- Curse of Enfeeblement
 	44457, -- Living Bomb 1.5
+	84617, -- Revealing Strike
 }
 
 -- default size is 1.3
