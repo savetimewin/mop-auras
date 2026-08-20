@@ -409,7 +409,8 @@ local major_offensive_buffs = {
 	115288, -- Energizing Brew
 	44544, -- Fingers of Frost 
 	105809, -- Holy Avenger
-	131078, -- Icy Veins -- no check spell id
+	12472, -- Icy Veins
+	131078, -- Icy Veins (Mage) (Glyph of Icy Veins)
 	51690, -- Killing Spree
 	51271, -- Pillar of Frost 
 	10060, -- Power Infusion 

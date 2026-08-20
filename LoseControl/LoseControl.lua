@@ -649,20 +649,54 @@ local interruptsIds = {
 }
 
 local spellIds = {
-	-- Brian's new category: Offensive
-	[1719] = "Offensive",		-- Recklessness
-	[31884] = "Offensive",		-- Avenging Wrath 
-	[114050] = "Offensive",		-- Ascendance (Ele)
-	[114051] = "Offensive",		-- Ascendance (Enhance)
-	[112071] = "Offensive",		-- Celestial Alignment
-	[102560] = "Offensive",		-- Incarnation: Chosen of Elune
+	-- Brian's new category: Big Offensive CDs
+	-- Warrior
+	[1719] = "Offensive", -- Recklessness
+
+	-- Paladin
+	[31884] = "Offensive", -- Avenging Wrath 
+
+	-- Shaman
+		-- Elemental
+	[114050] = "Offensive", -- Ascendance (Ele)
+		-- Enhancement
+	[114051] = "Offensive",	-- Ascendance (Enhance)
+
+	-- Druid
+		-- Balance
+	[112071] = "Offensive",	-- Celestial Alignment
+		-- Feral
 	[50334] = "Offensive",		-- Berserk
+
+	-- DK
+		-- Unholy
 	[49016] = "Offensive",		-- Unholy Frenzy
+		-- Frost
+	[51271] = "Offensive",		-- Pillar of Frost
+
+	-- Rogue
 	[121471] = "Offensive",		-- Shadow Blades
+
+	-- Hunter
 	[3045] = "Offensive",		-- Rapid Fire
+
+	-- Monk
+		-- Windwalker
 	[115288] = "Offensive",		-- Energizing Brew
-	[102543] = "Offensive",		-- Incarnation: King of the Jungle
+	
+	-- Mage
+		-- Arcane
 	[12042] = "Offensive",		-- Arcane Power 
+		-- Frost
+	[12472] = "Offensive", -- Icy Veins
+	[131078] = "Offensive", -- Icy Veins (Mage) (Glyph of Icy Veins)
+
+	-- Warlock
+	[113858] = "Offensive", -- Dark Soul: Misery
+	[113860] = "Offensive", -- Dark Soul: Instability
+	[113861] = "Offensive", -- Dark Soul: Knowledge
+
+
 	-- Death Knight
 	[108194] = "CC",		-- Asphyxiate
 	[115001] = "CC",		-- Remorseless Winter

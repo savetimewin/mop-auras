@@ -171,22 +171,10 @@ function GladiusEx.Data.DefaultClassicon()
         [GladiusEx:SafeGetSpellName(58984)]	= 9, -- Shadowmeld
         [GladiusEx:SafeGetSpellName(11327)]	= 9, -- Vanish
         [GladiusEx:SafeGetSpellName(27827)]	= 9, -- Spirit of Redemption
-        [GladiusEx:SafeGetSpellName(1022)] = 8.9, -- Hand of Protection
+        [GladiusEx:SafeGetSpellName(1022)] = 8.9, -- Hand of Protection (Magic CCs still go through)
 
-        -- Offensive - Spell Caster Burst Damage CD + Proc (CD > Proc) (they can still use this while rooted if in range or disarmed)
-        -- [GladiusEx:SafeGetSpellName(12472)]	= 8.5, -- Icy Veins
+        -- Offensive Procs that I need to Outplay/Anticipate like a Deep Freeze
         [GladiusEx:SafeGetSpellName(44544)]	= 8.5, -- Fingers of Frost
-        [GladiusEx:SafeGetSpellName(12042)]	= 8.5, -- Arcane Power
-        [GladiusEx:SafeGetSpellName(114050)] = 8.5, -- Ascendance (Elemental Shaman)
-        [GladiusEx:SafeGetSpellName(16166)] = 8.4, -- Elemental Mastery
-        [GladiusEx:SafeGetSpellName(114051)] = 8.5, -- Ascendance (Enhancement Shaman)
-        [GladiusEx:SafeGetSpellName(112071)] = 8.5, -- Celestial Alignment
-        [GladiusEx:SafeGetSpellName(113858)] = 8.5, -- Dark Soul: Instability
-        [GladiusEx:SafeGetSpellName(113861)] = 8.5, -- Dark Soul: Knowledge
-        [GladiusEx:SafeGetSpellName(113860)] = 8.5, -- Dark Soul: Misery
-        [GladiusEx:SafeGetSpellName(112071)] = 8.5, -- Celestial Alignment
-        [GladiusEx:SafeGetSpellName(102560)] = 8.4, -- Incarnation: Chosen of Elune
-
         -- Roots
         [GladiusEx:SafeGetSpellName(96294)]	= 8, -- Chains of Ice (Chilblains)
         [GladiusEx:SafeGetSpellName(25999)]	= 8, -- Charge
@@ -221,11 +209,6 @@ function GladiusEx.Data.DefaultClassicon()
 		[GladiusEx:SafeGetSpellName(45334)]	= 8, -- Immobilized
 		[GladiusEx:SafeGetSpellName(90327)]	= 8, -- Lock Jaw
 
-        -- Offensive - Melee Burst CD disarm not effective can be stopped with roots
-        [GladiusEx:SafeGetSpellName(50334)]	= 7.5, -- Berserk
-        [GladiusEx:SafeGetSpellName(102543)] = 7.4, -- Incarnation: King of the Jungle
-        [GladiusEx:SafeGetSpellName(115288)] = 7.5, -- Energizing Brew
-
         -- Disarms
         [GladiusEx:SafeGetSpellName(676)] = 7, -- Disarm
         [GladiusEx:SafeGetSpellName(126458)] = 7, -- Grapple Weapon (Symbiosis)
@@ -256,15 +239,10 @@ function GladiusEx.Data.DefaultClassicon()
         [GladiusEx:SafeGetSpellName(23920)] = 8.1, -- Spell Reflection (Warrior)
         [GladiusEx:SafeGetSpellName(113002)] = 8.1, -- Spell Reflection (Druid) (symbiosis)
         
-        -- Offensive - Melee Burst CD (can be stopped with roots 8 and disarms 7)
-        [GladiusEx:SafeGetSpellName(1719)] = 6,	-- Recklessness
-        [GladiusEx:SafeGetSpellName(13750)] = 6, -- Adrenaline Rush
-        [GladiusEx:SafeGetSpellName(13877)] = 6, -- Blade Flurry
-        [GladiusEx:SafeGetSpellName(3045)] = 6, -- Rapid Fire
-        [GladiusEx:SafeGetSpellName(51713)] = 6, -- Shadow Dance
-        [GladiusEx:SafeGetSpellName(49016)] = 6, -- Unholy Frenzy
-        [GladiusEx:SafeGetSpellName(51271)] = 6, -- Pillar of Frost
-        [GladiusEx:SafeGetSpellName(31884)] = 6, -- Avenging Wrath
+        [GladiusEx:SafeGetSpellName(13750)] = 6, -- Adrenaline Rush (Combat Rogue)
+        [GladiusEx:SafeGetSpellName(51713)] = 6, -- Shadow Dance (Subtlety Rogue)
+        [GladiusEx:SafeGetSpellName(102560)] = 6, -- Incarnation: Chosen of Elune (Balance Druid)
+        [GladiusEx:SafeGetSpellName(16166)] = 6, -- Elemental Mastery (Elemental Shaman)
 
         -- Defensive Cooldowns
         [GladiusEx:SafeGetSpellName(110909)] = 5, -- Alter Time
