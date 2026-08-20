@@ -42,7 +42,7 @@ local defaults = {
 	classIconSideViewMode = "SPEC",
 	classIconSideViewAttachTo = "Frame",
 	classIconSideViewSize = 20,
-	classIconShowLowestRemainingAura = true,
+	classIconShowLowestRemainingAura = false,
 }
 
 local ClassIcon = GladiusEx:NewGladiusExModule("ClassIcon",
