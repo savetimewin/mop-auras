@@ -571,6 +571,9 @@ local stances_forms = {
 	48265, -- Unholy Presence (DK)
 	48263, -- Blood Presence (DK)
 	5215, -- Prowl
+	30482, -- Molten Armor (Mage)
+	6117, -- Mage Armor (Mage)
+	7302, -- Frost Armor (Mage)
 }
 
 -- size 1.5
