@@ -1528,6 +1528,21 @@ local ccSilence = {
     [351338] = true, -- Quell (Evoker)
 }
 
+-- Arena CC priority: Full > Silence > Root > Disarm.
+-- Interrupt lockouts are treated as Silence.
+local function GetCCPriority(spellID)
+    if ccFull[spellID] then
+        return 4
+    elseif ccSilence[spellID] or interruptSpells[spellID] then
+        return 3
+    elseif ccRoot[spellID] then
+        return 2
+    elseif ccDisarm[spellID] then
+        return 1
+    end
+    return 0
+end
+
 
 local importantOffensivesColor = {r = 1, g = 0.5, b = 0, a = 1}
 local importantMobilityColor = {r = 0, g = 1, b = 1, a = 1}
@@ -2544,9 +2559,25 @@ local function defaultComparator(a, b)
     return a.auraInstanceID < b.auraInstanceID
 end
 
+local function compareCCPriority(a, b)
+    if a.isCC and b.isCC then
+        local priorityA = a.ccPriority or 0
+        local priorityB = b.ccPriority or 0
+        if priorityA ~= priorityB then
+            return priorityA > priorityB
+        end
+    end
+    return nil
+end
+
 local function durationComparator(a, b)
     if a.isCC ~= b.isCC then
         return a.isCC
+    end
+
+    local ccOrder = compareCCPriority(a, b)
+    if ccOrder ~= nil then
+        return ccOrder
     end
 
     if a.isEnlarged ~= b.isEnlarged then
@@ -2580,6 +2611,11 @@ local function reverseDurationComparator(a, b)
         return b.isCC
     end
 
+    local ccOrder = compareCCPriority(a, b)
+    if ccOrder ~= nil then
+        return ccOrder
+    end
+
     if a.isEnlarged ~= b.isEnlarged then
         return b.isEnlarged
     end
@@ -2609,6 +2645,11 @@ end
 local function largeSmallAuraComparator(a, b)
     if a.isCC ~= b.isCC then
         return a.isCC
+    end
+
+    local ccOrder = compareCCPriority(a, b)
+    if ccOrder ~= nil then
+        return ccOrder
     end
 
     if a.isEnlarged or b.isEnlarged then
@@ -2645,6 +2686,15 @@ local function largeSmallAuraComparator(a, b)
 end
 
 local function smallLargeAuraComparator(a, b)
+    if a.isCC ~= b.isCC then
+        return a.isCC
+    end
+
+    local ccOrder = compareCCPriority(a, b)
+    if ccOrder ~= nil then
+        return ccOrder
+    end
+
     if a.isCompacted or b.isCompacted then
         if a.isCompacted and not b.isCompacted then
             return true
@@ -4034,6 +4084,7 @@ function BBP.UpdateBuffs(self, unit, unitAuraUpdateInfo, auraSettings, UnitFrame
 
     local longestCCAura = nil
     local longestCCDuration = 0
+    local longestCCPriority = 0
     local pinnedAuras = isFriend and ((db["classIndicator"] and db["classIndicatorCCAuras"]) or (db["partyPointer"] and db["partyPointerCCAuras"])) and not (moveKeyAuras and moveKeyAurasFriendly)
 
 
@@ -4163,6 +4214,7 @@ function BBP.UpdateBuffs(self, unit, unitAuraUpdateInfo, auraSettings, UnitFrame
         -- end
         buff.isKeyAura = nil
         buff.isCC = nil
+        buff.ccPriority = nil
         buff.pinIcon = nil
 
         --buff:SetFrameStrata("HIGH")
@@ -4211,6 +4263,7 @@ function BBP.UpdateBuffs(self, unit, unitAuraUpdateInfo, auraSettings, UnitFrame
         local isCC = crowdControl[spellId]
         if isCC then
             buff.isCC = true
+            buff.ccPriority = GetCCPriority(spellId)
             if isEnemyUnit then
                 if db.otherNpdeBuffFilterCC then
                     if moveKeyAuras and ((moveKeyAurasFriendly and not isEnemyUnit) or isEnemyUnit) then
@@ -4238,7 +4291,11 @@ function BBP.UpdateBuffs(self, unit, unitAuraUpdateInfo, auraSettings, UnitFrame
             end
 
             if pinnedAuras and UnitFrame.classIndicatorCC then
-                if buff.duration and buff.expirationTime and buff.expirationTime > longestCCDuration then
+                local ccPriority = buff.ccPriority or 0
+                if buff.duration and buff.expirationTime and
+                    (ccPriority > longestCCPriority or
+                    (ccPriority == longestCCPriority and buff.expirationTime > longestCCDuration)) then
+                    longestCCPriority = ccPriority
                     longestCCDuration = buff.expirationTime
                     local ciColor
                     if isCC ~= true then
