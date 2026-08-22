@@ -100,7 +100,10 @@ function Timers:Update(unitGUID, srcGUID, category, spellID, isFriendly, isNotPe
     timer.isFriendly = isFriendly
     timer.expiration = GetTime() + (not timer.testMode and drTime or random(6, drTime))
 
-    StartTimers(timer, true, nil, true, nil, onAuraEnd)
+    -- SPELL_AURA_REMOVED must only start/reset the DR reset window. Treating it
+    -- as an application lets stale aura data re-run DR-stage inference when the
+    -- CC ends and can falsely advance the application counter.
+    StartTimers(timer, not onAuraEnd, nil, true, nil, onAuraEnd)
 end
 
 function Timers:Remove(unitGUID, category, noStop)
@@ -280,6 +283,29 @@ do
         return cached
     end
 
+    -- Infer the CURRENT DR application from the aura's fixed total duration,
+    -- never from remaining time. A full first application is ~1.0x, the second
+    -- is ~0.5x, and the third is ~0.25x for normal MoP DR categories.
+    local function GetAppliedStageFromDuration(category, currentDuration, maxDuration)
+        if not currentDuration or not maxDuration or maxDuration <= 0 then return end
+
+        local ratio = currentDuration / maxDuration
+        local secondRatio = DRList:GetNextDR(1, category)
+        local thirdRatio = DRList:GetNextDR(2, category)
+
+        local firstDistance = math.abs(ratio - 1)
+        local secondDistance = secondRatio > 0 and math.abs(ratio - secondRatio) or math.huge
+        local thirdDistance = thirdRatio > 0 and math.abs(ratio - thirdRatio) or math.huge
+
+        if thirdDistance < firstDistance and thirdDistance < secondDistance then
+            return 3
+        elseif secondDistance < firstDistance then
+            return 2
+        end
+
+        return 1
+    end
+
     local function Start(timer, isApplied, unitID, isUpdate, isRefresh, onAuraEnd)
         local origUnitID
         if unitID == "player-party" then -- CompactRaidFrame for player (no partyX id available for player)
@@ -320,15 +346,9 @@ do
                                     timer.applied = 1 -- Dynamic DR was most likely reset early
                                 end
                             else
-                                -- Determine the DR stage based on the ratio of current remaining duration to max base duration
-                                local remaining = expirationTime - GetTime()
-                                local ratio = remaining / maxDuration
-                                if math.abs(ratio - DRList:GetNextDR(2, timer.category)) <= 0.25 then
-                                    timer.applied = 3
-                                elseif math.abs(ratio - DRList:GetNextDR(1, timer.category)) <= 0.5 then
-                                    timer.applied = 2
-                                elseif math.abs(ratio - DRList:GetNextDR(3, timer.category)) <= 1.0 then
-                                    timer.applied = 1
+                                local inferredApplied = GetAppliedStageFromDuration(timer.category, current_duration, maxDuration)
+                                if inferredApplied then
+                                    timer.applied = inferredApplied
                                 end
                             end
                         end
@@ -358,14 +378,9 @@ do
                                                 timer.applied = 1
                                             end
                                         else
-                                            local remaining = exp - GetTime()
-                                            local ratio = remaining / maxDuration
-                                            if math.abs(ratio - DRList:GetNextDR(2, timer.category)) <= 0.25 then
-                                                timer.applied = 3
-                                            elseif math.abs(ratio - DRList:GetNextDR(1, timer.category)) <= 0.5 then
-                                                timer.applied = 2
-                                            elseif math.abs(ratio - DRList:GetNextDR(3, timer.category)) <= 1.0 then
-                                                timer.applied = 1
+                                            local inferredApplied = GetAppliedStageFromDuration(timer.category, cur_dur, maxDuration)
+                                            if inferredApplied then
+                                                timer.applied = inferredApplied
                                             end
                                         end
                                     end
