@@ -204,9 +204,6 @@ function TestMode:HideAnchors()
         self:UnregisterEvent("PLAYER_TARGET_CHANGED")
     end
     self:ToggleArenaAndPartyFrames(false)
-    if EditModeManagerFrame and EditModeManagerFrame.AccountSettings then -- Dragonflight...
-        HideUIPanel(EditModeManagerFrame)
-    end
 end
 
 local function OnMouseDown(self)
@@ -346,10 +343,6 @@ function TestMode:ShowAnchors()
             TestMode:CreateDummyAnchor(anchor, unitID)
         end
     end
-
-    if EditModeManagerFrame and EditModeManagerFrame.AccountSettings then
-        ShowUIPanel(EditModeManagerFrame)
-    end
 end
 
 function TestMode:Test(hide)
@@ -368,9 +361,6 @@ function TestMode:Test(hide)
         if self.personalNameplateCfg ~= nil then
             SetCVar("NameplatePersonalShowAlways", self.personalNameplateCfg)
             self.personalNameplateCfg = nil
-        end
-        if EditModeManagerFrame and EditModeManagerFrame.AccountSettings then -- Dragonflight...
-            HideUIPanel(EditModeManagerFrame)
         end
         return
     end
