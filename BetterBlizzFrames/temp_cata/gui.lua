@@ -2778,7 +2778,7 @@ local function guiGeneralTab()
     scrollFrame:SetScrollChild(contentFrame)
 
     local mainGuiAnchor = contentFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    mainGuiAnchor:SetPoint("TOPLEFT", 15, -15)
+    mainGuiAnchor:SetPoint("TOPLEFT", 30, -15)
     mainGuiAnchor:SetText(" ")
 
     local bgImg = BetterBlizzFrames:CreateTexture(nil, "BACKGROUND")
