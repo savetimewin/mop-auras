@@ -244,34 +244,64 @@ local function SetNavSelected(button, selected)
     end
 end
 
+local function UpdateNavigationSelection(buttons, pageName)
+    for name, button in pairs(buttons or {}) do
+        SetNavSelected(button, name == pageName)
+    end
+end
+
+local function AddNavigationButton(panel, nav, buttons, content, pageName, label, index)
+    local button = CreateFrame("Button", nil, nav, "UIPanelButtonTemplate")
+    button:SetHeight(28)
+    button:SetPoint("TOPLEFT", 8, -8 - ((index - 1) * 31))
+    button:SetPoint("TOPRIGHT", -8, -8 - ((index - 1) * 31))
+    button:SetText(label)
+    button.pageName = pageName
+    button.text = button:GetFontString()
+    button:SetScript("OnClick", function(self)
+        panel:ShowPage(self.pageName, content)
+    end)
+    buttons[pageName] = button
+end
+
 local function BuildNavigation(panel)
     if panel.navigationBuilt then return end
 
     local window = CreateStandaloneWindow(panel)
-    local nav = window.nav
     panel.navButtons = {}
 
-    local function AddButton(pageName, label, index)
-        local button = CreateFrame("Button", nil, nav, "UIPanelButtonTemplate")
-        button:SetHeight(28)
-        button:SetPoint("TOPLEFT", 8, -8 - ((index - 1) * 31))
-        button:SetPoint("TOPRIGHT", -8, -8 - ((index - 1) * 31))
-        button:SetText(label)
-        button.pageName = pageName
-        button.text = button:GetFontString()
-        button:SetScript("OnClick", function(self)
-            panel:ShowPage(self.pageName)
-        end)
-        panel.navButtons[pageName] = button
-    end
-
-    AddButton(panel.name, GENERAL or "General", 1)
+    AddNavigationButton(panel, window.nav, panel.navButtons, window.content, panel.name, GENERAL or "General", 1)
     for i = 1, #panel.pageOrder do
         local pageName = panel.pageOrder[i]
-        AddButton(pageName, pageName, i + 1)
+        AddNavigationButton(panel, window.nav, panel.navButtons, window.content, pageName, pageName, i + 1)
     end
 
     panel.navigationBuilt = true
+end
+
+local function BuildSettingsNavigation(panel)
+    if panel.settingsNavigationBuilt or not panel.settingsHost then return end
+
+    local host = panel.settingsHost
+    panel.settingsNavButtons = {}
+
+    AddNavigationButton(panel, host.nav, panel.settingsNavButtons, host.content, panel.name, GENERAL or "General", 1)
+    for i = 1, #panel.pageOrder do
+        local pageName = panel.pageOrder[i]
+        AddNavigationButton(panel, host.nav, panel.settingsNavButtons, host.content, pageName, pageName, i + 1)
+    end
+
+    panel.settingsNavigationBuilt = true
+end
+
+local function PopulateSettingsHost(panel)
+    if not panel.settingsHost or not next(DIMINISH_NS.db or {}) then
+        return
+    end
+
+    panel:EnsureInitialized()
+    BuildSettingsNavigation(panel)
+    panel:ShowPage(panel.currentPageName or panel.name, panel.settingsHost.content)
 end
 
 function Widgets:CreateMainPanel(name)
@@ -290,10 +320,10 @@ function Widgets:CreateMainPanel(name)
         BuildNavigation(self)
     end
 
-    function panel:ShowPage(pageName)
+    function panel:ShowPage(pageName, content)
         self:EnsureInitialized()
 
-        local window = self.window
+        local targetContent = content or self.window.content
         local page = pageName == self.name and self or self.pages[pageName]
         if not page then
             page = self
@@ -305,20 +335,19 @@ function Widgets:CreateMainPanel(name)
             self.currentPage:ClearAllPoints()
         end
 
-        if page:GetParent() ~= window.content then
-            page:SetParent(window.content)
+        if page:GetParent() ~= targetContent then
+            page:SetParent(targetContent)
         end
         page:ClearAllPoints()
-        page:SetAllPoints(window.content)
+        page:SetAllPoints(targetContent)
         page:Show()
         RefreshOnShow(page)
 
         self.currentPage = page
         self.currentPageName = pageName
 
-        for name, button in pairs(self.navButtons or {}) do
-            SetNavSelected(button, name == pageName)
-        end
+        UpdateNavigationSelection(self.navButtons, pageName)
+        UpdateNavigationSelection(self.settingsNavButtons, pageName)
     end
 
     function panel:OpenStandalone(pageName)
@@ -326,7 +355,7 @@ function Widgets:CreateMainPanel(name)
         RestoreWindowState(self.window)
         self.window:Show()
         self.window:Raise()
-        self:ShowPage(pageName or self.currentPageName or self.name)
+        self:ShowPage(pageName or self.currentPageName or self.name, self.window.content)
     end
 
     function panel:ToggleStandalone(pageName)
@@ -338,32 +367,73 @@ function Widgets:CreateMainPanel(name)
         end
     end
 
-    -- Keep an AddOns entry in Blizzard Settings, but use it only as a launcher
-    -- so the full Diminish UI can live in its own movable/resizable window.
+    -- Register the real Diminish configuration UI directly in Blizzard's
+    -- AddOns settings while keeping /dim as the standalone-window entry point.
     if Settings and Settings.RegisterCanvasLayoutCategory and Settings.RegisterAddOnCategory then
-        local launcher = CreateFrame("Frame", nil, UIParent)
-        launcher.name = "Diminish"
+        local template = _G.BackdropTemplateMixin and "BackdropTemplate" or nil
+        local settingsHost = CreateFrame("Frame", nil, UIParent)
+        settingsHost.name = "Diminish"
+        panel.settingsHost = settingsHost
 
-        local title = launcher:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
-        title:SetPoint("TOPLEFT", 16, -16)
-        title:SetText("Diminish")
+        local nav = CreateFrame("Frame", nil, settingsHost, template)
+        nav:SetPoint("TOPLEFT", 8, -8)
+        nav:SetPoint("BOTTOMLEFT", 8, 8)
+        nav:SetWidth(NAV_WIDTH)
+        if nav.SetBackdrop then
+            nav:SetBackdrop({
+                bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
+                edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+                tile = true,
+                tileSize = 16,
+                edgeSize = 12,
+                insets = { left = 3, right = 3, top = 3, bottom = 3 },
+            })
+            nav:SetBackdropColor(0.03, 0.03, 0.03, 0.55)
+            nav:SetBackdropBorderColor(0.45, 0.45, 0.45, 1)
+        end
+        settingsHost.nav = nav
 
-        local notes = launcher:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
-        notes:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 0, -12)
-        notes:SetText("Diminish options open in a separate movable and resizable window.")
+        local content = CreateFrame("Frame", nil, settingsHost)
+        content:SetPoint("TOPLEFT", nav, "TOPRIGHT", 10, 0)
+        content:SetPoint("BOTTOMRIGHT", settingsHost, "BOTTOMRIGHT", -8, 8)
+        settingsHost.content = content
 
-        local open = CreateFrame("Button", nil, launcher, "UIPanelButtonTemplate")
-        open:SetSize(220, 28)
-        open:SetPoint("TOPLEFT", notes, "BOTTOMLEFT", 0, -18)
-        open:SetText("Open Diminish Options")
-        open:SetScript("OnClick", function()
-            panel:OpenStandalone()
+        settingsHost:SetScript("OnShow", function()
+            if panel.window and panel.window:IsShown() then
+                panel.window:Hide()
+            end
+
+            PopulateSettingsHost(panel)
         end)
 
-        local category = Settings.RegisterCanvasLayoutCategory(launcher, launcher.name)
-        category.ID = category.ID or launcher.name
+        settingsHost:SetScript("OnHide", function()
+            if panel.currentPage and panel.currentPage:GetParent() == settingsHost.content then
+                panel.currentPage:Hide()
+            end
+        end)
+
+        local category = Settings.RegisterCanvasLayoutCategory(settingsHost, settingsHost.name)
+        category.ID = category.ID or settingsHost.name
         Settings.RegisterAddOnCategory(category)
         panel.settingsCategory = category
+
+        -- Blizzard's Settings canvas can display this registered frame without
+        -- running its OnShow script. Pre-build the embedded options once the
+        -- Diminish DB is ready so AddOns > Diminish is never an empty shell.
+        local initFrame = CreateFrame("Frame")
+        if IsLoggedIn() and next(DIMINISH_NS.db or {}) then
+            C_Timer.After(0, function()
+                PopulateSettingsHost(panel)
+            end)
+        else
+            initFrame:RegisterEvent("PLAYER_LOGIN")
+            initFrame:SetScript("OnEvent", function(self)
+                self:UnregisterEvent("PLAYER_LOGIN")
+                C_Timer.After(0, function()
+                    PopulateSettingsHost(panel)
+                end)
+            end)
+        end
     end
 
     SLASH_DIMINISH1 = "/diminish"
