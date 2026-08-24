@@ -204,7 +204,7 @@ LCT_SpellData[29166] = {
 -- Nature's Swiftness (misc)
 LCT_SpellData[132158] = {
 	class = "DRUID",
-	specID = { 102, 103, 105 },
+	specID = { 102, 105 },
 	none = true,
 	misc = true,
 	cooldown_starts_on_aura_fade = true,
