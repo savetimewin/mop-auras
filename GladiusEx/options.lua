@@ -254,6 +254,124 @@ function GladiusEx:GetPositions()
     }
 end
 
+-- Arena position controls use Blizzard arena1 as the origin. Position X/Y
+-- describe where GladiusEx arena1 sits relative to Blizzard arena1, while
+-- still moving the existing GladiusEx group anchor used by drag positioning.
+local function GetBlizzardArenaReference()
+    local function FindReference()
+        local candidates = {
+            _G.ArenaEnemyFrame1,
+            _G.CompactArenaFrameMember1,
+            _G.ArenaEnemyMatchFrame1,
+        }
+
+        for i = 1, #candidates do
+            local frame = candidates[i]
+            if frame and frame.GetLeft and frame.GetTop then
+                local left, top = frame:GetLeft(), frame:GetTop()
+                if left and top then
+                    return frame
+                end
+            end
+        end
+    end
+
+    local frame = FindReference()
+    if frame then
+        return frame
+    end
+
+    -- Blizzard_ArenaUI may be load-on-demand. Loading is attempted only out
+    -- of combat; if unavailable, the position controls remain disabled.
+    if not InCombatLockdown() then
+        local loadAddOn = (C_AddOns and C_AddOns.LoadAddOn) or LoadAddOn
+        if loadAddOn then
+            pcall(loadAddOn, "Blizzard_ArenaUI")
+            return FindReference()
+        end
+    end
+end
+
+local function GetScreenPosition(frame)
+    if not frame or not frame.GetLeft or not frame.GetTop then
+        return
+    end
+
+    local left, top = frame:GetLeft(), frame:GetTop()
+    if not left or not top then
+        return
+    end
+
+    local scale = frame:GetEffectiveScale() or 1
+    return left * scale, top * scale
+end
+
+local function RoundPixel(value)
+    if value >= 0 then
+        return math.floor(value + 0.5)
+    end
+    return math.ceil(value - 0.5)
+end
+
+function GladiusEx:CanPositionArenaRelativeToBlizzard()
+    local reference = GetBlizzardArenaReference()
+    local arena1 = self.buttons and self.buttons.arena1
+    local anchor = self.arena_anchor
+    if not reference or not arena1 or not anchor then
+        return false
+    end
+
+    local referenceX = GetScreenPosition(reference)
+    local frameX = GetScreenPosition(arena1)
+    local anchorX = GetScreenPosition(anchor)
+    return referenceX ~= nil and frameX ~= nil and anchorX ~= nil
+end
+
+function GladiusEx:GetArenaPositionOffset(axis)
+    local reference = GetBlizzardArenaReference()
+    local arena1 = self.buttons and self.buttons.arena1
+    if not reference or not arena1 then
+        return 0
+    end
+
+    local frameX, frameY = GetScreenPosition(arena1)
+    local referenceX, referenceY = GetScreenPosition(reference)
+    if not frameX or not referenceX then
+        return 0
+    end
+
+    local offset = axis == "x" and (frameX - referenceX) or (frameY - referenceY)
+    return RoundPixel(offset)
+end
+
+function GladiusEx:SetArenaPositionOffset(axis, value)
+    value = tonumber(value)
+    if not value then
+        return
+    end
+
+    local reference = GetBlizzardArenaReference()
+    local arena1 = self.buttons and self.buttons.arena1
+    local anchor = self.arena_anchor
+    if not reference or not arena1 or not anchor then
+        return
+    end
+
+    local frameX, frameY = GetScreenPosition(arena1)
+    local referenceX, referenceY = GetScreenPosition(reference)
+    local anchorX, anchorY = GetScreenPosition(anchor)
+    if not frameX or not referenceX or not anchorX then
+        return
+    end
+
+    local currentOffset = axis == "x" and (frameX - referenceX) or (frameY - referenceY)
+    local delta = value - currentOffset
+
+    self.db.arena.x.anchor_arena = anchorX + (axis == "x" and delta or 0)
+    self.db.arena.y.anchor_arena = anchorY + (axis == "y" and delta or 0)
+    self:UpdateFrames()
+end
+
 function GladiusEx:SetupModuleOptions(unit, key, module, order)
     local function getModuleOption(module, info)
         return (info.arg and module.db[unit][info.arg] or module.db[unit][info[#info]])
@@ -413,6 +531,50 @@ function GladiusEx:MakeGroupOptions(group, unit, order)
                                     return not self.db[unit].groupButtons
                                 end,
                                 order = 17
+                            },
+                            positionX = {
+                                type = "range",
+                                name = "Position X",
+                                desc = "Horizontal position of GladiusEx arena1 relative to Blizzard arena1. 0 aligns their left edges.",
+                                min = -2000,
+                                max = 2000,
+                                step = 1,
+                                bigStep = 10,
+                                get = function()
+                                    return self:GetArenaPositionOffset("x")
+                                end,
+                                set = function(_, value)
+                                    self:SetArenaPositionOffset("x", value)
+                                end,
+                                hidden = function()
+                                    return not self:IsArenaUnit(unit)
+                                end,
+                                disabled = function()
+                                    return not self.db[unit].groupButtons or not self:CanPositionArenaRelativeToBlizzard()
+                                end,
+                                order = 17.1
+                            },
+                            positionY = {
+                                type = "range",
+                                name = "Position Y",
+                                desc = "Vertical position of GladiusEx arena1 relative to Blizzard arena1. 0 aligns their top edges.",
+                                min = -2000,
+                                max = 2000,
+                                step = 1,
+                                bigStep = 10,
+                                get = function()
+                                    return self:GetArenaPositionOffset("y")
+                                end,
+                                set = function(_, value)
+                                    self:SetArenaPositionOffset("y", value)
+                                end,
+                                hidden = function()
+                                    return not self:IsArenaUnit(unit)
+                                end,
+                                disabled = function()
+                                    return not self.db[unit].groupButtons or not self:CanPositionArenaRelativeToBlizzard()
+                                end,
+                                order = 17.2
                             },
                             sep3 = {
                                 type = "description",
