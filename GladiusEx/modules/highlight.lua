@@ -84,6 +84,18 @@ end
 function Highlight:UNIT_TARGET(event, unit)
 	local unit = unit or ""
 
+	-- Test frames are synthetic and cannot be targeted/focused. Keep the
+	-- visual preview independent from UnitGUID so it stays visible while
+	-- positioning the arena frames.
+	if GladiusEx:IsTesting() then
+		for arenaUnit in pairs(self.frame) do
+			if GladiusEx:IsTesting(arenaUnit) then
+				self:Test(arenaUnit)
+			end
+		end
+		return
+	end
+
 	local playerTargetGUID = UnitGUID("target")
 	local focusGUID = UnitGUID("focus")
 	local targetGUID = UnitGUID(unit .. "target")
@@ -222,7 +234,24 @@ function Highlight:Reset(unit)
 end
 
 function Highlight:Test(unit)
-	-- test
+	local frame = self.frame[unit]
+	if not frame then return end
+
+	-- Purely visual test preview. arena1 represents target and arena2
+	-- represents focus; no real unit targeting is required or attempted.
+	self:Reset(unit)
+	frame:SetAlpha(1)
+	frame:Show()
+
+	if unit == "arena1" then
+		local color = self.db[unit].highlightTargetColor
+		frame.priority = self.db[unit].highlightTargetPriority
+		frame:SetBackdropBorderColor(color.r, color.g, color.b, color.a)
+	elseif unit == "arena2" then
+		local color = self.db[unit].highlightFocusColor
+		frame.priority = self.db[unit].highlightFocusPriority
+		frame:SetBackdropBorderColor(color.r, color.g, color.b, color.a)
+	end
 end
 
 function Highlight:GetOptions(unit)
