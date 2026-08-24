@@ -314,8 +314,19 @@ function TestMode:ShowAnchors()
     for _, unitID in pairs(NS.unitFrames) do
         if unitID == "arena" then
             if not DIMINISH_NS.IS_CLASSIC then
+                -- Keep arena test anchors on the same frame provider.
+                -- If GladiusEx is present, missing arena4/5 test frames must not
+                -- fall through to Blizzard arena frames.
+                local useGladiusEx = not DIMINISH_NS.db.unitFrames.arena.anchorUIParent
+                    and _G["GladiusExButtonFramearena1"] ~= nil
+
                 for i = 1, 5 do
-                    local anchor = DIMINISH_NS.Icons:GetAnchor(unitID..i, true)
+                    local anchor
+                    if useGladiusEx then
+                        anchor = _G["GladiusExButtonFramearena"..i]
+                    else
+                        anchor = DIMINISH_NS.Icons:GetAnchor(unitID..i, true)
+                    end
                     TestMode:CreateDummyAnchor(anchor, unitID, unitID..i)
                 end
             end

@@ -94,6 +94,7 @@ if not NS.IS_CLASSIC then
         "oUF_Adirelle_Arena%d",
         "Stuf.units.arena%d",
         "sArenaEnemyFrame%d",
+        "GladiusExButtonFramearena%d",
         "GladiusButtonFramearena%d",
         "oUF_LumenArena%d",
         "CompactArenaFrameMember%d",
