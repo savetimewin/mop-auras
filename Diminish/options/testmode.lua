@@ -211,7 +211,7 @@ end
 
 local function OnMouseDown(self)
     if self.unit == "nameplate" or (self.unit == "player" and DIMINISH_NS.db.unitFrames.player.usePersonalNameplate) then
-        return print("Please use the position sliders in Diminish_Options to set nameplate position. WoW patch 8.3.0 broke the drag to move functionaliy for nameplates.") -- luacheck: ignore
+        return print("Please use the position sliders in Diminish options to set nameplate position. WoW patch 8.3.0 broke the drag to move functionaliy for nameplates.") -- luacheck: ignore
     end
 
     self:StartMoving()

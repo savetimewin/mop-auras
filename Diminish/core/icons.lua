@@ -469,8 +469,8 @@ do
         frame.indicatorText:SetShown(db.colorBlind)
     end
 
-    -- Refresh everything for icons. Called by Diminish_Options.
-    -- Function is deleted if Diminish_Options is not enabled.
+    -- Refresh everything for icons. Called by the embedded Diminish options UI.
+    -- Kept available because the options UI is embedded.
     function Icons:OnFrameConfigChanged()
         local db = NS.db
 
@@ -632,7 +632,7 @@ do
 
     local function SetSpellTexture(frame, timer)
         if NS.db.categoryTextures[timer.category] then
-            -- Icon has been sat manually in Diminish_Options
+            -- Icon has been set manually in Diminish options
             return frame.icon:SetTexture(NS.db.categoryTextures[timer.category])
         end
 

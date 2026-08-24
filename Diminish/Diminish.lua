@@ -10,7 +10,7 @@ Diminish:SetScript("OnEvent", function(self, event, ...)
     return self[event](self, ...)
 end)
 
--- used for Diminish_Options
+-- shared with the embedded Diminish options UI
 NS.Diminish = Diminish
 _G.DIMINISH_NS = NS
 
@@ -212,7 +212,7 @@ function Diminish:InitDB()
 
     -- Reference to active db profile
     -- Always use this directly or reference will be invalid
-    -- after changing profile in Diminish_Options
+    -- after changing profile in the embedded options UI
     NS.db = DiminishDB.profiles[profile]
     NS.db.version = NS.DEFAULT_SETTINGS.version
     NS.activeProfile = profile
@@ -234,13 +234,8 @@ function Diminish:InitDB()
     -- Remove table values no longer found in default settings
     NS.CleanupDB(DiminishDB.profiles[profile], NS.DEFAULT_SETTINGS)
 
-    if not C_AddOns.IsAddOnLoaded("Diminish_Options") then
-        -- Cleanup functions/tables only used for Diminish_Options when it's not loaded
-        NS.DEFAULT_SETTINGS = nil
-        NS.CopyDefaults = nil
-        NS.CleanupDB = nil
-        Icons.OnFrameConfigChanged = nil
-    end
+    -- Options are embedded in Diminish, so keep the configuration helpers and
+    -- Icons:OnFrameConfigChanged() available for the lifetime of the addon.
 
     self.InitDB = nil
 end

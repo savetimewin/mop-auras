@@ -2,7 +2,7 @@ local ADDON_NAME, NS = ...
 local Widgets = NS.Widgets
 local TestMode = NS.TestMode
 local L = NS.L
-_G.DIMINISH_OPTIONS = NS
+_G.DIMINISH_OPTIONS = NS -- compatibility alias for existing internal checks
 
 NS.PLAYER_NAME = UnitName("player") .. "-" .. GetRealmName()
 
@@ -58,7 +58,7 @@ function Panel:Setup()
 
     --local notes = GetAddOnMetadata(self.name, "Notes-" .. GetLocale()) or GetAddOnMetadata(self.name, "Notes")
     Widgets:CreateHeader(self, gsub(self.name, "_", " "), C_AddOns.GetAddOnMetadata("Diminish", "Version"),
-        "\nClick the small red button next to Diminish_Options under the AddOns tab for frame specific options."
+        "\nUse /dim or /diminish to open the movable and resizable Diminish options window."
         .. "\n|cFFFF0000Note:|r Diminish is no longer actively maintained, use at your own risk.")
 
     local subCooldown = Widgets:CreateSubHeader(self, L.HEADER_COOLDOWN)

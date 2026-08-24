@@ -48,6 +48,13 @@ local function Refresh(self)
         end
     end
 
+    if unit == "arena" and frames.offsetX and frames.offsetY then
+        -- Arena has one shared X/Y offset only while attached to arena frames.
+        -- UIParent mode stores separate positions for arena1-5 instead.
+        frames.offsetX:SetShown(not unitFrameSettings.anchorUIParent)
+        frames.offsetY:SetShown(not unitFrameSettings.anchorUIParent)
+    end
+
     -- Refresh
     for k, category in pairs(DIMINISH_NS.CATEGORIES) do
         if frames.categories[k] then
@@ -204,18 +211,48 @@ for unitFrame, unit in pairs(NS.unitFrames) do
         end)
         frames.timerTextSize:SetPoint("LEFT", frames.iconPadding, 0, -50)
 
-        if unit == "nameplate" or unit == "player" then
-            -- Blizzard blocked :GetCenter() and such for nameplates in 8.2 which broke our drag anchoring,
-            -- so add sliders for setting positions for nameplate icons. This is a temp solution.
-            frames.offsetX = Widgets:CreateSlider(panel, "Position X", "Set X position for nameplate icons. Blizzard broke our drag-to-move functionality in patch 8.2 for nameplates so this is a temp workaround.", -200, 200, 1, function(_, value)
+        if unit == "nameplate" or unit == "player" or unit == "arena" then
+            local positionTooltip
+            local positionMin, positionMax = -200, 200
+
+            if unit == "arena" then
+                positionTooltip = "Set the shared position offset for all Arena DR icons while Anchor to UIParent is disabled."
+                positionMin, positionMax = -1000, 1000
+            else
+                -- Blizzard blocked :GetCenter() and such for nameplates in 8.2 which broke our drag anchoring,
+                -- so add sliders for setting positions for nameplate icons. This is a temp solution.
+                positionTooltip = "Set position for nameplate icons. Blizzard broke our drag-to-move functionality in patch 8.2 for nameplates so this is a temp workaround."
+            end
+
+            frames.offsetX = Widgets:CreateSlider(panel, "Position X", positionTooltip, positionMin, positionMax, 1, function(_, value)
                 db.offsetX = value
                 DIMINISH_NS.Icons:OnFrameConfigChanged()
+
+                -- Keep the red moving-frame anchors in sync while the user
+                -- fine-tunes Arena coordinates with the sliders/edit boxes.
+                if unit == "arena" and NS.TestMode:IsAnchoring() then
+                    for frame in NS.TestMode.pool:EnumerateActive() do
+                        if frame.realUnit == "arena" then
+                            frame:ClearAllPoints()
+                            frame:SetPoint("CENTER", frame:GetParent(), db.offsetX, db.offsetY)
+                        end
+                    end
+                end
             end)
             frames.offsetX:SetPoint("LEFT", frames.timerTextSize, 0, -50)
 
-            frames.offsetY = Widgets:CreateSlider(panel, "Position Y", "Set Y position for nameplate icons. Blizzard broke our drag-to-move functionality in patch 8.2 for nameplates so this is a temp workaround.", -200, 200, 1, function(_, value)
+            frames.offsetY = Widgets:CreateSlider(panel, "Position Y", positionTooltip, positionMin, positionMax, 1, function(_, value)
                 db.offsetY = value
                 DIMINISH_NS.Icons:OnFrameConfigChanged()
+
+                if unit == "arena" and NS.TestMode:IsAnchoring() then
+                    for frame in NS.TestMode.pool:EnumerateActive() do
+                        if frame.realUnit == "arena" then
+                            frame:ClearAllPoints()
+                            frame:SetPoint("CENTER", frame:GetParent(), db.offsetX, db.offsetY)
+                        end
+                    end
+                end
             end)
             frames.offsetY:SetPoint("LEFT", frames.offsetX, 0, -50)
         end
@@ -424,6 +461,7 @@ for unitFrame, unit in pairs(NS.unitFrames) do
             db.offsetsX = nil
 
             frames.growDirection:SetValue(nil)
+            panel.refresh(panel)
             DIMINISH_NS.Icons:OnFrameConfigChanged()
             if NS.TestMode:IsTestingOrAnchoring() then
                 NS.TestMode:HideAnchors()
@@ -443,6 +481,12 @@ for unitFrame, unit in pairs(NS.unitFrames) do
                 frames.offsetX:Hide()
                 frames.offsetY:Hide()
             end
+        end
+
+
+        if unit == "arena" and frames.offsetX and frames.offsetY then
+            frames.offsetX:SetShown(not db.anchorUIParent)
+            frames.offsetY:SetShown(not db.anchorUIParent)
         end
     end)
 end
