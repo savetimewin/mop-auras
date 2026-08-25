@@ -553,7 +553,9 @@ local function CreateSlider(parent, label, minValue, maxValue, stepValue, elemen
             self.Text:SetText(label .. ": " .. textValue)
             --if not BBF.checkCombatAndWarn() then
                 -- Update the X or Y position based on the axis
-                if axis == "X" then
+                if element:match("CastBarTimer[XY]Pos$") then
+                    BetterBlizzFramesDB[element] = value
+                elseif axis == "X" then
                     BetterBlizzFramesDB[element .. "XPos"] = value
                 elseif axis == "Y" then
                     BetterBlizzFramesDB[element .. "YPos"] = value
@@ -759,6 +761,11 @@ local function CreateSlider(parent, label, minValue, maxValue, stepValue, elemen
                 elseif element == "playerCastBarHeight" then
                     BetterBlizzFramesDB.playerCastBarHeight = value
                     BBF.ChangeCastbarSizes()
+                elseif element:match("CastBarTimer[XY]Pos$") then
+                    BetterBlizzFramesDB[element] = value
+                    if BBF.UpdateCastBarTimerPositions then
+                        BBF.UpdateCastBarTimerPositions()
+                    end
                 elseif element == "maxTargetBuffs" then
                     BetterBlizzFramesDB.maxTargetBuffs = value
                     BBF.RefreshAllAuraFrames()
@@ -876,6 +883,56 @@ local function CreateSlider(parent, label, minValue, maxValue, stepValue, elemen
             end
     end)
     return slider
+end
+
+local castBarTimerPositionOptionsFrames = {}
+local function OpenCastbarTimerPositionOptions(settingPrefix, label)
+    local frame = castBarTimerPositionOptionsFrames[settingPrefix]
+    if not frame then
+        frame = CreateFrame("Frame", "BBFCastbarTimerPositionOptions_" .. settingPrefix, UIParent, "BasicFrameTemplateWithInset")
+        frame:SetSize(230, 155)
+        frame:SetPoint("CENTER")
+        frame:SetFrameStrata("DIALOG")
+        frame:SetMovable(true)
+        frame:EnableMouse(true)
+        frame:RegisterForDrag("LeftButton")
+        frame:SetScript("OnDragStart", frame.StartMoving)
+        frame:SetScript("OnDragStop", frame.StopMovingOrSizing)
+
+        local title = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+        title:SetPoint("TOP", frame, "TOP", 0, -8)
+        title:SetText(label .. " Timer Position")
+
+        local note = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+        note:SetPoint("TOP", title, "BOTTOM", 0, -8)
+        note:SetText("Moves only the timer; spell text stays unchanged.")
+
+        local xSlider = CreateSlider(frame, "X Offset", -100, 100, 1, settingPrefix .. "TimerXPos", "X", 150)
+        xSlider:SetPoint("TOP", note, "BOTTOM", 0, -20)
+
+        local ySlider = CreateSlider(frame, "Y Offset", -100, 100, 1, settingPrefix .. "TimerYPos", "Y", 150)
+        ySlider:SetPoint("TOP", xSlider, "BOTTOM", 0, -20)
+
+        castBarTimerPositionOptionsFrames[settingPrefix] = frame
+    end
+
+    frame:Show()
+end
+
+
+local function AddCastbarTimerPositionRightClick(widget, settingPrefix, label)
+    widget:HookScript("OnMouseDown", function(_, button)
+        if button == "RightButton" then
+            GameTooltip:Hide()
+            OpenCastbarTimerPositionOptions(settingPrefix, label)
+        end
+    end)
+    widget:HookScript("OnEnter", function()
+        if GameTooltip:IsShown() then
+            GameTooltip:AddLine("Right-click to move only the timer text.", 0.2, 1, 0.6)
+            GameTooltip:Show()
+        end
+    end)
 end
 
 local function CreateTooltip(widget, tooltipText, anchor)
@@ -4379,6 +4436,7 @@ local function guiCastbars()
     local partyCastBarTimer = CreateCheckbox("partyCastBarTimer", L["Timer"], contentFrame, nil, BBF.partyCastBarTestMode)
     partyCastBarTimer:SetPoint("LEFT", partyCastBarTestMode.Text, "RIGHT", 10, 0)
     CreateTooltip(partyCastBarTimer, L["Tooltip_Castbar_Timer"])
+    AddCastbarTimerPositionRightClick(partyCastBarTimer, "partyCastBar", "Party Castbar")
 
     local partyCastbarSelf = CreateCheckbox("partyCastbarSelf", L["Self"], contentFrame, nil, BBF.partyCastBarTestMode)
     partyCastbarSelf:SetPoint("TOPLEFT", partyCastBarTimer, "BOTTOMLEFT", 0, pixelsBetweenBoxes)
@@ -4471,6 +4529,7 @@ local function guiCastbars()
     local targetCastBarTimer = CreateCheckbox("targetCastBarTimer", L["Timer"], contentFrame, nil, BBF.CastBarTimerCaller)
     targetCastBarTimer:SetPoint("LEFT", targetStaticCastbar.Text, "RIGHT", 10, 0)
     CreateTooltip(targetCastBarTimer, L["Tooltip_Castbar_Timer"])
+    AddCastbarTimerPositionRightClick(targetCastBarTimer, "targetCastBar", "Target Castbar")
 
     local targetToTCastbarAdjustment = CreateCheckbox("targetToTCastbarAdjustment", L["ToT_Offset"], contentFrame)
     targetToTCastbarAdjustment:SetPoint("TOPLEFT", targetStaticCastbar, "BOTTOMLEFT", 0, pixelsBetweenBoxes)
@@ -4646,6 +4705,7 @@ local function guiCastbars()
     local petCastBarTimer = CreateCheckbox("petCastBarTimer", L["Timer"], contentFrame, nil, BBF.petCastBarTestMode)
     petCastBarTimer:SetPoint("LEFT", petCastBarTestMode.Text, "RIGHT", 10, 0)
     CreateTooltip(petCastBarTimer, L["Tooltip_Castbar_Timer"])
+    AddCastbarTimerPositionRightClick(petCastBarTimer, "petCastBar", "Pet Castbar")
 
     local showPetCastBarIcon = CreateCheckbox("showPetCastBarIcon", L["Icon"], contentFrame, nil, BBF.petCastBarTestMode)
     showPetCastBarIcon:SetPoint("TOPLEFT", petCastBarTestMode, "BOTTOMLEFT", 0, pixelsBetweenBoxes)
@@ -4754,6 +4814,7 @@ local function guiCastbars()
     local focusCastBarTimer = CreateCheckbox("focusCastBarTimer", L["Timer"], contentFrame, nil, BBF.CastBarTimerCaller)
     focusCastBarTimer:SetPoint("LEFT", focusStaticCastbar.Text, "RIGHT", 10, 0)
     CreateTooltip(focusCastBarTimer, L["Tooltip_Castbar_Timer"])
+    AddCastbarTimerPositionRightClick(focusCastBarTimer, "focusCastBar", "Focus Castbar")
 
     local focusToTCastbarAdjustment = CreateCheckbox("focusToTCastbarAdjustment", L["ToT_Offset"], contentFrame)
     focusToTCastbarAdjustment:SetPoint("TOPLEFT", focusStaticCastbar, "BOTTOMLEFT", 0, pixelsBetweenBoxes)
@@ -4937,6 +4998,7 @@ local function guiCastbars()
     local playerCastBarTimer = CreateCheckbox("playerCastBarTimer", L["Timer"], contentFrame, nil, BBF.CastBarTimerCaller)
     playerCastBarTimer:SetPoint("LEFT", playerCastBarShowIcon.Text, "RIGHT", 10, 0)
     CreateTooltip(playerCastBarTimer, L["Tooltip_Castbar_Timer"])
+    AddCastbarTimerPositionRightClick(playerCastBarTimer, "playerCastBar", "Player Castbar")
 
     local playerCastBarTimerCentered = CreateCheckbox("playerCastBarTimerCentered", L["Center"], contentFrame, nil, BBF.CastBarTimerCaller)
     --playerStaticCastbar:SetPoint("TOPLEFT", playerCastBarIconScale, "BOTTOMLEFT", 10, -4)

@@ -772,7 +772,9 @@ local function CreateSlider(parent, label, minValue, maxValue, stepValue, elemen
             value = tonumber(textValue)
             --if not BBP.checkCombatAndWarn() then
                 -- Update the X or Y position based on the axis
-                if axis == "X" then
+                if element == "npCastTimerXPos" or element == "npCastTimerYPos" then
+                    BetterBlizzPlatesDB[element] = value
+                elseif axis == "X" then
                     BetterBlizzPlatesDB[element .. "XPos"] = value
                 elseif axis == "Y" then
                     BetterBlizzPlatesDB[element .. "YPos"] = value
@@ -976,6 +978,11 @@ local function CreateSlider(parent, label, minValue, maxValue, stepValue, elemen
                                 BBP.CreateBetterClassicCastbarBorders(frame)
                             end
                         end
+                    end
+                elseif element == "npCastTimerXPos" or element == "npCastTimerYPos" then
+                    BetterBlizzPlatesDB[element] = value
+                    if BBP.UpdateCastTimerPositions then
+                        BBP.UpdateCastTimerPositions()
                     end
                 elseif element == "nameplateVerticalPosition" then
                     BetterBlizzPlatesDB.nameplateVerticalPosition = value
@@ -1509,6 +1516,39 @@ local function CreateSlider(parent, label, minValue, maxValue, stepValue, elemen
     end)
 
     return slider
+end
+
+local nameplateCastTimerPositionOptionsFrame
+local function OpenNameplateCastTimerPositionOptions()
+    if not nameplateCastTimerPositionOptionsFrame then
+        local frame = CreateFrame("Frame", "BBPNameplateCastTimerPositionOptionsFrame", UIParent, "BasicFrameTemplateWithInset")
+        frame:SetSize(230, 155)
+        frame:SetPoint("CENTER")
+        frame:SetFrameStrata("DIALOG")
+        frame:SetMovable(true)
+        frame:EnableMouse(true)
+        frame:RegisterForDrag("LeftButton")
+        frame:SetScript("OnDragStart", frame.StartMoving)
+        frame:SetScript("OnDragStop", frame.StopMovingOrSizing)
+
+        local title = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+        title:SetPoint("TOP", frame, "TOP", 0, -8)
+        title:SetText("Nameplate Cast Timer Position")
+
+        local note = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+        note:SetPoint("TOP", title, "BOTTOM", 0, -8)
+        note:SetText("Moves only the timer; spell text stays unchanged.")
+
+        local xSlider = CreateSlider(frame, "X Offset", -100, 100, 1, "npCastTimerXPos", "X", 150)
+        xSlider:SetPoint("TOP", note, "BOTTOM", 0, -20)
+
+        local ySlider = CreateSlider(frame, "Y Offset", -100, 100, 1, "npCastTimerYPos", "Y", 150)
+        ySlider:SetPoint("TOP", xSlider, "BOTTOM", 0, -20)
+
+        nameplateCastTimerPositionOptionsFrame = frame
+    end
+
+    nameplateCastTimerPositionOptionsFrame:Show()
 end
 
 local function CreateTooltip(widget, tooltipText, anchor, cvarName)
@@ -5311,6 +5351,13 @@ local function guiGeneralTab()
 
     local showNameplateCastbarTimer = CreateCheckbox("showNameplateCastbarTimer", "Cast timer next to castbar", BetterBlizzPlates, nil, BBP.ToggleSpellCastEventRegistration)
     showNameplateCastbarTimer:SetPoint("LEFT", alwaysHideEnemyCastbar.text, "RIGHT", 0, 0)
+    CreateTooltipTwo(showNameplateCastbarTimer, "Castbar Timer", "Show the remaining cast time next to the castbar.", "Right-click to move only the timer text; the spell name will stay in place.")
+    showNameplateCastbarTimer:HookScript("OnMouseDown", function(_, button)
+        if button == "RightButton" then
+            GameTooltip:Hide()
+            OpenNameplateCastTimerPositionOptions()
+        end
+    end)
 
     local showNameplateTargetText = CreateCheckbox("showNameplateTargetText", "Show Target Text", BetterBlizzPlates, nil, BBP.ToggleSpellCastEventRegistration)
     showNameplateTargetText:SetPoint("TOPLEFT", alwaysHideEnemyCastbar, "BOTTOMLEFT", 0, pixelsBetweenBoxes)

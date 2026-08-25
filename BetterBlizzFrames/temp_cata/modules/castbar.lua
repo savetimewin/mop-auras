@@ -99,6 +99,29 @@ end
 local hiddenFrame = CreateFrame("Frame")
 hiddenFrame:Hide()
 
+local function PositionCastTimer(timer, bar, settingPrefix, baseX, baseY, playerTimer)
+    if not timer or not bar or not settingPrefix then return end
+
+    local db = BetterBlizzFramesDB
+    local xOffset = db[settingPrefix .. "TimerXPos"] or 0
+    local yOffset = db[settingPrefix .. "TimerYPos"] or 0
+
+    timer:ClearAllPoints()
+    if playerTimer and db.playerCastBarTimerCentered then
+        timer:SetPoint("BOTTOM", bar, "TOP", xOffset, 6 + yOffset)
+    else
+        timer:SetPoint("LEFT", bar, "RIGHT", baseX + xOffset, baseY + yOffset)
+    end
+end
+
+local function PositionPartyCastTimer(timer, bar)
+    PositionCastTimer(timer, bar, "partyCastBar", 5, 0)
+end
+
+local function PositionPetCastTimer(timer, bar)
+    PositionCastTimer(timer, bar, "petCastBar", 3, 0)
+end
+
 local function CastBarSetUnit(spellbar, unitId, showTradeSkill, showShield)
     if CastingBarFrame_SetUnit then
         CastingBarFrame_SetUnit(spellbar, unitId, showTradeSkill, showShield)
@@ -294,11 +317,11 @@ function BBF.CreateCastbars()
             spellbar.Flash:SetParent(BetterBlizzFramesDB.partyCastbarShowBorder and spellbar or hiddenFrame)
 
             spellbar.Timer = spellbar:CreateFontString(nil, "OVERLAY", "SystemFont_Shadow_Med1_Outline")
-            spellbar.Timer:SetPoint("LEFT", spellbar, "RIGHT", 5, 0)
+            PositionPartyCastTimer(spellbar.Timer, spellbar)
             spellbar.Timer:SetTextColor(1, 1, 1, 1)
 
             spellbar.FakeTimer = spellbar:CreateFontString(nil, "OVERLAY", "SystemFont_Shadow_Med1_Outline")
-            spellbar.FakeTimer:SetPoint("LEFT", spellbar, "RIGHT", 5, 0)
+            PositionPartyCastTimer(spellbar.FakeTimer, spellbar)
             spellbar.FakeTimer:SetTextColor(1, 1, 1, 1)
             spellbar.FakeTimer:SetText("1.8")
             spellbar.FakeTimer:Hide()
@@ -340,11 +363,11 @@ function BBF.CreateCastbars()
         petSpellBar:SetMinMaxSmoothedValue(0, 100)
 
         petSpellBar.Timer = petSpellBar:CreateFontString(nil, "OVERLAY", "SystemFont_Shadow_Med1_Outline")
-        petSpellBar.Timer:SetPoint("LEFT", petSpellBar, "RIGHT", 3, 0)
+        PositionPetCastTimer(petSpellBar.Timer, petSpellBar)
         petSpellBar.Timer:SetTextColor(1, 1, 1, 1)
 
         petSpellBar.FakeTimer = petSpellBar:CreateFontString(nil, "OVERLAY", "SystemFont_Shadow_Med1_Outline")
-        petSpellBar.FakeTimer:SetPoint("LEFT", petSpellBar, "RIGHT", 3, 0)
+        PositionPetCastTimer(petSpellBar.FakeTimer, petSpellBar)
         petSpellBar.FakeTimer:SetTextColor(1, 1, 1, 1)
         petSpellBar.FakeTimer:SetText("1.8")
         petSpellBar.FakeTimer:Hide()
@@ -414,7 +437,7 @@ function BBF.partyCastBarTestMode()
             if BetterBlizzFramesDB.partyCastBarTimer then
                 if not spellbar.FakeTimer then
                     spellbar.FakeTimer = spellbar:CreateFontString(nil, "OVERLAY", "SystemFont_Shadow_Med1_Outline")
-                    spellbar.FakeTimer:SetPoint("LEFT", spellbar, "RIGHT", 3, 0)
+                    PositionPartyCastTimer(spellbar.FakeTimer, spellbar)
                     spellbar.FakeTimer:SetTextColor(1, 1, 1, 1)
                 end
                 spellbar.FakeTimer:Show()
@@ -506,28 +529,29 @@ end)
 -- Hook into the OnUpdate, OnShow, and OnHide scripts for the spell bar
 local function CastBarTimer(bar)
     local castBarSetting = nil
+    local settingPrefix
+    local baseX, baseY
+    local playerTimer
     if bar == CastingBarFrame then
         castBarSetting = BetterBlizzFramesDB.playerCastBarTimer
+        settingPrefix = "playerCastBar"
+        baseX, baseY = 3, 2
+        playerTimer = true
     elseif bar == TargetFrameSpellBar then
         castBarSetting = BetterBlizzFramesDB.targetCastBarTimer
+        settingPrefix = "targetCastBar"
+        baseX, baseY = 3, -1
     elseif bar == FocusFrameSpellBar then
         castBarSetting = BetterBlizzFramesDB.focusCastBarTimer
+        settingPrefix = "focusCastBar"
+        baseX, baseY = 3, -1
     end
     if castBarSetting and not bar.Timer then
         bar.Timer = bar:CreateFontString(nil, "OVERLAY")
         bar.Timer:SetFont("Fonts\\FRIZQT__.TTF", 13, "OUTLINE")
     end
     if not bar.Timer then return end
-    bar.Timer:ClearAllPoints()
-    if bar == CastingBarFrame then
-        if BetterBlizzFramesDB.playerCastBarTimerCentered then
-            bar.Timer:SetPoint("BOTTOM", bar, "TOP", 0, 6)
-        else
-            bar.Timer:SetPoint("LEFT", bar, "RIGHT", 3, 2)
-        end
-    else
-        bar.Timer:SetPoint("LEFT", bar, "RIGHT", 3, -1)
-    end
+    PositionCastTimer(bar.Timer, bar, settingPrefix, baseX, baseY, playerTimer)
     if not castBarSetting then
         bar.Timer:Hide()
     else
@@ -545,6 +569,24 @@ function BBF.CastBarTimerCaller()
     CastBarTimer(TargetFrameSpellBar)
     if FocusFrameSpellBar then
         CastBarTimer(FocusFrameSpellBar)
+    end
+end
+
+function BBF.UpdateCastBarTimerPositions()
+    BBF.CastBarTimerCaller()
+
+    for i = 1, 5 do
+        local spellbar = spellBars[i]
+        if spellbar then
+            PositionPartyCastTimer(spellbar.Timer, spellbar)
+            PositionPartyCastTimer(spellbar.FakeTimer, spellbar)
+        end
+    end
+
+    local petSpellBar = spellBars["pet"]
+    if petSpellBar then
+        PositionPetCastTimer(petSpellBar.Timer, petSpellBar)
+        PositionPetCastTimer(petSpellBar.FakeTimer, petSpellBar)
     end
 end
 
@@ -1575,12 +1617,7 @@ do
             AdjustCastBarBorder(bar, bar.Border, 15, nil, nil, nil, 11)
             AdjustCastBarBorder(bar, bar.BorderShield, 12, true)
 
-            bar.TestTimer:ClearAllPoints()
-            if db.playerCastBarTimerCentered then
-                bar.TestTimer:SetPoint("BOTTOM", bar, "TOP", 0, 6)
-            else
-                bar.TestTimer:SetPoint("LEFT", bar, "RIGHT", 3, 2)
-            end
+            PositionCastTimer(bar.TestTimer, bar, "playerCastBar", 3, 2, true)
             RegionSetShown(bar.TestTimer, db.playerCastBarTimer and true or false)
 
             bar:Show()
@@ -1637,8 +1674,7 @@ do
             AdjustCastBarBorder(bar, bar.Border, 15)
             AdjustCastBarBorder(bar, bar.BorderShield, 12, true)
 
-            bar.TestTimer:ClearAllPoints()
-            bar.TestTimer:SetPoint("LEFT", bar, "RIGHT", 3, -1)
+            PositionCastTimer(bar.TestTimer, bar, prefix .. "CastBar", 3, -1)
             RegionSetShown(bar.TestTimer, db[prefix .. "CastBarTimer"] and true or false)
 
             ApplyPreviewCastTargetText(bar)
@@ -1724,8 +1760,7 @@ do
                     AdjustCastBarBorder(bar, bar.Border, 15, nil, nil, true)
                     AdjustCastBarBorder(bar, bar.BorderShield, 12, true, nil, true)
 
-                    bar.TestTimer:ClearAllPoints()
-                    bar.TestTimer:SetPoint("LEFT", bar, "RIGHT", 5, 0)
+                    PositionPartyCastTimer(bar.TestTimer, bar)
                     RegionSetShown(bar.TestTimer, db.partyCastBarTimer and true or false)
 
                     bar:Show()
@@ -1769,8 +1804,7 @@ do
                 AdjustCastBarBorder(bar, bar.Border, 15, nil, nil, true)
                 AdjustCastBarBorder(bar, bar.BorderShield, 12, true, nil, true)
 
-                bar.TestTimer:ClearAllPoints()
-                bar.TestTimer:SetPoint("LEFT", bar, "RIGHT", 5, 0)
+                PositionPartyCastTimer(bar.TestTimer, bar)
                 RegionSetShown(bar.TestTimer, db.partyCastBarTimer and true or false)
 
                 bar:Show()
@@ -1823,8 +1857,7 @@ do
             AdjustCastBarBorder(bar, bar.Border, 15, nil, nil, true)
             AdjustCastBarBorder(bar, bar.BorderShield, 12, true, nil, true)
 
-            bar.TestTimer:ClearAllPoints()
-            bar.TestTimer:SetPoint("LEFT", bar, "RIGHT", 3, 0)
+            PositionPetCastTimer(bar.TestTimer, bar)
             RegionSetShown(bar.TestTimer, db.petCastBarTimer and true or false)
 
             bar:Show()

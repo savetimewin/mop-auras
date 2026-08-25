@@ -1008,17 +1008,51 @@ function BBP.ToggleTargetTextAlwaysShow()
     end
 end
 
+local function PositionCastTimer(timer, castBar)
+    if not timer or not castBar then return end
+
+    if castBar.Text and castBar.Text.GetDrawLayer then
+        local drawLayer, subLevel = castBar.Text:GetDrawLayer()
+        if drawLayer then
+            timer:SetDrawLayer(drawLayer, subLevel or 0)
+        end
+    end
+
+    timer:ClearAllPoints()
+    timer:SetPoint(
+        "LEFT",
+        castBar,
+        "RIGHT",
+        5 + (BetterBlizzPlatesDB.npCastTimerXPos or 0),
+        BetterBlizzPlatesDB.npCastTimerYPos or 0
+    )
+end
+
+function BBP.UpdateCastTimerPositions()
+    for _, namePlate in pairs(C_NamePlate.GetNamePlates()) do
+        local frame = namePlate.UnitFrame
+        if frame and not frame:IsForbidden() then
+            local castBar = frame.CastBar or frame.castBar or (frame.CastBarsContainer and frame.CastBarsContainer.castBar)
+            PositionCastTimer(frame.CastTimer, castBar)
+            PositionCastTimer(frame.dummyTimer, castBar)
+        end
+    end
+end
+
 function BBP.UpdateCastTimer(frame, unit)
     local castBar = frame.CastBar or frame.castBar or frame.CastBarsContainer.castBar
     if not frame.CastTimerFrame then
         frame.CastTimerFrame = CreateFrame("Frame", nil, castBar)
-        frame.CastTimer = frame.CastTimerFrame:CreateFontString(nil, "BACKGROUND", "GameFontNormalSmall")
-        --nameplate.CastTimer:SetPoint("LEFT", nameplate, "BOTTOMRIGHT", -10, 15)
-        frame.CastTimer:SetPoint("LEFT", castBar, "RIGHT", 5, 0)
+        frame.CastTimer = frame.CastTimerFrame:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
         local npTextSize = BetterBlizzPlatesDB.npCastTimerSize or BetterBlizzPlatesDB.npTargetTextSize
         BBP.SetFontBasedOnOption(frame.CastTimer, npTextSize or 12, "OUTLINE, SLUG")
         frame.CastTimer:SetTextColor(1, 1, 1)
     end
+
+    frame.CastTimerFrame:SetFrameStrata(castBar:GetFrameStrata())
+    frame.CastTimerFrame:SetFrameLevel(castBar:GetFrameLevel())
+
+    PositionCastTimer(frame.CastTimer, castBar)
 
     local duration = UnitCastingDuration(unit)
     if not duration then

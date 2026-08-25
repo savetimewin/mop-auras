@@ -154,6 +154,8 @@ local defaultSettings = {
     forceClassColors = false,
     enemyClassColorName = false,
     showNameplateCastbarTimer = false,
+    npCastTimerXPos = 0,
+    npCastTimerYPos = 0,
     showNameplateTargetText = false,
     targetTextAlwaysShowPvP = true,
     targetTextAlwaysShowPvE = true,
@@ -7944,8 +7946,20 @@ local function NamePlateCastBarTestMode(frame)
 
                 if castBarTimer then
                     if not frame.dummyTimer then
-                        frame.dummyTimer = frame.healthBar:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-                        frame.dummyTimer:SetPoint("LEFT", frame.castBar, "RIGHT", 5, 0)
+                        frame.dummyTimer = frame.castBar:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+                        frame.dummyTimer:SetPoint(
+                            "LEFT",
+                            frame.castBar,
+                            "RIGHT",
+                            5 + (BetterBlizzPlatesDB.npCastTimerXPos or 0),
+                            BetterBlizzPlatesDB.npCastTimerYPos or 0
+                        )
+                        if frame.castBar.Text and frame.castBar.Text.GetDrawLayer then
+                            local drawLayer, subLevel = frame.castBar.Text:GetDrawLayer()
+                            if drawLayer then
+                                frame.dummyTimer:SetDrawLayer(drawLayer, subLevel or 0)
+                            end
+                        end
                         frame.dummyTimer:SetTextColor(1, 1, 1)
                         frame.dummyTimer:SetText("1.5")
                     end
