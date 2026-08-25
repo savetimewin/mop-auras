@@ -366,6 +366,7 @@ addon.Spells = {
     [54428]  = { type = BUFF_OTHER }, -- Divine Plea
 	[12051]  = { type = BUFF_OTHER }, -- Evocation
 	[16191]  = { type = BUFF_OTHER }, -- Mana Tide Totem
+    [137562] = { type = BUFF_OTHER }, -- Nimble Brew
     
     -- BUFF_DEFENSIVE
     [110909] = { type = BUFF_DEFENSIVE }, -- Alter Time
