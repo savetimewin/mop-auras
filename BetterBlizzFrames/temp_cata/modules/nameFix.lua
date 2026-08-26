@@ -334,8 +334,24 @@ local function InitializeFontString(frame)
         frame.bbfName:SetSize(name:GetSize())
     end)
 
-    -- Hide original
+    -- BBF renders bbfName instead of Blizzard's original name FontString.
+    -- Blizzard can restore the original FontString's alpha during later
+    -- unit-frame refreshes. On friendly units that original name is green
+    -- and can appear directly over the class-colored bbfName.
     name:SetAlpha(0)
+    if not name.bbfAlphaLocked then
+        hooksecurefunc(name, "SetAlpha", function(self, alpha)
+            if self.bbfForcingAlpha then
+                return
+            end
+            if alpha ~= 0 then
+                self.bbfForcingAlpha = true
+                self:SetAlpha(0)
+                self.bbfForcingAlpha = nil
+            end
+        end)
+        name.bbfAlphaLocked = true
+    end
 end
 
 local frames = {
