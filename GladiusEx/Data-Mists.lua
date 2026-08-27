@@ -148,30 +148,30 @@ function GladiusEx.Data.DefaultClassicon()
 		[GladiusEx:SafeGetSpellName(1330)]	= 9, -- Garrote
 
         -- Instant Casts
-        [GladiusEx:SafeGetSpellName(16188)]	= 9, -- Ancestral Swiftness (Shaman)
-        [GladiusEx:SafeGetSpellName(132158)] = 9, -- Nature's Swiftness (Druid)
-        [GladiusEx:SafeGetSpellName(114108)] = 8.9, -- Soul of the Forest (Resto Druid)
-        [GladiusEx:SafeGetSpellName(29274)]	= 9, -- Nature's Swiftness (Druid)
-        [GladiusEx:SafeGetSpellName(12043)]	= 9, -- Presence of Mind
-        [GladiusEx:SafeGetSpellName(69369)]	= 9, -- Predator's Swiftness (Feral Druid)
+        [GladiusEx:SafeGetSpellName(16188)]	= 8.9, -- Ancestral Swiftness (Shaman)
+        [GladiusEx:SafeGetSpellName(132158)] = 8.9, -- Nature's Swiftness (Druid)
+        [GladiusEx:SafeGetSpellName(114108)] = 8.6, -- Soul of the Forest (Resto Druid)
+        [GladiusEx:SafeGetSpellName(29274)]	= 8.9, -- Nature's Swiftness (Druid)
+        [GladiusEx:SafeGetSpellName(12043)]	= 8.9, -- Presence of Mind
+        [GladiusEx:SafeGetSpellName(69369)]	= 8.9, -- Predator's Swiftness (Feral Druid)
 
 
         -- Immunity
-        [GladiusEx:SafeGetSpellName(122465)] = 9, -- Dematerialize
-        [GladiusEx:SafeGetSpellName(65871)]	= 9, -- Deterrence
-        [GladiusEx:SafeGetSpellName(110617)] = 9, -- Deterrence
-        [GladiusEx:SafeGetSpellName(19263)]	= 9, -- Deterrence
-        [GladiusEx:SafeGetSpellName(148467)] = 9, -- Deterrence
-        [GladiusEx:SafeGetSpellName(67801)]	= 9, -- Deterrence
-        [GladiusEx:SafeGetSpellName(110618)] = 9, -- Deterrence
-        [GladiusEx:SafeGetSpellName(642)] = 9, -- Divine Shield
-        [GladiusEx:SafeGetSpellName(110700)] = 9, -- Divine Shield
-        [GladiusEx:SafeGetSpellName(110696)] = 9, -- Ice Block
-        [GladiusEx:SafeGetSpellName(45438)]	= 9, -- Ice Block
-        [GladiusEx:SafeGetSpellName(58984)]	= 9, -- Shadowmeld
-        [GladiusEx:SafeGetSpellName(11327)]	= 9, -- Vanish
-        [GladiusEx:SafeGetSpellName(27827)]	= 9, -- Spirit of Redemption
-        [GladiusEx:SafeGetSpellName(1022)] = 8.9, -- Hand of Protection (Magic CCs still go through)
+        [GladiusEx:SafeGetSpellName(122465)] = 8.8, -- Dematerialize
+        [GladiusEx:SafeGetSpellName(65871)]	= 8.8, -- Deterrence
+        [GladiusEx:SafeGetSpellName(110617)] = 8.8, -- Deterrence
+        [GladiusEx:SafeGetSpellName(19263)]	= 8.8, -- Deterrence
+        [GladiusEx:SafeGetSpellName(148467)] = 8.8, -- Deterrence
+        [GladiusEx:SafeGetSpellName(67801)]	= 8.8, -- Deterrence
+        [GladiusEx:SafeGetSpellName(110618)] = 8.8, -- Deterrence
+        [GladiusEx:SafeGetSpellName(642)] = 8.8, -- Divine Shield
+        [GladiusEx:SafeGetSpellName(110700)] = 8.8, -- Divine Shield
+        [GladiusEx:SafeGetSpellName(110696)] = 8.8, -- Ice Block
+        [GladiusEx:SafeGetSpellName(45438)]	= 8.8, -- Ice Block
+        [GladiusEx:SafeGetSpellName(58984)]	= 8.8, -- Shadowmeld
+        [GladiusEx:SafeGetSpellName(11327)]	= 8.8, -- Vanish
+        [GladiusEx:SafeGetSpellName(27827)]	= 8.8, -- Spirit of Redemption
+        [GladiusEx:SafeGetSpellName(1022)] = 8.7, -- Hand of Protection (Magic CCs still go through)
 
         -- Offensive Procs that I need to Outplay/Anticipate like a Deep Freeze
         [GladiusEx:SafeGetSpellName(44544)]	= 8.5, -- Fingers of Frost

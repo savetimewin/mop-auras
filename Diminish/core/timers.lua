@@ -341,13 +341,12 @@ do
                         if not GetAuraDuration(origUnitID or unitID, 137562) then -- Skip checks when target has Nimble Brew
                             local maxDuration = GetBaseMaxDuration(timer.spellID, timer.applied, current_duration) -- TODO: orc racial?
 
-                            if not maxDuration then
-                                if current_duration > 4 and ((timer.applied or 0) >= 2) then
-                                    timer.applied = 1 -- Dynamic DR was most likely reset early
-                                end
-                            else
+                            if maxDuration then
                                 local inferredApplied = GetAppliedStageFromDuration(timer.category, current_duration, maxDuration)
-                                if inferredApplied then
+                                -- Combat-log applications are authoritative while this DR timer is active.
+                                -- Aura data may recover a missed higher stage, but stale aura data must
+                                -- never downgrade stage 2/3 back to an earlier stage.
+                                if inferredApplied and inferredApplied > (timer.applied or 0) then
                                     timer.applied = inferredApplied
                                 end
                             end
@@ -373,13 +372,10 @@ do
                                 if NS.IS_NOT_RETAIL and timer.category ~= "taunt" and timer.category ~= "knockback" then
                                     if not GetAuraDuration(origUnitID or unitID, 137562) then
                                         local maxDuration = GetBaseMaxDuration(timer.spellID, timer.applied, cur_dur)
-                                        if not maxDuration then
-                                            if cur_dur > 4 and ((timer.applied or 0) >= 2) then
-                                                timer.applied = 1
-                                            end
-                                        else
+                                        if maxDuration then
                                             local inferredApplied = GetAppliedStageFromDuration(timer.category, cur_dur, maxDuration)
-                                            if inferredApplied then
+                                            -- Same monotonic rule for the delayed aura read.
+                                            if inferredApplied and inferredApplied > (timer.applied or 0) then
                                                 timer.applied = inferredApplied
                                             end
                                         end
