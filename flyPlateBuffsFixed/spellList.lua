@@ -277,6 +277,8 @@ local war_personal_nostack_debuffs = {
 	109466, -- Curse of Enfeeblement
 	44457, -- Living Bomb 1.5
 	84617, -- Revealing Strike
+	1943, -- Rupture 1.3
+	703, -- Garrote 1.3
 }
 
 -- default size is 1.3
