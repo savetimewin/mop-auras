@@ -62,6 +62,7 @@ local AllSpellIDsAndIconsByName = { };
 local ElapsedTimer = 0;
 local Nameplates = {};
 local NameplatesVisible = {};
+local NameplateUnits = {};
 local FriendlyNameplates = {};
 local PetOwnerGUIDs = {};
 local InstanceType = "none";
@@ -249,6 +250,7 @@ do
 		EventFrame:RegisterEvent("NAME_PLATE_UNIT_ADDED");
 		EventFrame:RegisterEvent("NAME_PLATE_UNIT_REMOVED");
 		EventFrame:RegisterEvent("UNIT_AURA");
+		EventFrame:RegisterEvent("PLAYER_CONTROL_GAINED");
 		SLASH_NAMEPLATECOOLDOWNS1 = '/nc';
 		SlashCmdList["NAMEPLATECOOLDOWNS"] = function(msg)
 			if (msg == "t" or msg == "ver") then
@@ -772,6 +774,10 @@ do
 
 	function UpdateOnlyOneNameplate(frame, unitGUID)
 		local counter = 1;
+		local unitID = NameplateUnits[frame];
+		if (unitID and UnitGUID(unitID) == unitGUID) then
+			FriendlyNameplates[frame] = (UnitReaction("player", unitID) or 0) > 4;
+		end
 		local canShowForUnit = unitGUID ~= LocalPlayerGUID
 			and (db.ShowCDOnAllies == true or not FriendlyNameplates[frame]);
 		if (canShowForUnit and GlobalFilterNameplate(unitGUID)) then
@@ -2978,6 +2984,7 @@ do
 	EventFrame.NAME_PLATE_UNIT_ADDED = function(unitID)
 		local nameplate = C_NamePlate_GetNamePlateForUnit(unitID);
 		local unitGUID = UnitGUID(unitID);
+		NameplateUnits[nameplate] = unitID;
 		NameplatesVisible[nameplate] = unitGUID;
 		FriendlyNameplates[nameplate] = (UnitReaction("player", unitID) or 0) > 4;
 		if (not Nameplates[nameplate]) then
@@ -2994,10 +3001,15 @@ do
 	EventFrame.NAME_PLATE_UNIT_REMOVED = function(unitID)
 		local nameplate = C_NamePlate_GetNamePlateForUnit(unitID);
 		NameplatesVisible[nameplate] = nil;
+		NameplateUnits[nameplate] = nil;
 		FriendlyNameplates[nameplate] = nil;
 		if (nameplate.NCFrame ~= nil) then
 			nameplate.NCFrame:Hide();
 		end
+	end
+
+	EventFrame.PLAYER_CONTROL_GAINED = function()
+		C_Timer_After(0, OnUpdate);
 	end
 
 	EventFrame.PLAYER_TARGET_CHANGED = function()
