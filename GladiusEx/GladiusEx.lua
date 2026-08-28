@@ -529,6 +529,16 @@ function GladiusEx:GetArenaSize(minVal)
         GetNumGroupMembers(LE_PARTY_CATEGORY_INSTANCE)
     )
 
+    -- MoP Classic's prep specialization count is the authoritative bracket
+    -- size once available. This prevents stale arena3/group events from
+    -- inflating a 2v2 into a phantom gray third frame.
+    if GladiusEx.IS_MOPC then
+        local opponent_specs = GladiusEx.Data.GetNumArenaOpponentSpecs() or 0
+        if opponent_specs >= 2 and opponent_specs <= 5 then
+            guess = opponent_specs
+        end
+    end
+
     log(
         "GetArenaSize",
         minVal,
