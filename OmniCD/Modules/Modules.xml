@@ -8,6 +8,7 @@
 	<Script file="Party\GroupInfo.lua"/>
 	<Script file="Party\Bars.lua"/>
 	<Script file="Party\Icons.lua"/>
+	<Script file="Party\Reorder.lua"/>
 	<Script file="Party\Position.lua"/>
 	<Script file="Party\Visibility.lua"/>
 	<Script file="Party\Highlights.lua"/>
