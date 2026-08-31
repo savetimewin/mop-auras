@@ -12,10 +12,10 @@
 	<Script file="Party\Visibility.lua"/>
 	<Script file="Party\Highlights.lua"/>
 	<Script file="Party\Cooldowns.lua"/>
-	<Script file="Party\Test.lua"/>
 	<Script file="Party\ExtraBars.lua"/>
 	<Script file="Party\StatusBar.lua"/>
 	<Script file="Party\Inspect.lua"/>
+	<Script file="Party\Test.lua"/>
 	<Script file="Party\Sync.lua"/>
 	<Script file="Party\CD.lua"/>
 	<Script file="Party\CD_Mists.lua"/>

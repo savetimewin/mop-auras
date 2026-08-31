@@ -1,10 +1,82 @@
 local E, L = select(2, ...):unpack()
-local P = E.Party
+local P, CM = E.Party, E.Comm
+
+local GetSpecialization = C_SpecializationInfo and C_SpecializationInfo.GetSpecialization or GetSpecialization
+local GetSpecializationInfo = C_SpecializationInfo and C_SpecializationInfo.GetSpecializationInfo or GetSpecializationInfo
 
 local TM = CreateFrame("Frame")
 
 local AddOnTestMode = {}
 local config = {}
+
+-- Test.lua is intentionally loaded after Inspect.lua so this wraps the real
+-- player inspection path without changing normal inspection behavior.
+local InspectUser = CM.InspectUser
+
+local function GetPlayerSpecID()
+	if E.preCata then
+		return P.userInfo and P.userInfo.raceID
+	end
+
+	local specIndex = GetSpecialization and GetSpecialization()
+	return specIndex and GetSpecializationInfo and GetSpecializationInfo(specIndex)
+end
+
+function P:IsForeignTestPlayer()
+	return self.isInTestMode
+		and self.testClass
+		and self.testSpec
+		and (self.testClass ~= E.userClass or self.testSpec ~= GetPlayerSpecID())
+end
+
+function P:ApplyTestPlayerIdentity()
+	if not self:IsForeignTestPlayer() or not self.userInfo then
+		return
+	end
+
+	local info = self.userInfo
+	info.class = self.testClass
+	info.spec = self.testSpec
+
+	-- A foreign class/spec cannot truthfully reuse the player's equipped
+	-- talents/items. Keep the test deterministic and limited to baseline/spec
+	-- spells rather than inventing an impossible loadout.
+	wipe(info.talentData)
+	wipe(info.itemData)
+end
+
+function CM:InspectUser()
+	local isForeignTestPlayer = P:IsForeignTestPlayer()
+	if isForeignTestPlayer and P.userInfo then
+		-- Run the real inspection with the real class so serialized sync data
+		-- remains valid for the player's actual character.
+		P.userInfo.class = E.userClass
+	end
+	local success = InspectUser(self)
+	if not success then
+		return false
+	end
+
+	if isForeignTestPlayer then
+		P:ApplyTestPlayerIdentity()
+		local info = P.userInfo
+		if P.groupInfo[info.guid] then
+			info:SetupBar()
+		end
+	elseif not P.isInTestMode and P.userInfo then
+		P.userInfo.class = E.userClass
+	end
+
+	return true
+end
+
+function P:RefreshTestPlayer()
+	if not self.isInTestMode then
+		return
+	end
+	CM:InspectUser()
+	self:Refresh()
+end
 
 AddOnTestMode.VuhDo = function(isTestEnabled)
 	if not VUHDO_CONFIG then
@@ -38,6 +110,7 @@ function TM:Test(zone)
 		self:ToggleAddOnTestFrames(P.isInTestMode)
 
 		P:UpdateDelayedZoneData()
+		CM:InspectUser()
 		P:Refresh()
 
 		self:UpdateIndicator(zone)
@@ -53,6 +126,10 @@ function TM:Test(zone)
 		self.indicator:Hide()
 		self:UnregisterEvent("PLAYER_LEAVING_WORLD")
 
+		if P.userInfo then
+			P.userInfo.class = E.userClass
+		end
+		CM:InspectUser()
 		P:Refresh()
 	end
 end
