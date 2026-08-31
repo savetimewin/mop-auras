@@ -29,35 +29,49 @@ function P:IsForeignTestPlayer()
 		and (self.testClass ~= E.userClass or self.testSpec ~= GetPlayerSpecID())
 end
 
+function P:IsTestPlayerIdentityOverridden()
+	if not self.isInTestMode or not self.testClass or not self.testSpec then
+		return false
+	end
+
+	return self:IsForeignTestPlayer()
+		or self.testRace and self.testRace ~= E.userRaceID
+end
+
 function P:ApplyTestPlayerIdentity()
-	if not self:IsForeignTestPlayer() or not self.userInfo then
+	if not self.isInTestMode or not self.testClass or not self.testSpec or not self.userInfo then
 		return
 	end
 
+	local isForeignTestPlayer = self:IsForeignTestPlayer()
 	local info = self.userInfo
 	info.class = self.testClass
 	info.spec = self.testSpec
+	info.raceID = self.testRace or E.userRaceID
 
 	-- A foreign class/spec cannot truthfully reuse the player's equipped
-	-- talents/items. Keep the test deterministic and limited to baseline/spec
-	-- spells rather than inventing an impossible loadout.
-	wipe(info.talentData)
-	wipe(info.itemData)
+	-- talents/items. A race-only override can keep them because the same
+	-- class/spec loadout remains valid.
+	if isForeignTestPlayer then
+		wipe(info.talentData)
+		wipe(info.itemData)
+	end
 end
 
 function CM:InspectUser()
-	local isForeignTestPlayer = P:IsForeignTestPlayer()
-	if isForeignTestPlayer and P.userInfo then
-		-- Run the real inspection with the real class so serialized sync data
+	local isTestPlayerIdentityOverridden = P:IsTestPlayerIdentityOverridden()
+	if isTestPlayerIdentityOverridden and P.userInfo then
+		-- Run the real inspection with the real identity so serialized sync data
 		-- remains valid for the player's actual character.
 		P.userInfo.class = E.userClass
+		P.userInfo.raceID = E.userRaceID
 	end
 	local success = InspectUser(self)
 	if not success then
 		return false
 	end
 
-	if isForeignTestPlayer then
+	if isTestPlayerIdentityOverridden then
 		P:ApplyTestPlayerIdentity()
 		local info = P.userInfo
 		if P.groupInfo[info.guid] then
@@ -65,6 +79,7 @@ function CM:InspectUser()
 		end
 	elseif not P.isInTestMode and P.userInfo then
 		P.userInfo.class = E.userClass
+		P.userInfo.raceID = E.userRaceID
 	end
 
 	return true
@@ -128,6 +143,7 @@ function TM:Test(zone)
 
 		if P.userInfo then
 			P.userInfo.class = E.userClass
+			P.userInfo.raceID = E.userRaceID
 		end
 		CM:InspectUser()
 		P:Refresh()

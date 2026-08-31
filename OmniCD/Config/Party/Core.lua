@@ -10,6 +10,67 @@ local GetSpecializationInfo = C_SpecializationInfo and C_SpecializationInfo.GetS
 local testClassValues = {}
 local testSpecValues = {}
 local defaultTestSpec = {}
+local testRaceValues = {}
+local defaultTestRace = {}
+
+-- MoP race IDs used by OmniCD's RACIAL spell entries. Pandaren uses
+-- faction-specific IDs 25/26 rather than the neutral character-creation ID.
+local mopRaceInfo = {
+	[1]  = { "Human", "Human" },
+	[2]  = { "Orc", "Orc" },
+	[3]  = { "Dwarf", "Dwarf" },
+	[4]  = { "NightElf", "Night Elf" },
+	[5]  = { "Scourge", "Undead" },
+	[6]  = { "Tauren", "Tauren" },
+	[7]  = { "Gnome", "Gnome" },
+	[8]  = { "Troll", "Troll" },
+	[9]  = { "Goblin", "Goblin" },
+	[10] = { "BloodElf", "Blood Elf" },
+	[11] = { "Draenei", "Draenei" },
+	[22] = { "Worgen", "Worgen" },
+	[25] = { "Pandaren", "Pandaren" },
+	[26] = { "Pandaren", "Pandaren" },
+}
+
+local mopClassRaceIDs = {
+	DEATHKNIGHT = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 22 },
+	DRUID       = { 4, 6, 8, 22 },
+	HUNTER      = { 1, 2, 3, 4, 5, 6, 8, 9, 10, 11, 22, 25, 26 },
+	MAGE        = { 1, 2, 3, 4, 5, 7, 8, 9, 10, 11, 22, 25, 26 },
+	MONK        = { 1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 25, 26 },
+	PALADIN     = { 1, 3, 6, 10, 11 },
+	PRIEST      = { 1, 3, 4, 5, 6, 7, 8, 9, 10, 11, 22, 25, 26 },
+	ROGUE       = { 1, 2, 3, 4, 5, 7, 8, 9, 10, 22, 25, 26 },
+	SHAMAN      = { 2, 3, 6, 8, 9, 11, 25, 26 },
+	WARLOCK     = { 1, 2, 3, 5, 7, 8, 9, 10, 22 },
+	WARRIOR     = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 22, 25, 26 },
+}
+
+local function GetMoPRaceName(raceID)
+	local raceInfo = mopRaceInfo[raceID]
+	if not raceInfo then
+		return tostring(raceID)
+	end
+
+	local name = LOCALIZED_RACE_NAMES_MALE and LOCALIZED_RACE_NAMES_MALE[raceInfo[1]] or raceInfo[2]
+	if raceID == 25 then
+		return format("%s (%s)", name, FACTION_ALLIANCE or "Alliance")
+	elseif raceID == 26 then
+		return format("%s (%s)", name, FACTION_HORDE or "Horde")
+	end
+	return name
+end
+
+if E.isMoP then
+	for class, raceIDs in pairs(mopClassRaceIDs) do
+		local races = {}
+		testRaceValues[class] = races
+		for _, raceID in ipairs(raceIDs) do
+			races[raceID] = GetMoPRaceName(raceID)
+		end
+		defaultTestRace[class] = raceIDs[1]
+	end
+end
 
 if GetNumSpecializationsForClassID and GetSpecializationInfoForClassID and GetSpecializationInfoByID then
 	for classID = 1, MAX_CLASSES do
@@ -62,6 +123,12 @@ local function EnsureTestSelection()
 		local playerSpec = class == E.userClass and GetPlayerSpecID()
 		P.testSpec = playerSpec and specs[playerSpec] and playerSpec or defaultTestSpec[class]
 	end
+
+	local races = testRaceValues[class]
+	if races and (not P.testRace or not races[P.testRace]) then
+		local playerRace = class == E.userClass and E.userRaceID
+		P.testRace = playerRace and races[playerRace] and playerRace or defaultTestRace[class]
+	end
 end
 
 local getTestClass = function()
@@ -73,6 +140,10 @@ local setTestClass = function(_, value)
 	local specs = testSpecValues[value]
 	local playerSpec = value == E.userClass and GetPlayerSpecID()
 	P.testSpec = playerSpec and specs and specs[playerSpec] and playerSpec or defaultTestSpec[value]
+
+	local races = testRaceValues[value]
+	local playerRace = value == E.userClass and E.userRaceID
+	P.testRace = playerRace and races and races[playerRace] and playerRace or defaultTestRace[value]
 	P:RefreshTestPlayer()
 end
 local getTestSpec = function()
@@ -81,6 +152,14 @@ local getTestSpec = function()
 end
 local setTestSpec = function(_, value)
 	P.testSpec = value
+	P:RefreshTestPlayer()
+end
+local getTestRace = function()
+	EnsureTestSelection()
+	return P.testRace
+end
+local setTestRace = function(_, value)
+	P.testRace = value
 	P:RefreshTestPlayer()
 end
 
@@ -136,6 +215,22 @@ local testSpecOption = {
 	set = setTestSpec,
 }
 
+local testRaceOption = {
+	hidden = function()
+		EnsureTestSelection()
+		return not E.isMoP or not testRaceValues[P.testClass]
+	end,
+	name = format("%s %s", L["Test"], RACE or "Race"),
+	order = 5,
+	type = "select",
+	values = function()
+		EnsureTestSelection()
+		return testRaceValues[P.testClass] or {}
+	end,
+	get = getTestRace,
+	set = setTestRace,
+}
+
 local configZone = {
 	disabled = disableZone,
 	name = getZoneName,
@@ -161,6 +256,7 @@ local configZone = {
 		},
 		testClass = testClassOption,
 		testSpec = testSpecOption,
+		testRace = testRaceOption,
 	}
 }
 
@@ -189,13 +285,14 @@ local noCfgZone = {
 		},
 		testClass = testClassOption,
 		testSpec = testSpecOption,
+		testRace = testRaceOption,
 		lb1 = {
-			name = "\n", order = 5, type = "description",
+			name = "\n", order = 6, type = "description",
 		},
 		zoneSetting = {
 			name = L["Use Zone Settings From:"],
 			desc = L["Select the zone setting to use for this zone."],
-			order = 6,
+			order = 7,
 			type = "select",
 			values = E.L_CFG_ZONE,
 			get = function(info) return E.profile.Party[info[2] == "none" and "noneZoneSetting" or "scenarioZoneSetting"] end,
