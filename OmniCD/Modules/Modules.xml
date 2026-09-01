@@ -8,15 +8,14 @@
 	<Script file="Party\GroupInfo.lua"/>
 	<Script file="Party\Bars.lua"/>
 	<Script file="Party\Icons.lua"/>
-	<Script file="Party\Reorder.lua"/>
 	<Script file="Party\Position.lua"/>
 	<Script file="Party\Visibility.lua"/>
 	<Script file="Party\Highlights.lua"/>
 	<Script file="Party\Cooldowns.lua"/>
+	<Script file="Party\Test.lua"/>
 	<Script file="Party\ExtraBars.lua"/>
 	<Script file="Party\StatusBar.lua"/>
 	<Script file="Party\Inspect.lua"/>
-	<Script file="Party\Test.lua"/>
 	<Script file="Party\Sync.lua"/>
 	<Script file="Party\CD.lua"/>
 	<Script file="Party\CD_Mists.lua"/>
