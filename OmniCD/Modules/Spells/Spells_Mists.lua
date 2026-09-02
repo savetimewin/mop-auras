@@ -58,7 +58,7 @@ E.spell_db = {
 		{ spellID = 108238,	duration = 120,	type = "defensive",	spec = true	},
 		{ spellID = 62606,	duration = 9,	type = "defensive",	spec = {104},	charges = 3	},
 		{ spellID = 61336,	duration = 180,	type = "defensive",	spec = {103,104}	},
-		{ spellID = 102342,	duration = 60,	type = "externalDefensive",	spec = {105}	},
+		{ spellID = 102342,	duration = 30,	type = "externalDefensive",	spec = {105}	},
 		{ spellID = 124974,	duration = 90,	type = "raidDefensive",	spec = true	},
 		{ spellID = 740,	duration = {[105]=180,default=480},	type = "raidDefensive",	buff = 44203	},
 		{ spellID = 102351,	duration = 30,	type = "heal",	spec = true	},
