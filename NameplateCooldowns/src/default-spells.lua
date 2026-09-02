@@ -130,7 +130,7 @@ AddCooldowns("DRUID", {
 	{ 106922, 180, "defensive" }, -- Might of Ursoc
 	{ 108238, 120, "defensive", { talent = true } }, -- Renewal
 	{ 61336, 180, "defensive", { specs = { 103, 104 } } }, -- Survival Instincts
-	{ 102342, 60, "externalDefensive", { specs = { 105 } } }, -- Ironbark (PvP set: 30s)
+	{ 102342, 30, "externalDefensive", { specs = { 105 } } }, -- Ironbark
 	{ 124974, 90, "raidDefensive", { talent = true } }, -- Nature's Vigil
 	{ 740, { [105] = 180, default = 480 }, "raidDefensive" }, -- Tranquility
 	{ 50334, 180, "offensive", { specs = { 104 } } }, -- Berserk (Guardian)
@@ -530,7 +530,6 @@ addonTable.CooldownVariants = {
 	[58875] = { 45 },
 	[61336] = { 120 },
 	[64044] = { 35 },
-	[102342] = { 30 },
 	[104773] = { 120 },
 	[106922] = { 120 },
 	[108978] = { 90 },

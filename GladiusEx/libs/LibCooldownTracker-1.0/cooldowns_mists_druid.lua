@@ -98,14 +98,13 @@ LCT_SpellData[61336] = {
 	cooldown_variants = { 120 },
 }
 
--- Ironbark (PvP set: 30s) (externalDefensive)
+-- Ironbark (30s baseline) (externalDefensive)
 LCT_SpellData[102342] = {
 	class = "DRUID",
 	specID = { 105 },
 	defensive = true,
 	duration = 12,
-	cooldown = 60,
-	cooldown_variants = { 30 },
+	cooldown = 30,
 }
 
 -- Nature's Vigil (raidDefensive)
