@@ -651,6 +651,7 @@ function GladiusEx.Data.DefaultCooldowns()
 			[113858] = true, -- offensive
 			[113861] = true, -- offensive
 			[113860] = true, -- offensive
+			[104316] = true, -- offensive: Imp Swarm
 			[48020] = true, -- mobility: Demonic Circle: Teleport
 			[113942] = true, -- mobility: Demonic Gateway reuse debuff
 			[113295] = true, -- Symbiosis: Rejuvenation

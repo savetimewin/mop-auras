@@ -367,6 +367,7 @@ AddCooldowns("WARLOCK", {
 	{ 113858, 120, "offensive", { specs = { 267 }, optionalCharges = 2 } }, -- Dark Soul: Instability
 	{ 113861, 120, "offensive", { specs = { 266 }, optionalCharges = 2 } }, -- Dark Soul: Knowledge
 	{ 113860, 120, "offensive", { specs = { 265 }, optionalCharges = 2 } }, -- Dark Soul: Misery
+	{ 104316, 106.2, "offensive", { specs = { 266 } } }, -- Imp Swarm
 	{ 48020, 30, "movement" }, -- Demonic Circle: Teleport
 });
 
@@ -591,6 +592,7 @@ addonTable.SpecHints = {
 	[113858] = 267,
 	[113860] = 265,
 	[113861] = 266,
+	[104316] = 266,
 	[115213] = 268,
 	[115288] = 269,
 	[115310] = 270,

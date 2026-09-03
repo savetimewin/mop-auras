@@ -138,6 +138,15 @@ LCT_SpellData[113860] = {
 	cooldown = 120,
 }
 
+-- Imp Swarm (Glyph of Imp Swarm; offensive)
+LCT_SpellData[104316] = {
+	class = "WARLOCK",
+	specID = { 266 },
+	detected_only = true,
+	offensive = true,
+	cooldown = 106.2,
+}
+
 -- Demonic Circle: Teleport (movement)
 LCT_SpellData[48020] = {
 	class = "WARLOCK",

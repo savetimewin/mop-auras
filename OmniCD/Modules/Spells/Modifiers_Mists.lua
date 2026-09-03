@@ -92,7 +92,6 @@ E.spell_chmod_talents = {
 E.spell_cdmod_by_haste = {
 	[31935] = true,
 	[879]	= true,
-	[104316]	= true,
 }
 
 

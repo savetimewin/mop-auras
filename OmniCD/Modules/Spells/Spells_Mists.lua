@@ -411,7 +411,7 @@ E.spell_db = {
 		{ spellID = 113861,	duration = 120,	type = "offensive",	spec = {266}	},
 		{ spellID = 113860,	duration = 120,	type = "offensive",	spec = {265}	},
 		{ spellID = 105174,	duration = 15,	type = "offensive",	spec = {266},	charges = 2	},
-		{ spellID = 104316,	duration = 120,	type = "offensive",	spec = 56242	},
+		{ spellID = 104316,	duration = 106.2,	type = "offensive",	spec = 56242	},
 		{ spellID = 108508,	duration = 60,	type = "offensive",	spec = true	},
 		{ spellID = 18540,	duration = 600,	type = "offensive",	},
 		{ spellID = 1122,	duration = 600,	type = "offensive",	},
