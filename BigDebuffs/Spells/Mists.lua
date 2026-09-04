@@ -331,6 +331,7 @@ addon.Spells = {
     [87023]  = { type = DEBUFF_OFFENSIVE }, -- Cauterize
     [45181]  = { type = DEBUFF_OFFENSIVE }, -- Cheated Death
     [131894] = { type = DEBUFF_OFFENSIVE }, -- Murder of Crows
+    [77606]  = { type = DEBUFF_OFFENSIVE }, -- Dark Sim
 
     -- BUFF_OTHER (includes debuffs too?)
     -- DRINKS
