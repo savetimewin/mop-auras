@@ -7,6 +7,7 @@ local activeTimers = {}
 local activeGUIDs = {}
 
 local DR_TIME = NS.DR_TIME
+local MIN_DYNAMIC_RESET_TIME = 15
 local Icons = NS.Icons
 local Debug = NS.Debug
 local NewTable = NS.NewTable
@@ -98,7 +99,12 @@ function Timers:Update(unitGUID, srcGUID, category, spellID, isFriendly, isNotPe
     local drTime = --[[isNotPetOrPlayer and 20 or]] DR_TIME
     timer.spellID = spellID
     timer.isFriendly = isFriendly
-    timer.expiration = GetTime() + (not timer.testMode and drTime or random(6, drTime))
+    local now = GetTime()
+    timer.expiration = now + (not timer.testMode and drTime or random(6, drTime))
+
+    if onAuraEnd and not timer.testMode then
+        timer.resetWindowStart = now
+    end
 
     -- SPELL_AURA_REMOVED must only start/reset the DR reset window. Treating it
     -- as an application lets stale aura data re-run DR-stage inference when the
@@ -306,6 +312,24 @@ do
         return 1
     end
 
+    -- MoP Classic may reset DR any time from 15s to 20s after the CC ends.
+    -- Before 15s, never allow aura-duration inference to lower the current stage.
+    local function UpdateAppliedStage(timer, category, currentDuration, maxDuration)
+        local inferredApplied = GetAppliedStageFromDuration(category, currentDuration, maxDuration)
+        if not inferredApplied then return end
+
+        local currentApplied = timer.applied or 0
+        local resetWindowStart = timer.resetWindowStart
+        local resetConfirmed = inferredApplied == 1
+            and currentApplied > 1
+            and resetWindowStart
+            and (GetTime() - resetWindowStart) >= MIN_DYNAMIC_RESET_TIME
+
+        if resetConfirmed or inferredApplied > currentApplied then
+            timer.applied = inferredApplied
+        end
+    end
+
     local function Start(timer, isApplied, unitID, isUpdate, isRefresh, onAuraEnd)
         local origUnitID
         if unitID == "player-party" then -- CompactRaidFrame for player (no partyX id available for player)
@@ -342,16 +366,12 @@ do
                             local maxDuration = GetBaseMaxDuration(timer.spellID, timer.applied, current_duration) -- TODO: orc racial?
 
                             if maxDuration then
-                                local inferredApplied = GetAppliedStageFromDuration(timer.category, current_duration, maxDuration)
-                                -- Combat-log applications are authoritative while this DR timer is active.
-                                -- Aura data may recover a missed higher stage, but stale aura data must
-                                -- never downgrade stage 2/3 back to an earlier stage.
-                                if inferredApplied and inferredApplied > (timer.applied or 0) then
-                                    timer.applied = inferredApplied
-                                end
+                                UpdateAppliedStage(timer, timer.category, current_duration, maxDuration)
                             end
                         end
                     end
+
+                    timer.resetWindowStart = nil
 
                     -- Add aura duration to DR timer(18s) when using display mode on aura start
                     timer.expiration = expirationTime + DR_TIME
@@ -373,14 +393,12 @@ do
                                     if not GetAuraDuration(origUnitID or unitID, 137562) then
                                         local maxDuration = GetBaseMaxDuration(timer.spellID, timer.applied, cur_dur)
                                         if maxDuration then
-                                            local inferredApplied = GetAppliedStageFromDuration(timer.category, cur_dur, maxDuration)
-                                            -- Same monotonic rule for the delayed aura read.
-                                            if inferredApplied and inferredApplied > (timer.applied or 0) then
-                                                timer.applied = inferredApplied
-                                            end
+                                            UpdateAppliedStage(timer, timer.category, cur_dur, maxDuration)
                                         end
                                     end
                                 end
+
+                                timer.resetWindowStart = nil
 
                                 timer.expiration = exp + DR_TIME
 
