@@ -289,13 +289,13 @@ do
         return cached
     end
 
-    -- Infer the CURRENT DR application from the aura's fixed total duration,
-    -- never from remaining time. A full first application is ~1.0x, the second
-    -- is ~0.5x, and the third is ~0.25x for normal MoP DR categories.
-    local function GetAppliedStageFromDuration(category, currentDuration, maxDuration)
-        if not currentDuration or not maxDuration or maxDuration <= 0 then return end
+    -- Infer the CURRENT DR application from the aura's actual remaining time.
+    -- In MoP Classic aura.duration may still report the undiminished/base duration,
+    -- while expirationTime reflects the real DR-reduced aura length.
+    local function GetAppliedStageFromDuration(category, remainingDuration, maxDuration)
+        if not remainingDuration or remainingDuration <= 0 or not maxDuration or maxDuration <= 0 then return end
 
-        local ratio = currentDuration / maxDuration
+        local ratio = remainingDuration / maxDuration
         local secondRatio = DRList:GetNextDR(1, category)
         local thirdRatio = DRList:GetNextDR(2, category)
 
@@ -314,8 +314,8 @@ do
 
     -- MoP Classic may reset DR any time from 15s to 20s after the CC ends.
     -- Before 15s, never allow aura-duration inference to lower the current stage.
-    local function UpdateAppliedStage(timer, category, currentDuration, maxDuration)
-        local inferredApplied = GetAppliedStageFromDuration(category, currentDuration, maxDuration)
+    local function UpdateAppliedStage(timer, category, remainingDuration, maxDuration)
+        local inferredApplied = GetAppliedStageFromDuration(category, remainingDuration, maxDuration)
         if not inferredApplied then return end
 
         local currentApplied = timer.applied or 0
@@ -366,7 +366,8 @@ do
                             local maxDuration = GetBaseMaxDuration(timer.spellID, timer.applied, current_duration) -- TODO: orc racial?
 
                             if maxDuration then
-                                UpdateAppliedStage(timer, timer.category, current_duration, maxDuration)
+                                local remainingDuration = expirationTime - GetTime()
+                                UpdateAppliedStage(timer, timer.category, remainingDuration, maxDuration)
                             end
                         end
                     end
@@ -393,7 +394,8 @@ do
                                     if not GetAuraDuration(origUnitID or unitID, 137562) then
                                         local maxDuration = GetBaseMaxDuration(timer.spellID, timer.applied, cur_dur)
                                         if maxDuration then
-                                            UpdateAppliedStage(timer, timer.category, cur_dur, maxDuration)
+                                            local remainingDuration = exp - GetTime()
+                                            UpdateAppliedStage(timer, timer.category, remainingDuration, maxDuration)
                                         end
                                     end
                                 end
