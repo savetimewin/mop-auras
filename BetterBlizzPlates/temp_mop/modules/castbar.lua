@@ -1049,6 +1049,14 @@ function BBP.UpdateCastTimer(frame, unit)
         frame.CastTimer:SetTextColor(1, 1, 1)
     end
 
+    -- Nameplate frames are recycled. If another style pass strips the font flags,
+    -- restore the timer outline instead of leaving that plate borderless.
+    local _, _, timerFontFlags = frame.CastTimer:GetFont()
+    if not timerFontFlags or not timerFontFlags:find("OUTLINE", 1, true) then
+        local npTextSize = BetterBlizzPlatesDB.npCastTimerSize or BetterBlizzPlatesDB.npTargetTextSize
+        BBP.SetFontBasedOnOption(frame.CastTimer, npTextSize or 12, "OUTLINE")
+    end
+
     frame.CastTimerFrame:SetFrameStrata(castBar:GetFrameStrata())
     frame.CastTimerFrame:SetFrameLevel(castBar:GetFrameLevel())
 
