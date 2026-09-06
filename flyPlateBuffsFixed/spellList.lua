@@ -354,6 +354,7 @@ local major_defensive_buffs = {
 -- size 1.7
 -- only shown on nameplates & not on bigdebuffs addon 
 local minor_defensive_buffs = {
+	33763, -- Lifebloom
 	1463, -- Incanter's Ward
 	116844, -- Ring of Peace
 	55694, -- Enraged Regeneration
