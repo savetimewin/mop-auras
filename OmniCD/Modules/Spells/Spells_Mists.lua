@@ -473,7 +473,7 @@ E.spell_db = {
 		{ spellID = 122286,	duration = 60,	type = "defensive",	spec = true	},
 	},
 	["PVPTRINKET"] = {
-		{ spellID = 42292,	duration = 120,	type = "pvptrinket",	item = 100616, item2 = 100618, item3 = 100591, item4 = 91682, item5 = 91686, item6 = 91684 },
+		{ spellID = 42292,	duration = 120,	type = "pvptrinket",	item = 100616, item2 = 100618, item3 = 100591, item4 = 91682, item5 = 91686, item6 = 91684, item7 = 103335 },
 		{ spellID = 126697,	duration = 120,	type = "trinket",	item = 64740,	icon = 132344	},
 		{ spellID = 126690,	duration = 60,	type = "trinket",	item = 64687,	icon = 135884	},
 	},
