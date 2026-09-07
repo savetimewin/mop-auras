@@ -1006,6 +1006,12 @@ function GroupInfoMixin:IsSpecOrTalentForPvpStatus(talentID, isLearnedLevel)
 end
 
 function GroupInfoMixin:IsEquipped(spell)
+	-- Item 0 is an on-use placeholder (Demonic Gateway), not equipped gear.
+	-- SetupBar checks sessionItemData after AddOnCast observes actual use.
+	if spell.item == 0 then
+		return false
+	end
+
 	local hasItemRequirement
 
 	for key, itemID in pairs(spell) do
