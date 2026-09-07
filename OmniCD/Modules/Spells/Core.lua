@@ -75,7 +75,7 @@ function E:ProcessSpellDB()
 
 				local name
 				if isItemBasedTrinket then
-					name = C_Item.GetItemNameByID(itemID) or C_Spell.GetSpellName(id)
+					name = (C_Item.GetItemNameByID and C_Item.GetItemNameByID(itemID)) or C_Spell.GetSpellName(id)
 				else
 					name = C_Spell.GetSpellName(id)
 				end
