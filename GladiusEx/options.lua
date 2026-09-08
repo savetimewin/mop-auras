@@ -399,22 +399,6 @@ function GladiusEx:SetupModuleOptions(unit, key, module, order)
     -- set additional module options
     local mod_options = module:GetOptions(unit)
 
-    if (key == "CastBar" or key == "TargetBar") and LibStub("AceGUI-3.0"):GetWidgetVersion("GladiusExColorPicker") then
-        local function UseOpacityPicker(option)
-            if option.type == "color" and option.hasAlpha then
-                option.dialogControl = "GladiusExColorPicker"
-            end
-            if type(option.args) == "table" then
-                for _, child in pairs(option.args) do
-                    UseOpacityPicker(child)
-                end
-            end
-        end
-        for _, option in pairs(mod_options) do
-            UseOpacityPicker(option)
-        end
-    end
-
     if type(options) == "table" then
         options.args = mod_options
     end
