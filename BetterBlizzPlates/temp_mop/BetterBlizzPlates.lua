@@ -156,6 +156,7 @@ local defaultSettings = {
     showNameplateCastbarTimer = false,
     npCastTimerXPos = 0,
     npCastTimerYPos = 0,
+    npCastTimerScale = 1,
     showNameplateTargetText = false,
     targetTextAlwaysShowPvP = true,
     targetTextAlwaysShowPvE = true,
@@ -7966,6 +7967,7 @@ local function NamePlateCastBarTestMode(frame)
                     table.insert(ClickStackPreviews, frame.dummyTimer)
                     local npTextSize = BetterBlizzPlatesDB.npCastTimerSize or BetterBlizzPlatesDB.npTargetTextSize
                     BBP.SetFontBasedOnOption(frame.dummyTimer, npTextSize or 12, "OUTLINE")
+                    frame.dummyTimer:SetScale(BetterBlizzPlatesDB.npCastTimerScale or 1)
                     frame.dummyTimer:Show()
                 else
                     if frame.dummyTimer then

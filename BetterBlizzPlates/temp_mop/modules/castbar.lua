@@ -1011,6 +1011,8 @@ end
 local function PositionCastTimer(timer, castBar)
     if not timer or not castBar then return end
 
+    timer:SetScale(BetterBlizzPlatesDB.npCastTimerScale or 1)
+
     if castBar.Text and castBar.Text.GetDrawLayer then
         local drawLayer, subLevel = castBar.Text:GetDrawLayer()
         if drawLayer then

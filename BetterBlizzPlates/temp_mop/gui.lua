@@ -979,7 +979,7 @@ local function CreateSlider(parent, label, minValue, maxValue, stepValue, elemen
                             end
                         end
                     end
-                elseif element == "npCastTimerXPos" or element == "npCastTimerYPos" then
+                elseif element == "npCastTimerXPos" or element == "npCastTimerYPos" or element == "npCastTimerScale" then
                     BetterBlizzPlatesDB[element] = value
                     if BBP.UpdateCastTimerPositions then
                         BBP.UpdateCastTimerPositions()
@@ -1522,7 +1522,7 @@ local nameplateCastTimerPositionOptionsFrame
 local function OpenNameplateCastTimerPositionOptions()
     if not nameplateCastTimerPositionOptionsFrame then
         local frame = CreateFrame("Frame", "BBPNameplateCastTimerPositionOptionsFrame", UIParent, "BasicFrameTemplateWithInset")
-        frame:SetSize(230, 155)
+        frame:SetSize(280, 200)
         frame:SetPoint("CENTER")
         frame:SetFrameStrata("DIALOG")
         frame:SetMovable(true)
@@ -1533,17 +1533,20 @@ local function OpenNameplateCastTimerPositionOptions()
 
         local title = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
         title:SetPoint("TOP", frame, "TOP", 0, -8)
-        title:SetText("Nameplate Cast Timer Position")
+        title:SetText("Nameplate Cast Timer Settings")
 
         local note = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
         note:SetPoint("TOP", title, "BOTTOM", 0, -8)
-        note:SetText("Moves only the timer; spell text stays unchanged.")
+        note:SetText("Move and scale the timer independently.")
 
         local xSlider = CreateSlider(frame, "X Offset", -100, 100, 1, "npCastTimerXPos", "X", 150)
         xSlider:SetPoint("TOP", note, "BOTTOM", 0, -20)
 
         local ySlider = CreateSlider(frame, "Y Offset", -100, 100, 1, "npCastTimerYPos", "Y", 150)
         ySlider:SetPoint("TOP", xSlider, "BOTTOM", 0, -20)
+
+        local scaleSlider = CreateSlider(frame, "Timer Scale", 0.5, 2.5, 0.01, "npCastTimerScale", nil, 150)
+        scaleSlider:SetPoint("TOP", ySlider, "BOTTOM", 0, -20)
 
         nameplateCastTimerPositionOptionsFrame = frame
     end
@@ -5351,7 +5354,7 @@ local function guiGeneralTab()
 
     local showNameplateCastbarTimer = CreateCheckbox("showNameplateCastbarTimer", "Cast timer next to castbar", BetterBlizzPlates, nil, BBP.ToggleSpellCastEventRegistration)
     showNameplateCastbarTimer:SetPoint("LEFT", alwaysHideEnemyCastbar.text, "RIGHT", 0, 0)
-    CreateTooltipTwo(showNameplateCastbarTimer, "Castbar Timer", "Show the remaining cast time next to the castbar.", "Right-click to move only the timer text; the spell name will stay in place.")
+    CreateTooltipTwo(showNameplateCastbarTimer, "Castbar Timer", "Show the remaining cast time next to the castbar.", "Right-click to move and scale the timer independently of the spell name.")
     showNameplateCastbarTimer:HookScript("OnMouseDown", function(_, button)
         if button == "RightButton" then
             GameTooltip:Hide()
