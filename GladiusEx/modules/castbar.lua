@@ -501,7 +501,7 @@ function CastBar:Update(unit)
 	self.frame[unit].timeText:ClearAllPoints()
 	self.frame[unit].timeText:SetPoint(self.db[unit].castTimeTextAlign, self.frame[unit].bar, self.db[unit].castTimeTextAlign, self.db[unit].castTimeTextOffsetX, self.db[unit].castTimeTextOffsetY)
 	if invpos(self.db[unit].castTimeTextAlign) then
-		self.frame[unit].timeText:SetPoint(invpos(self.db[unit].castTimeTextAlign), self.frame[unit].bar, invpos(self.db[unit].castTimeTextAlign), 0, 0)
+		self.frame[unit].timeText:SetPoint(invpos(self.db[unit].castTimeTextAlign), self.frame[unit].bar, invpos(self.db[unit].castTimeTextAlign), 0, self.db[unit].castTimeTextOffsetY)
 	end
 	self.frame[unit].timeText:SetWordWrap(false)
 
