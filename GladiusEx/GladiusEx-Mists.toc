@@ -14,6 +14,7 @@ localization\enUS.lua
 localization\locales.lua
 GladiusEx.lua
 Data-Mists.lua
+colorpicker.lua
 options.lua
 modules\alerts.lua
 modules\announcements.lua
