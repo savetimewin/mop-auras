@@ -146,6 +146,20 @@ local function UpdateCastText(f, spell)
 	f.castText:SetText(spell)
 end
 
+local function UpdateCastBackground(frame, db)
+	local show = not db.castBarBackgroundHideWhenNotCasting or frame.isCasting or frame.isChanneling
+	if show then
+		frame.background:Show()
+	else
+		frame.background:Hide()
+	end
+	if show and db.castIcon then
+		frame.icon.bg:Show()
+	else
+		frame.icon.bg:Hide()
+	end
+end
+
 function CastBar:UNIT_SPELLCAST_START(event, unit)
 	self:CastStart(unit, false)
 end
@@ -298,10 +312,7 @@ function CastBar:CastStart(unit, channel)
 		f.lineID = lineID
 
 		f.icon:SetTexture(icon)
-		if self.db[unit].castBarBackgroundHideWhenNotCasting then
-			f.icon.bg:Show()
-			f.background:Show()
-		end
+		UpdateCastBackground(f, self.db[unit])
 
 		self:SetInterruptible(unit, not notInterruptible)
 
@@ -320,10 +331,7 @@ function CastBar:CastEnd(frame, db)
 	frame.timeText:SetText("")
 	frame.castText:SetText("")
 	frame.icon:SetTexture("")
-	if db.castBarBackgroundHideWhenNotCasting then
-		frame.icon.bg:Hide()
-		frame.background:Hide()
-	end
+	UpdateCastBackground(frame, db)
 	frame.bar:SetValue(0)
 	frame.spark:Hide()
 	self:SetInterruptible(frame.unit, true)
@@ -521,13 +529,7 @@ function CastBar:Update(unit)
 	-- hide
 	self.frame[unit]:Hide()
 
-	if self.db[unit].castBarBackgroundHideWhenNotCasting then
-		self.frame[unit].icon.bg:Hide()
-		self.frame[unit].background:Hide()
-	else
-		self.frame[unit].icon.bg:Show()
-		self.frame[unit].background:Show()
-	end
+	UpdateCastBackground(self.frame[unit], self.db[unit])
 end
 
 function CastBar:Show(unit)
@@ -560,12 +562,15 @@ function CastBar:Test(unit)
 		f.delay = 0.2
 
 		f.icon:SetTexture(icon)
+		UpdateCastBackground(f, self.db[unit])
 		self:SetInterruptible(unit, not notInterruptible)
 		f.bar:SetMinMaxValues(0, f.maxValue)
 
 		if self.db[unit].castSpark then f.spark:Show() end
 		CastUpdate(f)
 		UpdateCastText(f, spell)
+	else
+		self:CastEnd(f, self.db[unit])
 	end
 end
 
