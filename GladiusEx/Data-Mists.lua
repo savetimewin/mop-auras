@@ -141,8 +141,8 @@ function GladiusEx.Data.DefaultClassicon()
         [GladiusEx:SafeGetSpellName(116709)] = 9, -- Spear Hand Strike
         [GladiusEx:SafeGetSpellName(24259)]	= 9, -- Spell Lock
         [GladiusEx:SafeGetSpellName(47476)]	= 9, -- Strangulate
-        [GladiusEx:SafeGetSpellName(31117)]	= 9, -- Unstable Affliction (Silence)
-        [GladiusEx:SafeGetSpellName(43523)]	= 9, -- Unstable Affliction (Silence)
+        [31117] = 9, -- Unstable Affliction (Silence), exact aura ID as in LoseControl
+        [43523] = 9, -- Unstable Affliction (Silence), exact aura ID as in LoseControl
         [GladiusEx:SafeGetSpellName(15487)]	= 9, -- Silence
 		[GladiusEx:SafeGetSpellName(34490)]	= 9, -- Silencing shot (3 second silence)
 		[GladiusEx:SafeGetSpellName(1330)]	= 9, -- Garrote

@@ -169,6 +169,38 @@ function ClassIcon.UnitAuraTest(unit, index, filter)
 	end
 end
 
+local faerieFireClasses = {
+	ROGUE = true,
+	DRUID = true,
+	MAGE = true,
+	HUNTER = true,
+	PRIEST = true,
+}
+
+function ClassIcon:GetAuraPriority(unit, name, spellid)
+	if GladiusEx.IS_MOPC then
+		-- The DoT and dispel silence share a name. Also guard old saved
+		-- name-based entries so existing profiles cannot show the DoT.
+		if spellid == 31117 or spellid == 43523 then
+			local priority = self.db[unit].classIconAuras[spellid]
+			if type(priority) == "boolean" then return nil end
+			return priority or self:GetImportantAura(unit, name)
+		elseif spellid == 30108 or name == GladiusEx:SafeGetSpellName(30108)
+			or name == GladiusEx:SafeGetSpellName(31117)
+			or name == GladiusEx:SafeGetSpellName(43523) then
+			return nil
+		end
+
+		-- Check the afflicted unit, not the druid who cast Faerie Fire.
+		if spellid == 770 or name == GladiusEx:SafeGetSpellName(770) then
+			local class = select(2, UnitClass(unit))
+			if not faerieFireClasses[class] then return nil end
+		end
+	end
+
+	return self:GetImportantAura(unit, name) or self:GetImportantAura(unit, spellid)
+end
+
 function ClassIcon:ScanAuras(unit)
 	local best_priority = 0
 	local best_name, best_icon, best_duration, best_expires
@@ -186,7 +218,7 @@ function ClassIcon:ScanAuras(unit)
 			local name, icon, _, _, duration, expires, _, _, _, spellid = UnitAura(unit, index, filter)
 			if not name then break end
 
-			local prio = self:GetImportantAura(unit, name) or self:GetImportantAura(unit, spellid)
+			local prio = self:GetAuraPriority(unit, name, spellid)
 			if prio and prio > best_priority or (prio == best_priority and best_expires and ((showShortest and expires and expires <= best_expires) or (not showShortest and (not expires or expires >= best_expires)))) then
 				best_name, best_icon, best_duration, best_expires, best_priority = name, icon, duration, expires, prio
 			end
