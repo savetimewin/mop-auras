@@ -13,7 +13,7 @@ function BBF.UpdateClassicCastbarTexture(texture)
     end
 end
 
-local CastingBarFrame = CastingBarFrame or PlayerCastingBarFrame
+local CastingBarFrame = _G.PlayerCastingBarFrame or _G.CastingBarFrame
 
 local function adjustCastBarBorder(castBar, border, adjust, shield, player, party, playerCb)
     -- Default values for width
